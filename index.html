@@ -1278,72 +1278,114 @@ function ciQuestion(num, label, desc, fieldId, savedVal, hasComment, commentId, 
   </div>`;
 }
 
+// Determine if protocol is MA-type
+function isMaProtocol(protocol) {
+  return protocol === 'MA Training Only' || protocol === 'FD/MA Training';
+}
+
+// ── SONOGRAPHER CHECK-IN FORM ──
+function sonoCheckinForm() {
+  return `
+    <div class="form-grid" style="margin-bottom:.5rem">
+      <div class="form-group"><label class="form-label">Cases Completed This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 8"></div>
+      <div class="form-group"><label class="form-label">Supervision Level</label>
+        <select class="form-control" id="ci-supervision"><option value="">Select...</option>${['Fully supervised','Mostly supervised','Mix of both','Mostly independent','Fully independent'].map(o=>`<option>${o}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-section">Weekly Evaluation</div>
+    ${ciQuestion(1,'Technical Scanning Skills','How would you rate the trainee\'s ability to perform venous ultrasound exams (including deep and superficial systems)?','ci-technical','',false,'','')}
+    ${ciQuestion(2,'Anatomy & Protocol Knowledge','How well does the trainee demonstrate understanding of venous anatomy and practice-specific scanning protocols (e.g., CVI studies, reflux testing)?','ci-anatomy','',false,'','')}
+    ${ciQuestion(3,'Probe Handling & Technique','How would you assess their probe control, positioning, and overall scanning technique?','ci-probe','',false,'','')}
+    ${ciQuestion(4,'Workflow & Efficiency','Is the trainee improving in exam speed while maintaining quality and accuracy?','ci-workflow','',false,'','')}
+    ${ciQuestion(5,'Patient Interaction','How well does the trainee communicate with patients and maintain professionalism during exams?','ci-patient','',false,'','')}
+    ${ciQuestion(6,'Clinical Understanding','Does the trainee demonstrate understanding of vein disease (e.g., CVI, varicose veins) and correlate findings appropriately?','ci-clinical','',false,'','')}
+    ${ciQuestion(7,'Documentation & Reporting','How accurate and thorough is the trainee\'s documentation and preliminary reporting?','ci-documentation','',true,'ci-documentation-comment','')}
+    ${ciQuestion(8,'Independence & Confidence','Is the trainee progressing toward working independently?','ci-independence','',true,'ci-independence-comment','')}
+    ${ciQuestion(9,'Doctor Presentation','How well does the trainee communicate with the physician?','ci-doctor','',true,'ci-doctor-comment','')}
+    <div class="form-section">Overall Progress & Feedback</div>
+    <div class="form-group"><label class="form-label">Key Strengths This Week 🏆</label><textarea class="form-control" id="ci-strengths" placeholder="Skills mastered, improvements noticed..."></textarea></div>
+    <div class="form-group"><label class="form-label">Areas Needing Improvement</label><textarea class="form-control" id="ci-improvements" placeholder="Skills to focus on, areas needing more practice..."></textarea></div>
+    <div class="form-group"><label class="form-label">Additional Comments or Concerns</label><textarea class="form-control" id="ci-additional" placeholder="Anything else to note..."></textarea></div>`;
+}
+
+// ── MA CHECK-IN FORM ──
+function maCheckinForm() {
+  return `
+    <div class="form-grid" style="margin-bottom:.5rem">
+      <div class="form-group"><label class="form-label">Procedures Assisted This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 6"></div>
+      <div class="form-group"><label class="form-label">Supervision Level</label>
+        <select class="form-control" id="ci-supervision"><option value="">Select...</option>${['Fully supervised','Mostly supervised','Mix of both','Mostly independent','Fully independent'].map(o=>`<option>${o}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-section">Weekly Evaluation</div>
+    ${ciQuestion(1,'Procedure Preparation','How well does the trainee prepare procedure rooms and set up trays for vein procedures (e.g., RFA, sclerotherapy)?','ci-ma-prep','',false,'','')}
+    ${ciQuestion(2,'Medication Preparation','Is the trainee accurately and safely preparing/mixing medications according to protocol?','ci-ma-med','',false,'','')}
+    ${ciQuestion(3,'Patient Consent Process','Does the trainee ensure all required consents are properly completed and signed prior to procedures?','ci-ma-consent','',false,'','')}
+    ${ciQuestion(4,'Patient Intake & Presentation','How effectively does the trainee perform new patient intake (history, symptoms, documentation) and present the case clearly and concisely to the physician?','ci-ma-intake','',false,'','')}
+    ${ciQuestion(5,'Patient Preparation & Draping','How well does the trainee prep and drape patients for procedures while maintaining sterility and patient comfort?','ci-ma-draping','',false,'','')}
+    ${ciQuestion(6,'Aseptic Technique','Does the trainee consistently follow proper sterile/aseptic techniques during procedures?','ci-ma-aseptic','',false,'','')}
+    ${ciQuestion(7,'Procedure Assistance','How effectively does the trainee assist the physician during procedures (anticipating needs, passing instruments, maintaining flow)?','ci-ma-assist','',true,'ci-ma-assist-comment','')}
+    ${ciQuestion(8,'Equipment Handling','Is the trainee proficient in handling and troubleshooting equipment (e.g., RFA machine, ultrasound basics if applicable)?','ci-ma-equipment','',true,'ci-ma-equipment-comment','')}
+    ${ciQuestion(9,'Post-Procedure Duties','How well does the trainee perform post-procedure tasks (bandaging, patient instructions, room turnover)?','ci-ma-post','',false,'','')}
+    ${ciQuestion(10,'Workflow & Efficiency','Is the trainee improving in speed and organization while maintaining accuracy?','ci-ma-workflow','',false,'','')}
+    ${ciQuestion(11,'Professionalism & Patient Interaction','How well does the trainee communicate with patients and maintain a professional demeanor?','ci-ma-professionalism','',true,'ci-ma-professionalism-comment','')}
+    <div class="form-section">Overall Feedback</div>
+    <div class="form-group"><label class="form-label">Key Strengths This Week 🏆</label><textarea class="form-control" id="ci-strengths" placeholder="Skills mastered, improvements noticed..."></textarea></div>
+    <div class="form-group"><label class="form-label">Areas Needing Improvement</label><textarea class="form-control" id="ci-improvements" placeholder="Skills to focus on, areas needing more practice..."></textarea></div>
+    <div class="form-group"><label class="form-label">Additional Comments or Concerns</label><textarea class="form-control" id="ci-additional" placeholder="Anything else to note..."></textarea></div>`;
+}
+
 async function openCheckinModal(traineeId, week) {
+  const trDoc = await db.collection('trainees').doc(traineeId).get();
+  const trainee = {id:trDoc.id,...trDoc.data()};
+  const isMA = isMaProtocol(trainee.protocol);
+  const formType = isMA ? 'MA / FD·MA' : 'Sonographer';
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr">
-      <div><div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Week ${week} Weekly Check-in</div>
-      <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">Weekly sonographer trainee progress evaluation</div></div>
+      <div>
+        <div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Week ${week} Weekly Check-in</div>
+        <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">${trainee.name} · <span style="font-weight:600;color:var(--accent)">${formType} Form</span></div>
+      </div>
       <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <div class="form-grid" style="margin-bottom:.5rem">
-        <div class="form-group"><label class="form-label">Cases Completed This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 8"></div>
-        <div class="form-group"><label class="form-label">Supervision Level</label>
-          <select class="form-control" id="ci-supervision"><option value="">Select...</option>${['Fully supervised','Mostly supervised','Mix of both','Mostly independent','Fully independent'].map(o=>`<option>${o}</option>`).join('')}</select>
-        </div>
-      </div>
-
-      <div class="form-section">Weekly Evaluation</div>
-
-      ${ciQuestion(1,'Technical Scanning Skills','How would you rate the trainee\'s ability to perform venous ultrasound exams (including deep and superficial systems)?','ci-technical','',false,'','')}
-      ${ciQuestion(2,'Anatomy & Protocol Knowledge','How well does the trainee demonstrate understanding of venous anatomy and practice-specific scanning protocols (e.g., CVI studies, reflux testing)?','ci-anatomy','',false,'','')}
-      ${ciQuestion(3,'Probe Handling & Technique','How would you assess their probe control, positioning, and overall scanning technique?','ci-probe','',false,'','')}
-      ${ciQuestion(4,'Workflow & Efficiency','Is the trainee improving in exam speed while maintaining quality and accuracy?','ci-workflow','',false,'','')}
-      ${ciQuestion(5,'Patient Interaction','How well does the trainee communicate with patients and maintain professionalism during exams?','ci-patient','',false,'','')}
-      ${ciQuestion(6,'Clinical Understanding','Does the trainee demonstrate understanding of vein disease (e.g., CVI, varicose veins) and correlate findings appropriately?','ci-clinical','',false,'','')}
-      ${ciQuestion(7,'Documentation & Reporting','How accurate and thorough is the trainee\'s documentation and preliminary reporting?','ci-documentation','',true,'ci-documentation-comment','')}
-      ${ciQuestion(8,'Independence & Confidence','Is the trainee progressing toward working independently?','ci-independence','',true,'ci-independence-comment','')}
-      ${ciQuestion(9,'Doctor Presentation','How well does the trainee communicate with the physician?','ci-doctor','',true,'ci-doctor-comment','')}
-
-      <div class="form-section">Overall Progress & Feedback</div>
-      <div class="form-group"><label class="form-label">What are the trainee's key strengths this week? 🏆</label>
-        <textarea class="form-control" id="ci-strengths" placeholder="Skills mastered, improvements noticed, positive highlights..."></textarea>
-      </div>
-      <div class="form-group"><label class="form-label">What areas need improvement?</label>
-        <textarea class="form-control" id="ci-improvements" placeholder="Skills to focus on, areas needing more practice..."></textarea>
-      </div>
-      <div class="form-group"><label class="form-label">Any additional comments or concerns?</label>
-        <textarea class="form-control" id="ci-additional" placeholder="Anything else to note for this week..."></textarea>
-      </div>
+      ${isMA ? maCheckinForm() : sonoCheckinForm()}
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
-      <button class="btn btn-primary" id="ci-save-btn" onclick="saveCheckin('${traineeId}',${week})"><i class="fa-solid fa-check"></i> Save Check-in</button>
+      <button class="btn btn-primary" id="ci-save-btn" onclick="saveCheckin('${traineeId}',${week},'${isMA?'ma':'sono'}')"><i class="fa-solid fa-check"></i> Save Check-in</button>
     </div>
   </div>`);
 }
 
-async function saveCheckin(traineeId, week) {
+async function saveCheckin(traineeId, week, formType) {
+  const isMA = formType === 'ma';
   const obj = {
-    traineeId, week, date:todayStr(),
+    traineeId, week, date:todayStr(), formType,
     cases: v('ci-cases'),
     supervision: v('ci-supervision'),
-    technical: v('ci-technical'),
-    anatomy: v('ci-anatomy'),
-    probe: v('ci-probe'),
-    workflow: v('ci-workflow'),
-    patient: v('ci-patient'),
-    clinical: v('ci-clinical'),
-    documentation: v('ci-documentation'),
-    documentationComment: v('ci-documentation-comment'),
-    independence: v('ci-independence'),
-    independenceComment: v('ci-independence-comment'),
-    doctor: v('ci-doctor'),
-    doctorComment: v('ci-doctor-comment'),
     strengths: v('ci-strengths'),
     improvements: v('ci-improvements'),
     additional: v('ci-additional'),
   };
+  if(isMA) {
+    Object.assign(obj, {
+      maPrep: v('ci-ma-prep'), maMed: v('ci-ma-med'), maConsent: v('ci-ma-consent'),
+      maIntake: v('ci-ma-intake'), maDraping: v('ci-ma-draping'), maAseptic: v('ci-ma-aseptic'),
+      maAssist: v('ci-ma-assist'), maAssistComment: v('ci-ma-assist-comment'),
+      maEquipment: v('ci-ma-equipment'), maEquipmentComment: v('ci-ma-equipment-comment'),
+      maPost: v('ci-ma-post'), maWorkflow: v('ci-ma-workflow'),
+      maProfessionalism: v('ci-ma-professionalism'), maProfessionalismComment: v('ci-ma-professionalism-comment'),
+    });
+  } else {
+    Object.assign(obj, {
+      technical: v('ci-technical'), anatomy: v('ci-anatomy'), probe: v('ci-probe'),
+      workflow: v('ci-workflow'), patient: v('ci-patient'), clinical: v('ci-clinical'),
+      documentation: v('ci-documentation'), documentationComment: v('ci-documentation-comment'),
+      independence: v('ci-independence'), independenceComment: v('ci-independence-comment'),
+      doctor: v('ci-doctor'), doctorComment: v('ci-doctor-comment'),
+    });
+  }
   setBtn('ci-save-btn',true,'Saving...');
   try {
     await db.collection('checkins').add({...obj, createdAt:ts()});
@@ -1357,28 +1399,52 @@ async function viewCheckinModal(id) {
   const doc = await db.collection('checkins').doc(id).get();
   if(!doc.exists) return;
   const ci = {id:doc.id,...doc.data()};
-  const ratingBadge = (label, val) => val ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border)"><span style="font-size:.82rem;font-weight:500">${label}</span><span style="padding:.2rem .65rem;border-radius:6px;font-size:.75rem;font-weight:700;background:${CI_RATING_COLORS[val]||'#64748b'};color:#fff">${val}</span></div>` : '';
+  const isMA = ci.formType === 'ma';
+  const ratingBadge = (label, val, comment) => val ? `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.82rem;font-weight:500">${label}</span>
+      <span style="padding:.2rem .65rem;border-radius:6px;font-size:.75rem;font-weight:700;background:${CI_RATING_COLORS[val]||'#64748b'};color:#fff">${val}</span>
+    </div>
+    ${comment?`<div style="font-size:.77rem;color:var(--text-light);padding:.3rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-bottom:.3rem">${comment}</div>`:''}` : '';
+
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
-    <div class="modal-hdr"><span class="modal-title">Week ${ci.week} Check-in — ${fmtDate(ci.date)}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-hdr">
+      <div>
+        <span class="modal-title">Week ${ci.week} Check-in — ${fmtDate(ci.date)}</span>
+        <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem"><span style="font-weight:600;color:var(--accent)">${isMA?'MA / FD·MA':'Sonographer'} Form</span></div>
+      </div>
+      <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
     <div class="modal-body">
       <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
-        ${ci.cases?`<span class="badge badge-info"><i class="fa-solid fa-stethoscope"></i> ${ci.cases} cases</span>`:''}
+        ${ci.cases?`<span class="badge badge-info"><i class="fa-solid fa-stethoscope"></i> ${ci.cases} ${isMA?'procedures':'cases'}</span>`:''}
         ${ci.supervision?`<span class="badge badge-gray"><i class="fa-solid fa-eye"></i> ${ci.supervision}</span>`:''}
       </div>
 
-      <div style="margin-bottom:1.1rem">
-        ${ratingBadge('Technical Scanning Skills', ci.technical)}
-        ${ratingBadge('Anatomy & Protocol Knowledge', ci.anatomy)}
-        ${ratingBadge('Probe Handling & Technique', ci.probe)}
-        ${ratingBadge('Workflow & Efficiency', ci.workflow)}
-        ${ratingBadge('Patient Interaction', ci.patient)}
-        ${ratingBadge('Clinical Understanding', ci.clinical)}
-        ${ratingBadge('Documentation & Reporting', ci.documentation)}
-        ${ci.documentationComment?`<div style="font-size:.78rem;color:var(--text-light);padding:.35rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-top:.2rem;margin-bottom:.3rem">${ci.documentationComment}</div>`:''}
-        ${ratingBadge('Independence & Confidence', ci.independence)}
-        ${ci.independenceComment?`<div style="font-size:.78rem;color:var(--text-light);padding:.35rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-top:.2rem;margin-bottom:.3rem">${ci.independenceComment}</div>`:''}
-        ${ratingBadge('Doctor Presentation', ci.doctor)}
-        ${ci.doctorComment?`<div style="font-size:.78rem;color:var(--text-light);padding:.35rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-top:.2rem;margin-bottom:.3rem">${ci.doctorComment}</div>`:''}
+      <div style="margin-bottom:1rem">
+        ${isMA ? `
+          ${ratingBadge('Procedure Preparation', ci.maPrep, '')}
+          ${ratingBadge('Medication Preparation', ci.maMed, '')}
+          ${ratingBadge('Patient Consent Process', ci.maConsent, '')}
+          ${ratingBadge('Patient Intake & Presentation', ci.maIntake, '')}
+          ${ratingBadge('Patient Preparation & Draping', ci.maDraping, '')}
+          ${ratingBadge('Aseptic Technique', ci.maAseptic, '')}
+          ${ratingBadge('Procedure Assistance', ci.maAssist, ci.maAssistComment)}
+          ${ratingBadge('Equipment Handling', ci.maEquipment, ci.maEquipmentComment)}
+          ${ratingBadge('Post-Procedure Duties', ci.maPost, '')}
+          ${ratingBadge('Workflow & Efficiency', ci.maWorkflow, '')}
+          ${ratingBadge('Professionalism & Patient Interaction', ci.maProfessionalism, ci.maProfessionalismComment)}
+        ` : `
+          ${ratingBadge('Technical Scanning Skills', ci.technical, '')}
+          ${ratingBadge('Anatomy & Protocol Knowledge', ci.anatomy, '')}
+          ${ratingBadge('Probe Handling & Technique', ci.probe, '')}
+          ${ratingBadge('Workflow & Efficiency', ci.workflow, '')}
+          ${ratingBadge('Patient Interaction', ci.patient, '')}
+          ${ratingBadge('Clinical Understanding', ci.clinical, '')}
+          ${ratingBadge('Documentation & Reporting', ci.documentation, ci.documentationComment)}
+          ${ratingBadge('Independence & Confidence', ci.independence, ci.independenceComment)}
+          ${ratingBadge('Doctor Presentation', ci.doctor, ci.doctorComment)}
+        `}
       </div>
 
       ${ci.strengths?`<div class="form-group"><div class="form-label" style="color:var(--success)">🏆 Key Strengths</div><div style="background:#dcfce7;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.strengths}</div></div>`:''}
