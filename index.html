@@ -582,6 +582,7 @@ async function renderTrainerDetail(tid) {
   const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
   const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
   const checkinsDue = trainees.filter(t=>isCheckinDue(t,checkins));
+  const assessmentsDueList = trainees.map(t=>({trainee:t,days:getAssessmentsDue(t,assessments)})).filter(x=>x.days.length>0);
   const body = document.getElementById('trainer-detail-body');
   if(!body) return;
   body.innerHTML = `
@@ -607,6 +608,7 @@ async function renderTrainerDetail(tid) {
       <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${assessments.filter(a=>trainees.find(t=>t.id===a.traineeId)).length}</div><div class="stat-label">Assessments</div></div></div>
       <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.filter(c=>trainees.find(t=>t.id===c.traineeId)).length}</div><div class="stat-label">Check-ins</div></div></div>
     </div>
+    ${assessmentsDueList.length?`<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:var(--r);padding:.85rem 1.1rem;margin-bottom:.65rem;display:flex;align-items:center;gap:.6rem"><i class="fa-solid fa-triangle-exclamation" style="color:#dc2626"></i><span style="font-size:.88rem;color:#991b1b;font-weight:600">${assessmentsDueList.length} milestone assessment${assessmentsDueList.length>1?'s':''} due: ${assessmentsDueList.map(x=>`${x.trainee.name} (${x.days.map(d=>d+'-day').join(', ')})`).join(' · ')}</span></div>`:''}
     ${checkinsDue.length?`<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem"><i class="fa-solid fa-bell" style="color:#d97706"></i><span style="font-size:.88rem;color:#92400e;font-weight:600">${checkinsDue.length} trainee${checkinsDue.length>1?'s':''} need a weekly check-in: ${checkinsDue.map(t=>t.name).join(', ')}</span></div>`:''}
     <div class="card">
       <div class="card-hdr"><span class="card-hdr-title">Assigned Trainees (${trainees.length})</span>
@@ -628,6 +630,20 @@ function isCheckinDue(trainee, checkins) {
   return daysSince >= 7;
 }
 
+// Returns array of assessment days that are due but not yet completed
+function getAssessmentsDue(trainee, assessments) {
+  if(trainee.status !== 'active' || !trainee.startDate) return [];
+  const due = [];
+  [30,60,90].forEach(day=>{
+    const alreadyDone = assessments.find(a=>a.traineeId===trainee.id && a.day===day);
+    if(alreadyDone) return;
+    const dueDate = new Date(trainee.startDate+'T12:00:00');
+    dueDate.setDate(dueDate.getDate() + day);
+    if(new Date() >= dueDate) due.push(day);
+  });
+  return due;
+}
+
 async function renderTrainerDashboard(tid) {
   setNavActive('nav-dashboard');
   viewTrainerId = tid;
@@ -647,6 +663,10 @@ async function renderTrainerDashboard(tid) {
 
   // Find active trainees with check-in due
   const checkinsDue = trainees.filter(t=>isCheckinDue(t, checkins));
+  // Find trainees with assessment(s) due
+  const assessmentsDueList = trainees
+    .map(t=>({trainee:t, days:getAssessmentsDue(t, assessments)}))
+    .filter(x=>x.days.length>0);
 
   const body = document.getElementById('trainer-dash-body');
   if(!body) return;
@@ -659,8 +679,29 @@ async function renderTrainerDashboard(tid) {
       </div>
     </div>
 
+    ${assessmentsDueList.length ? `
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.65rem">
+        <i class="fa-solid fa-triangle-exclamation" style="color:#dc2626;font-size:1rem"></i>
+        <span style="font-weight:700;font-size:.95rem;color:#991b1b">Milestone Assessments Due (${assessmentsDueList.length})</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        ${assessmentsDueList.map(({trainee:t, days})=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--r-sm);padding:.55rem .85rem;border:1px solid #fca5a5;flex-wrap:wrap;gap:.4rem">
+            <div style="font-size:.84rem;font-weight:600">${t.name}
+              <span style="font-weight:400;color:var(--text-light);font-size:.75rem">· ${days.map(d=>`${d}-day`).join(', ')} assessment${days.length>1?'s':''} due</span>
+            </div>
+            <div style="display:flex;gap:.35rem">
+              ${days.map(d=>`<button style="background:#dc2626;color:#fff;border:none;padding:.26rem .65rem;font-size:.74rem;border-radius:6px;cursor:pointer;font-weight:600" onclick="renderTraineeDetail('${t.id}','${tid}')">
+                <i class="fa-solid fa-clipboard-list"></i> ${d}-Day
+              </button>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
     ${checkinsDue.length ? `
-    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1.5rem">
+    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem">
       <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.65rem">
         <i class="fa-solid fa-bell" style="color:#d97706;font-size:1rem"></i>
         <span style="font-weight:700;font-size:.95rem;color:#92400e">Weekly Check-ins Due (${checkinsDue.length})</span>
@@ -672,22 +713,25 @@ async function renderTrainerDashboard(tid) {
           const lastDate = myCheckins.length ? myCheckins.reduce((a,b)=>(a.date||'')>(b.date||'')?a:b).date : null;
           return `<div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--r-sm);padding:.55rem .85rem;border:1px solid #fcd34d">
             <div style="font-size:.84rem;font-weight:600">${t.name} <span style="font-weight:400;color:var(--text-light);font-size:.75rem">· Week ${nextWeek}${lastDate?' · Last: '+fmtDate(lastDate):' · No check-ins yet'}</span></div>
-            <button class="btn btn-warning btn-sm" style="background:#d97706;color:#fff;border:none;padding:.28rem .7rem;font-size:.76rem;border-radius:6px;cursor:pointer;font-weight:600" onclick="renderTraineeDetail('${t.id}','${tid}')">
+            <button style="background:#d97706;color:#fff;border:none;padding:.28rem .7rem;font-size:.76rem;border-radius:6px;cursor:pointer;font-weight:600" onclick="renderTraineeDetail('${t.id}','${tid}')">
               <i class="fa-solid fa-clipboard-list"></i> Start Check-in
             </button>
           </div>`;
         }).join('')}
       </div>
-    </div>` : `
+    </div>` : ''}
+
+    ${!assessmentsDueList.length && !checkinsDue.length ? `
     <div style="background:#dcfce7;border:1px solid #86efac;border-radius:var(--r);padding:.85rem 1.1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem">
       <i class="fa-solid fa-circle-check" style="color:#15803d"></i>
-      <span style="font-size:.88rem;color:#15803d;font-weight:600">All check-ins are up to date! ✓</span>
-    </div>`}
+      <span style="font-size:.88rem;color:#15803d;font-weight:600">All check-ins and assessments are up to date! ✓</span>
+    </div>` : ''}
 
     <div class="stats-grid" style="margin-bottom:1.5rem">
       <div class="stat-card"><div class="stat-icon si-sky"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-value">${trainees.length}</div><div class="stat-label">My Trainees</div></div></div>
       <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${trainees.filter(t=>t.status==='active').length}</div><div class="stat-label">Active</div></div></div>
       <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value">${checkinsDue.length}</div><div class="stat-label">Check-ins Due</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${assessmentsDueList.length}</div><div class="stat-label">Assessments Due</div></div></div>
       <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.filter(c=>trainees.find(t=>t.id===c.traineeId)).length}</div><div class="stat-label">Total Check-ins</div></div></div>
     </div>
     <div class="card">
@@ -737,8 +781,9 @@ function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, 
     const trainer = (window._allTrainers||[]).find(t=>t.id===tr.trainerId);
     const asmts = getAsmtStatus(tr, assessments);
     const ciDue = isCheckinDue(tr, checkins);
+    const aDue = getAssessmentsDue(tr, assessments);
     return `<tr onclick="renderTraineeDetail('${tr.id}','${fromTrainerId||''}')">
-      <td><div style="display:flex;align-items:center;gap:.6rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}${ciDue?` <span style="font-size:.65rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.25rem">CHECK-IN DUE</span>`:''}</div><div style="font-size:.71rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:.6rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}${aDue.length?` <span style="font-size:.63rem;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">${aDue.map(d=>d+'-DAY').join(' ')}</span>`:''}${ciDue?` <span style="font-size:.63rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">CHECK-IN DUE</span>`:''}</div><div style="font-size:.71rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
       ${!hideTrainerCol?`<td>${trainer?`<span class="badge badge-gray">${trainer.name}</span>`:'—'}</td>`:''}
       <td>${tr.protocol?`<span class="protocol-pill">${tr.protocol}</span>`:'<span style="color:var(--text-light);font-size:.78rem">None</span>'}</td>
       <td style="font-size:.78rem;color:var(--text-light)">${tr.startDate?fmtDate(tr.startDate):'—'}</td>
