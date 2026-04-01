@@ -1230,7 +1230,7 @@ async function loadAdminAssign() {
 
 // Secondary app for creating accounts
 let _secondaryApp2;
-try { _secondaryApp2 = firebase.app('secondary'); } catch(e) { _secondaryApp2 = firebase.initializeApp(firebase.app().options,'secondary'); }
+try { _secondaryApp2 = firebase.app('learn-portal'); } catch(e) { _secondaryApp2 = firebase.initializeApp(firebase.app().options,'learn-portal'); }
 
 function openCreateTraineeAccount() {
   showModal(`<div class="modal" onclick="event.stopPropagation()">
@@ -1257,17 +1257,24 @@ async function createTraineeAccount() {
   if(pass.length<6) return showEl('ta-error','Password must be at least 6 characters.');
   setBtn('ta-btn',true,'Creating...');
   try {
-    const sec = _secondaryApp2;
-    const secAuth = firebase.auth(sec);
-    const cred = await secAuth.createUserWithEmailAndPassword(email,pass);
-    await secAuth.signOut();
-    await db.collection('users').doc(cred.user.uid).set({name,email,role:'trainee',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-    showEl('ta-success',`Account created! ${name} can now sign in at this page.`);
-    setBtn('ta-btn',false,'Done ✓');
-    setTimeout(()=>{forceClose();loadAdminAssign();},1500);
+    // Use Firebase REST API to create account without affecting current session
+    const apiKey = 'AIzaSyCmVslcWotuoFMQDLDAb_5T90njHg6rygg';
+    const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password:pass, returnSecureToken:true})
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const uid = data.localId;
+    await db.collection('users').doc(uid).set({name, email, role:'trainee', createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showEl('ta-success', `Account created! ${name} can now sign in at this page.`);
+    setBtn('ta-btn', false, 'Done ✓');
+    setTimeout(()=>{forceClose(); loadAdminAssign();}, 1500);
   } catch(e){
-    setBtn('ta-btn',false,'<i class="fa-solid fa-user-plus"></i> Create Account');
-    showEl('ta-error',authErr(e.code)||e.message);
+    setBtn('ta-btn', false, '<i class="fa-solid fa-user-plus"></i> Create Account');
+    const msg = e.message==='EMAIL_EXISTS'?'An account with that email already exists.':e.message==='WEAK_PASSWORD : Password should be at least 6 characters'?'Password must be at least 6 characters.':e.message||'Something went wrong.';
+    showEl('ta-error', msg);
   }
 }
 
