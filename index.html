@@ -791,7 +791,7 @@ async function renderTraineeDetail(tid, fromTid) {
       ${checkins.length===0?`<div class="empty"><i class="fa-solid fa-calendar-check"></i><p>No check-ins yet — start Week 1!</p></div>`:''}
       ${[...checkins].reverse().map(ci=>`<div class="ci-item" onclick="viewCheckinModal('${ci.id}')">
         <div class="ci-week-badge">W${ci.week}</div>
-        <div style="flex:1"><div style="font-weight:600;font-size:.87rem">Week ${ci.week} Check-in</div><div style="font-size:.73rem;color:var(--text-light)">${fmtDate(ci.date)} · Confidence: ${ci.confidence||'—'}/10 · Cases: ${ci.cases||'0'}</div></div>
+        <div style="flex:1"><div style="font-weight:600;font-size:.87rem">Week ${ci.week} Check-in</div><div style="font-size:.73rem;color:var(--text-light)">${fmtDate(ci.date)} · Cases: ${ci.cases||'0'} · ${ci.technical||'Not rated'}</div></div>
         <div style="font-size:.75rem;color:var(--text-light);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ci.summary||ci.wins||''}</div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-light);font-size:.72rem"></i>
       </div>`).join('')}
@@ -1163,44 +1163,70 @@ async function deleteAssessment(id, traineeId, day) {
 // ═══════════════════════════════════════
 //  CHECK-IN MODAL
 // ═══════════════════════════════════════
+// ── SKILL RATING OPTIONS ──
+const CI_RATINGS = ['Needs Improvement','Developing','Competent','Proficient'];
+const CI_RATING_COLORS = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
+
+function ciRatingSelector(fieldId, savedVal) {
+  return `<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.35rem">
+    ${CI_RATINGS.map(r=>`<button type="button" onclick="setCIRating(this,'${fieldId}','${r.replace(/'/g,"\\'")}')" class="ci-rate-btn" data-rating="${r}" style="padding:.28rem .7rem;border-radius:6px;border:2px solid ${savedVal===r?CI_RATING_COLORS[r]:'var(--border)'};background:${savedVal===r?CI_RATING_COLORS[r]:'#fff'};color:${savedVal===r?'#fff':CI_RATING_COLORS[r]};font-size:.75rem;font-weight:600;cursor:pointer;transition:.12s">${r}</button>`).join('')}
+    <input type="hidden" id="${fieldId}" value="${savedVal||''}">
+  </div>`;
+}
+function setCIRating(el, fieldId, rating) {
+  el.parentElement.querySelectorAll('.ci-rate-btn').forEach(b=>{
+    const r=b.dataset.rating; b.style.background='#fff'; b.style.color=CI_RATING_COLORS[r]; b.style.borderColor='var(--border)';
+  });
+  el.style.background=CI_RATING_COLORS[rating]; el.style.color='#fff'; el.style.borderColor=CI_RATING_COLORS[rating];
+  document.getElementById(fieldId).value=rating;
+}
+
+function ciQuestion(num, label, desc, fieldId, savedVal, hasComment, commentId, commentVal) {
+  return `<div style="padding:.9rem 0;border-bottom:1px solid var(--border)">
+    <div style="font-size:.84rem;font-weight:600;margin-bottom:.18rem">${num}. ${label}</div>
+    <div style="font-size:.78rem;color:var(--text-light);margin-bottom:.4rem">${desc}</div>
+    ${ciRatingSelector(fieldId, savedVal)}
+    ${hasComment?`<div style="margin-top:.6rem"><textarea class="form-control" id="${commentId}" style="min-height:60px;font-size:.8rem" placeholder="Comments (optional)...">${commentVal||''}</textarea></div>`:''}
+  </div>`;
+}
+
 async function openCheckinModal(traineeId, week) {
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr">
-      <div><div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Week ${week} Clinical Check-in</div>
-      <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">Weekly sonographer trainee progress questionnaire</div></div>
+      <div><div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Week ${week} Weekly Check-in</div>
+      <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">Weekly sonographer trainee progress evaluation</div></div>
       <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <div class="form-section">Scanning Confidence & Volume</div>
-      <div class="form-group"><label class="form-label">Overall Scanning Confidence (1–10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-confidence',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-confidence"></div>
-      </div>
-      <div class="form-grid">
+      <div class="form-grid" style="margin-bottom:.5rem">
         <div class="form-group"><label class="form-label">Cases Completed This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 8"></div>
         <div class="form-group"><label class="form-label">Supervision Level</label>
           <select class="form-control" id="ci-supervision"><option value="">Select...</option>${['Fully supervised','Mostly supervised','Mix of both','Mostly independent','Fully independent'].map(o=>`<option>${o}</option>`).join('')}</select>
         </div>
       </div>
-      <div class="form-section">Protocol Confidence</div>
-      <div class="form-group"><label class="form-label">GSV Mapping (1–10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-gsv',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-gsv"></div>
+
+      <div class="form-section">Weekly Evaluation</div>
+
+      ${ciQuestion(1,'Technical Scanning Skills','How would you rate the trainee\'s ability to perform venous ultrasound exams (including deep and superficial systems)?','ci-technical','',false,'','')}
+      ${ciQuestion(2,'Anatomy & Protocol Knowledge','How well does the trainee demonstrate understanding of venous anatomy and practice-specific scanning protocols (e.g., CVI studies, reflux testing)?','ci-anatomy','',false,'','')}
+      ${ciQuestion(3,'Probe Handling & Technique','How would you assess their probe control, positioning, and overall scanning technique?','ci-probe','',false,'','')}
+      ${ciQuestion(4,'Workflow & Efficiency','Is the trainee improving in exam speed while maintaining quality and accuracy?','ci-workflow','',false,'','')}
+      ${ciQuestion(5,'Patient Interaction','How well does the trainee communicate with patients and maintain professionalism during exams?','ci-patient','',false,'','')}
+      ${ciQuestion(6,'Clinical Understanding','Does the trainee demonstrate understanding of vein disease (e.g., CVI, varicose veins) and correlate findings appropriately?','ci-clinical','',false,'','')}
+      ${ciQuestion(7,'Documentation & Reporting','How accurate and thorough is the trainee\'s documentation and preliminary reporting?','ci-documentation','',true,'ci-documentation-comment','')}
+      ${ciQuestion(8,'Independence & Confidence','Is the trainee progressing toward working independently?','ci-independence','',true,'ci-independence-comment','')}
+      ${ciQuestion(9,'Doctor Presentation','How well does the trainee communicate with the physician?','ci-doctor','',true,'ci-doctor-comment','')}
+
+      <div class="form-section">Overall Progress & Feedback</div>
+      <div class="form-group"><label class="form-label">What are the trainee's key strengths this week? 🏆</label>
+        <textarea class="form-control" id="ci-strengths" placeholder="Skills mastered, improvements noticed, positive highlights..."></textarea>
       </div>
-      <div class="form-group"><label class="form-label">SSV Mapping (1–10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-ssv',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-ssv"></div>
+      <div class="form-group"><label class="form-label">What areas need improvement?</label>
+        <textarea class="form-control" id="ci-improvements" placeholder="Skills to focus on, areas needing more practice..."></textarea>
       </div>
-      <div class="form-group"><label class="form-label">Reflux Testing (1–10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-reflux',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-reflux"></div>
+      <div class="form-group"><label class="form-label">Any additional comments or concerns?</label>
+        <textarea class="form-control" id="ci-additional" placeholder="Anything else to note for this week..."></textarea>
       </div>
-      <div class="form-group"><label class="form-label">Anatomy Comfort (1–10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-anatomy',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-anatomy"></div>
-      </div>
-      <div class="form-section">Learning & Progress</div>
-      <div class="form-group"><label class="form-label">This Week's Clinical Wins 🏆</label><textarea class="form-control" id="ci-wins" placeholder="Skills mastered, successful scans, protocols learned..."></textarea></div>
-      <div class="form-group"><label class="form-label">Challenges & Difficult Cases</label><textarea class="form-control" id="ci-challenges" placeholder="What was difficult? Hard anatomy? Cases that didn't go well?"></textarea></div>
-      <div class="form-group"><label class="form-label">Questions for Preceptor</label><textarea class="form-control" id="ci-questions" placeholder="Topics to review, techniques to practice..."></textarea></div>
-      <div class="form-section">Preceptor Feedback</div>
-      <div class="form-group"><label class="form-label">Preceptor Observations & Feedback</label><textarea class="form-control" id="ci-summary" placeholder="Overall weekly assessment, coaching notes..."></textarea></div>
-      <div class="form-group"><label class="form-label">Focus for Next Week</label><textarea class="form-control" id="ci-focus" placeholder="Protocols, skills, or cases to prioritize..."></textarea></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
@@ -1210,7 +1236,26 @@ async function openCheckinModal(traineeId, week) {
 }
 
 async function saveCheckin(traineeId, week) {
-  const obj = {traineeId, week, date:todayStr(), confidence:v('ci-confidence'), cases:v('ci-cases'), supervision:v('ci-supervision'), gsv:v('ci-gsv'), ssv:v('ci-ssv'), reflux:v('ci-reflux'), anatomy:v('ci-anatomy'), wins:v('ci-wins'), challenges:v('ci-challenges'), questions:v('ci-questions'), summary:v('ci-summary'), focus:v('ci-focus')};
+  const obj = {
+    traineeId, week, date:todayStr(),
+    cases: v('ci-cases'),
+    supervision: v('ci-supervision'),
+    technical: v('ci-technical'),
+    anatomy: v('ci-anatomy'),
+    probe: v('ci-probe'),
+    workflow: v('ci-workflow'),
+    patient: v('ci-patient'),
+    clinical: v('ci-clinical'),
+    documentation: v('ci-documentation'),
+    documentationComment: v('ci-documentation-comment'),
+    independence: v('ci-independence'),
+    independenceComment: v('ci-independence-comment'),
+    doctor: v('ci-doctor'),
+    doctorComment: v('ci-doctor-comment'),
+    strengths: v('ci-strengths'),
+    improvements: v('ci-improvements'),
+    additional: v('ci-additional'),
+  };
   setBtn('ci-save-btn',true,'Saving...');
   try {
     await db.collection('checkins').add({...obj, createdAt:ts()});
@@ -1224,22 +1269,33 @@ async function viewCheckinModal(id) {
   const doc = await db.collection('checkins').doc(id).get();
   if(!doc.exists) return;
   const ci = {id:doc.id,...doc.data()};
+  const ratingBadge = (label, val) => val ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border)"><span style="font-size:.82rem;font-weight:500">${label}</span><span style="padding:.2rem .65rem;border-radius:6px;font-size:.75rem;font-weight:700;background:${CI_RATING_COLORS[val]||'#64748b'};color:#fff">${val}</span></div>` : '';
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr"><span class="modal-title">Week ${ci.week} Check-in — ${fmtDate(ci.date)}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="modal-body">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:1rem">
-        ${[['Confidence',ci.confidence],['GSV',ci.gsv],['SSV',ci.ssv],['Reflux',ci.reflux],['Anatomy',ci.anatomy],['Cases',ci.cases||'0']].map(([l,v2])=>`
-          <div style="background:#f8fafd;border-radius:var(--r-sm);padding:.65rem;border:1px solid var(--border);text-align:center">
-            <div style="font-size:.66rem;font-weight:700;text-transform:uppercase;color:var(--text-light);margin-bottom:.18rem">${l}</div>
-            <div style="font-size:1.3rem;font-weight:800;color:var(--primary)">${v2||'—'}${l!=='Cases'?`<span style="font-size:.68rem;color:var(--text-light)">/10</span>`:''}</div>
-          </div>`).join('')}
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+        ${ci.cases?`<span class="badge badge-info"><i class="fa-solid fa-stethoscope"></i> ${ci.cases} cases</span>`:''}
+        ${ci.supervision?`<span class="badge badge-gray"><i class="fa-solid fa-eye"></i> ${ci.supervision}</span>`:''}
       </div>
-      ${ci.supervision?`<div style="margin-bottom:.7rem"><span class="badge badge-info"><i class="fa-solid fa-eye"></i> ${ci.supervision}</span></div>`:''}
-      ${ci.wins?`<div class="form-group"><div class="form-label" style="color:var(--success)">🏆 Clinical Wins</div><div style="background:#dcfce7;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.wins}</div></div>`:''}
-      ${ci.challenges?`<div class="form-group"><div class="form-label" style="color:var(--danger)">⚡ Challenges</div><div style="background:#fee2e2;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.challenges}</div></div>`:''}
-      ${ci.questions?`<div class="form-group"><div class="form-label">❓ Questions for Preceptor</div><div style="background:#fef3c7;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.questions}</div></div>`:''}
-      ${ci.summary?`<div class="form-group"><div class="form-label">📋 Preceptor Feedback</div><div style="background:#f1f5f9;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.summary}</div></div>`:''}
-      ${ci.focus?`<div class="form-group"><div class="form-label">🎯 Focus Next Week</div><div style="background:#e0f2fe;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.focus}</div></div>`:''}
+
+      <div style="margin-bottom:1.1rem">
+        ${ratingBadge('Technical Scanning Skills', ci.technical)}
+        ${ratingBadge('Anatomy & Protocol Knowledge', ci.anatomy)}
+        ${ratingBadge('Probe Handling & Technique', ci.probe)}
+        ${ratingBadge('Workflow & Efficiency', ci.workflow)}
+        ${ratingBadge('Patient Interaction', ci.patient)}
+        ${ratingBadge('Clinical Understanding', ci.clinical)}
+        ${ratingBadge('Documentation & Reporting', ci.documentation)}
+        ${ci.documentationComment?`<div style="font-size:.78rem;color:var(--text-light);padding:.35rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-top:.2rem;margin-bottom:.3rem">${ci.documentationComment}</div>`:''}
+        ${ratingBadge('Independence & Confidence', ci.independence)}
+        ${ci.independenceComment?`<div style="font-size:.78rem;color:var(--text-light);padding:.35rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-top:.2rem;margin-bottom:.3rem">${ci.independenceComment}</div>`:''}
+        ${ratingBadge('Doctor Presentation', ci.doctor)}
+        ${ci.doctorComment?`<div style="font-size:.78rem;color:var(--text-light);padding:.35rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-top:.2rem;margin-bottom:.3rem">${ci.doctorComment}</div>`:''}
+      </div>
+
+      ${ci.strengths?`<div class="form-group"><div class="form-label" style="color:var(--success)">🏆 Key Strengths</div><div style="background:#dcfce7;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.strengths}</div></div>`:''}
+      ${ci.improvements?`<div class="form-group"><div class="form-label" style="color:var(--danger)">⚡ Areas Needing Improvement</div><div style="background:#fee2e2;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.improvements}</div></div>`:''}
+      ${ci.additional?`<div class="form-group"><div class="form-label">💬 Additional Comments</div><div style="background:#f1f5f9;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.additional}</div></div>`:''}
     </div>
     <div class="modal-foot">
       <button class="btn btn-danger btn-sm" onclick="deleteCheckin('${ci.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
