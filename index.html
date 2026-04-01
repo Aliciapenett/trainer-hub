@@ -3,23 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trainer Hub</title>
+<title>SVD Sonographer Training Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{--primary:#1a2e4a;--primary-light:#243d61;--accent:#00b4d8;--accent-light:#48cae4;--success:#2dc653;--warning:#f4a261;--danger:#e63946;--bg:#f0f4f8;--card:#ffffff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);--shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 12px 28px rgba(0,0,0,.12);--r:14px;--r-sm:8px}
+:root{--primary:#0f3460;--primary-light:#1a4a7a;--accent:#0ea5e9;--accent-light:#38bdf8;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--bg:#f0f5fb;--card:#ffffff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);--shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 12px 28px rgba(0,0,0,.12);--r:14px;--r-sm:8px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-/* HEADER */
-.hdr{background:var(--primary);color:#fff;padding:0 1.75rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md)}
-.hdr-logo{display:flex;align-items:center;gap:.7rem;font-size:1.15rem;font-weight:800;color:#fff;cursor:pointer;user-select:none}
-.hdr-logo i{color:var(--accent-light)}
+.hdr{background:var(--primary);color:#fff;padding:0 1.75rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md)}
+.hdr-logo{display:flex;align-items:center;gap:.75rem;cursor:pointer;user-select:none}
+.hdr-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),#0284c7);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.hdr-logo-text{display:flex;flex-direction:column}
+.hdr-logo-title{font-size:1rem;font-weight:800;color:#fff;line-height:1.1}
+.hdr-logo-sub{font-size:.65rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.08em}
 .hdr-nav{display:flex;gap:.15rem}
-.nav-btn{background:none;border:none;color:rgba(255,255,255,.65);padding:.45rem .9rem;border-radius:var(--r-sm);cursor:pointer;font-size:.85rem;font-family:inherit;font-weight:500;transition:.15s}
+.nav-btn{background:none;border:none;color:rgba(255,255,255,.65);padding:.45rem .9rem;border-radius:var(--r-sm);cursor:pointer;font-size:.83rem;font-family:inherit;font-weight:500;transition:.15s;display:flex;align-items:center;gap:.35rem}
 .nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,.14);color:#fff}
-.main{max-width:1160px;margin:0 auto;padding:2rem 1.5rem}
-/* BUTTONS */
+.main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem}
 .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:600;transition:.15s;white-space:nowrap}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-primary:hover{background:var(--accent-light);transform:translateY(-1px)}
@@ -32,159 +33,148 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .btn-danger{background:var(--danger);color:#fff}
 .btn-danger:hover{opacity:.88}
 .btn-sm{padding:.3rem .7rem;font-size:.78rem}
-/* CARDS */
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border)}
 .card-hdr{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .card-body{padding:1.4rem}
 .card-hdr-title{font-weight:700;font-size:.95rem}
-/* BADGES */
 .badge{display:inline-flex;align-items:center;gap:.22rem;padding:.18rem .55rem;border-radius:100px;font-size:.72rem;font-weight:600}
-.badge-success{background:#d1fae5;color:#065f46}
+.badge-success{background:#dcfce7;color:#15803d}
 .badge-warning{background:#fef3c7;color:#92400e}
 .badge-danger{background:#fee2e2;color:#991b1b}
 .badge-info{background:#dbeafe;color:#1e40af}
 .badge-gray{background:#f1f5f9;color:#475569}
 .badge-purple{background:#ede9fe;color:#5b21b6}
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.75rem}
+.badge-teal{background:#ccfbf1;color:#0f766e}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:1rem;margin-bottom:1.75rem}
 .stat-card{background:var(--card);border-radius:var(--r);padding:1.1rem;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:.9rem}
-.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
 .si-blue{background:#dbeafe;color:#1d4ed8}
-.si-teal{background:#d0fef8;color:#0d9488}
+.si-teal{background:#ccfbf1;color:#0f766e}
 .si-green{background:#dcfce7;color:#15803d}
 .si-orange{background:#ffedd5;color:#c2410c}
 .si-purple{background:#ede9fe;color:#6d28d9}
-.stat-value{font-size:1.65rem;font-weight:800;line-height:1}
-.stat-label{font-size:.75rem;color:var(--text-light);margin-top:.2rem}
-/* TRAINER CARDS */
-.trainers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:1.1rem;margin-bottom:1.75rem}
+.si-sky{background:#e0f2fe;color:#0369a1}
+.stat-value{font-size:1.6rem;font-weight:800;line-height:1}
+.stat-label{font-size:.73rem;color:var(--text-light);margin-top:.2rem}
+.trainers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.1rem;margin-bottom:1.75rem}
 .trainer-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:.18s}
 .trainer-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
 .tc-hdr{padding:1.2rem;display:flex;align-items:center;gap:.9rem}
-.trainer-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:function:center;font-size:1.25rem;font-weight:800;color:#fff;flex-shrink:0}
-.trainer-av{display:flex;align-items:center;justify-content:center}
+.trainer-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:#fff;flex-shrink:0}
 .trainer-name{font-size:1.05rem;font-weight:700}
-.trainer-role{font-size:.75rem;color:var(--text-light)}
+.trainer-role{font-size:.73rem;color:var(--text-light);margin-top:.1rem}
 .tc-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border)}
 .tc-stat{padding:.85rem;text-align:center;border-right:1px solid var(--border)}
 .tc-stat:last-child{border-right:none}
 .tc-stat-val{font-size:1.2rem;font-weight:800;color:var(--primary)}
-.tc-stat-lbl{font-size:.68rem;color:var(--text-light);margin-top:.15rem}
-.tc-foot{padding:.8rem 1.2rem;background:#f8fafd;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:var(--text-light)}
-/* TABLE */
+.tc-stat-lbl{font-size:.67rem;color:var(--text-light);margin-top:.12rem}
+.tc-foot{padding:.8rem 1.2rem;background:#f8fafd;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.77rem;color:var(--text-light)}
 .tbl-wrap{overflow-x:auto}
-.tbl{width:100%;border-collapse:collapse;min-width:620px}
-.tbl th{text-align:left;padding:.65rem 1rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-light);background:#f8fafd;border-bottom:1px solid var(--border)}
-.tbl td{padding:.85rem 1rem;border-bottom:1px solid var(--border);font-size:.84rem;vertical-align:middle}
+.tbl{width:100%;border-collapse:collapse;min-width:640px}
+.tbl th{text-align:left;padding:.65rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);background:#f8fafd;border-bottom:1px solid var(--border)}
+.tbl td{padding:.85rem 1rem;border-bottom:1px solid var(--border);font-size:.83rem;vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tbody tr:hover td{background:#f8fdff;cursor:pointer}
+.tbl tbody tr:hover td{background:#f0f9ff;cursor:pointer}
 .av-sm{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0}
-/* ASSESSMENT DOTS */
 .a-dots{display:flex;gap:.35rem}
-.a-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;border:2px solid}
+.a-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;border:2px solid}
 .a-done{background:var(--success);border-color:var(--success);color:#fff}
-.a-due{background:#fff1f2;border-color:var(--danger);color:var(--danger)}
+.a-due{background:#fef2f2;border-color:var(--danger);color:var(--danger)}
 .a-soon{background:#fffbeb;border-color:var(--warning);color:var(--warning)}
 .a-future{background:#f1f5f9;border-color:var(--border);color:var(--text-light)}
-/* PROGRESS BAR */
-.prog-bar{height:6px;background:var(--border);border-radius:100px;overflow:hidden}
-.prog-fill{height:100%;border-radius:100px;background:var(--accent)}
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem}
-.overlay{animation:fadeIn .18s ease}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .18s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:slideUp .2s ease}
-.modal-lg{max-width:720px}
+.modal{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:580px;max-height:92vh;overflow-y:auto;animation:slideUp .2s ease}
+.modal-lg{max-width:740px}
 @keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-hdr{padding:1.25rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
 .modal-title{font-size:1.05rem;font-weight:700}
 .modal-close{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:1.15rem;padding:.2rem .4rem;border-radius:4px;transition:.15s}
 .modal-close:hover{color:var(--danger)}
 .modal-body{padding:1.4rem}
-.modal-foot{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem;background:#fff;position:sticky;bottom:0}
-/* FORMS */
+.modal-foot{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem;background:#fff;position:sticky;bottom:0;z-index:2}
 .form-group{margin-bottom:1.1rem}
 .form-label{display:block;font-size:.83rem;font-weight:600;margin-bottom:.35rem}
 .form-hint{font-size:.73rem;color:var(--text-light);margin-top:.2rem}
 .form-control{width:100%;padding:.58rem .8rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.84rem;color:var(--text);background:#fff;transition:.15s;outline:none}
 .form-control:focus{border-color:var(--accent)}
-textarea.form-control{resize:vertical;min-height:80px}
+textarea.form-control{resize:vertical;min-height:78px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.form-section{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin:1.4rem 0 .9rem;padding-bottom:.45rem;border-bottom:1px solid var(--border)}
-/* RATING */
+.form-section{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:1.4rem 0 .9rem;padding-bottom:.45rem;border-bottom:2px solid #e0f2fe}
 .rating-wrap{display:flex;gap:.28rem;flex-wrap:wrap;margin-top:.4rem}
 .r-btn{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);background:#fff;cursor:pointer;font-size:.75rem;font-weight:600;transition:.13s;display:flex;align-items:center;justify-content:center}
 .r-btn:hover{border-color:var(--accent);color:var(--accent)}
 .r-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
-/* TABS */
 .tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.5rem}
-.tab-btn{padding:.65rem 1.15rem;border:none;background:none;cursor:pointer;font-family:inherit;font-size:.84rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s}
+.tab-btn{padding:.65rem 1.1rem;border:none;background:none;cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;display:flex;align-items:center;gap:.35rem}
 .tab-btn:hover{color:var(--text)}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
-/* BACK BTN */
 .back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--accent);cursor:pointer;font-size:.84rem;font-weight:500;margin-bottom:1.25rem;border:none;background:none;font-family:inherit;padding:0}
 .back-btn:hover{text-decoration:underline}
-/* SECTION HEADER */
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
-.sec-title{font-size:1.1rem;font-weight:700}
-/* TRAINEE HEADER */
+.sec-title{font-size:1.08rem;font-weight:700}
 .trainee-top{display:flex;align-items:flex-start;gap:1.25rem;margin-bottom:1.75rem;flex-wrap:wrap}
-.av-lg{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:#fff;flex-shrink:0}
-/* ASSESSMENT CARDS */
+.av-lg{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.55rem;font-weight:800;color:#fff;flex-shrink:0}
 .a-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 .a-card{border-radius:var(--r);border:2px solid var(--border);overflow:hidden;transition:.18s}
 .a-card.done{border-color:var(--success)}
 .a-card.due{border-color:var(--danger)}
-.a-card.clickable:hover{border-color:var(--accent);cursor:pointer;transform:translateY(-2px)}
+.a-card.clickable:hover{border-color:var(--accent);cursor:pointer;transform:translateY(-2px);box-shadow:var(--shadow-md)}
 .a-card-hdr{padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between}
-.a-day-lbl{font-size:.65rem;color:var(--text-light);margin-top:.1rem}
 .a-card-body{padding:1rem;border-top:1px solid var(--border);font-size:.82rem}
-/* CHECKIN ITEMS */
 .ci-item{display:flex;align-items:center;gap:.9rem;padding:.8rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:.45rem;cursor:pointer;transition:.14s}
-.ci-item:hover{border-color:var(--accent);background:#f0fdff}
-.ci-week-badge{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0}
-/* EMPTY STATE */
+.ci-item:hover{border-color:var(--accent);background:#f0f9ff}
+.ci-week-badge{width:38px;height:38px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
 .empty{text-align:center;padding:3rem 1rem;color:var(--text-light)}
-.empty i{font-size:2.2rem;opacity:.4;margin-bottom:.75rem;display:block}
-.empty p{font-size:.9rem}
-/* PROTOCOL PILLS */
+.empty i{font-size:2.2rem;opacity:.35;margin-bottom:.75rem;display:block}
+.empty p{font-size:.88rem}
 .protocol-pill{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .6rem;border-radius:100px;background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:600;margin:.1rem}
-/* PAGE SECTIONS */
 .page{display:none}
 .page.active{display:block}
-/* ALERT */
-.alert{padding:.75rem 1rem;border-radius:var(--r-sm);font-size:.83rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.alert{padding:.75rem 1rem;border-radius:var(--r-sm);font-size:.83rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.6rem}
 .alert-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--accent)}
-.alert-success{background:#d1fae5;color:#065f46;border-left:4px solid var(--success)}
-.select-trainee-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
-@media(max-width:600px){.a-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.trainers-grid{grid-template-columns:1fr}}
+.alert-success{background:#dcfce7;color:#15803d;border-left:4px solid var(--success)}
+.alert-warning{background:#fef3c7;color:#92400e;border-left:4px solid var(--warning)}
+/* Competency score bar */
+.comp-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem}
+.comp-label{font-size:.78rem;min-width:170px;color:var(--text)}
+.comp-bar{flex:1;height:8px;background:var(--border);border-radius:100px;overflow:hidden}
+.comp-fill{height:100%;border-radius:100px;background:var(--accent)}
+.comp-val{font-size:.78rem;font-weight:700;min-width:32px;text-align:right;color:var(--primary)}
+/* milestone banner */
+.milestone{background:linear-gradient(135deg,#0f3460,#0ea5e9);color:#fff;border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:1.75rem;display:flex;align-items:center;gap:1rem}
+.milestone i{font-size:2rem;opacity:.85}
+@media(max-width:620px){.a-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.trainers-grid{grid-template-columns:1fr}.tabs{overflow-x:auto}}
 </style>
 </head>
 <body>
 
 <header class="hdr">
   <div class="hdr-logo" onclick="goHome()">
-    <i class="fa-solid fa-dumbbell"></i>
-    Trainer Hub
+    <div class="hdr-logo-icon"><i class="fa-solid fa-wave-square" style="color:#fff"></i></div>
+    <div class="hdr-logo-text">
+      <span class="hdr-logo-title">VIP Vein Training Hub</span>
+      <span class="hdr-logo-sub">Superficial Venous Disease · Sonographer Training</span>
+    </div>
   </div>
   <nav class="hdr-nav">
     <button class="nav-btn active" id="nav-hub" onclick="showPage('hub')"><i class="fa-solid fa-house"></i> Hub</button>
-    <button class="nav-btn" id="nav-trainers" onclick="showPage('trainers')"><i class="fa-solid fa-users"></i> Trainers</button>
-    <button class="nav-btn" id="nav-trainees" onclick="showPage('trainees')"><i class="fa-solid fa-user-check"></i> Trainees</button>
+    <button class="nav-btn" id="nav-trainers" onclick="showPage('trainers')"><i class="fa-solid fa-user-nurse"></i> Preceptors</button>
+    <button class="nav-btn" id="nav-trainees" onclick="showPage('trainees')"><i class="fa-solid fa-user-graduate"></i> Trainees</button>
   </nav>
 </header>
 
 <main class="main">
-  <!-- HUB PAGE -->
+  <!-- HUB -->
   <div class="page active" id="page-hub">
     <div style="margin-bottom:1.75rem">
-      <h1 style="font-size:1.5rem;font-weight:800">Dashboard Overview</h1>
-      <p style="color:var(--text-light);font-size:.88rem;margin-top:.25rem">Welcome back. Here's how your team is doing.</p>
+      <h1 style="font-size:1.5rem;font-weight:800">Training Dashboard</h1>
+      <p style="color:var(--text-light);font-size:.88rem;margin-top:.25rem">Superficial Venous Disease Sonographer Training Program</p>
     </div>
     <div class="stats-grid" id="hub-stats"></div>
     <div class="sec-hdr">
-      <span class="sec-title">Trainers</span>
-      <button class="btn btn-primary btn-sm" onclick="openAddTrainer()"><i class="fa-solid fa-plus"></i> Add Trainer</button>
+      <span class="sec-title">Preceptors</span>
+      <button class="btn btn-primary btn-sm" onclick="openAddTrainer()"><i class="fa-solid fa-plus"></i> Add Preceptor</button>
     </div>
     <div class="trainers-grid" id="hub-trainer-cards"></div>
     <div class="sec-hdr" style="margin-top:1.25rem">
@@ -193,14 +183,14 @@ textarea.form-control{resize:vertical;min-height:80px}
     <div class="card"><div class="card-body" id="recent-activity"></div></div>
   </div>
 
-  <!-- TRAINERS PAGE -->
+  <!-- PRECEPTORS PAGE -->
   <div class="page" id="page-trainers">
     <div class="sec-hdr">
       <div>
-        <h1 style="font-size:1.35rem;font-weight:800">Trainers</h1>
-        <p style="color:var(--text-light);font-size:.83rem;margin-top:.2rem">Manage trainer profiles and assignments</p>
+        <h1 style="font-size:1.35rem;font-weight:800">Preceptors</h1>
+        <p style="color:var(--text-light);font-size:.83rem;margin-top:.2rem">Manage preceptor profiles and trainee assignments</p>
       </div>
-      <button class="btn btn-primary" onclick="openAddTrainer()"><i class="fa-solid fa-plus"></i> Add Trainer</button>
+      <button class="btn btn-primary" onclick="openAddTrainer()"><i class="fa-solid fa-plus"></i> Add Preceptor</button>
     </div>
     <div class="trainers-grid" id="trainers-grid"></div>
   </div>
@@ -209,8 +199,8 @@ textarea.form-control{resize:vertical;min-height:80px}
   <div class="page" id="page-trainees">
     <div class="sec-hdr">
       <div>
-        <h1 style="font-size:1.35rem;font-weight:800">All Trainees</h1>
-        <p style="color:var(--text-light);font-size:.83rem;margin-top:.2rem">View and manage all trainees</p>
+        <h1 style="font-size:1.35rem;font-weight:800">Sonographer Trainees</h1>
+        <p style="color:var(--text-light);font-size:.83rem;margin-top:.2rem">All trainees across the training program</p>
       </div>
       <button class="btn btn-primary" onclick="openAddTrainee(null)"><i class="fa-solid fa-plus"></i> Add Trainee</button>
     </div>
@@ -219,50 +209,93 @@ textarea.form-control{resize:vertical;min-height:80px}
         <span class="card-hdr-title">All Trainees</span>
         <input class="form-control" style="width:220px;padding:.35rem .7rem;font-size:.8rem" placeholder="Search trainees..." id="trainee-search" oninput="renderAllTrainees()">
       </div>
-      <div class="tbl-wrap"><table class="tbl" id="all-trainees-tbl">
-        <thead><tr><th>Name</th><th>Trainer</th><th>Protocol</th><th>Start Date</th><th>Assessments</th><th>Status</th><th></th></tr></thead>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Name</th><th>Preceptor</th><th>Protocol Track</th><th>Start Date</th><th>Assessments</th><th>Status</th><th></th></tr></thead>
         <tbody id="all-trainees-body"></tbody>
       </table></div>
     </div>
   </div>
 
-  <!-- TRAINER DETAIL PAGE -->
+  <!-- PRECEPTOR DETAIL -->
   <div class="page" id="page-trainer-detail">
-    <button class="back-btn" onclick="showPage('trainers')"><i class="fa-solid fa-arrow-left"></i> Back to Trainers</button>
+    <button class="back-btn" onclick="showPage('trainers')"><i class="fa-solid fa-arrow-left"></i> Back to Preceptors</button>
     <div id="trainer-detail-content"></div>
   </div>
 
-  <!-- TRAINEE DETAIL PAGE -->
+  <!-- TRAINEE DETAIL -->
   <div class="page" id="page-trainee-detail">
     <button class="back-btn" id="trainee-back-btn" onclick="goBackFromTrainee()"><i class="fa-solid fa-arrow-left"></i> Back</button>
     <div id="trainee-detail-content"></div>
   </div>
 </main>
 
-<!-- MODALS -->
 <div id="modal-root"></div>
 
 <script>
-// ═══════════════════════════════════════════
-//  DATA LAYER
-// ═══════════════════════════════════════════
-const COLORS = ['#1a2e4a','#0d9488','#7c3aed','#be185d','#b45309','#065f46','#1d4ed8','#9f1239'];
-const PROTOCOLS = ['Strength & Conditioning','Weight Loss','Muscle Gain','Athletic Performance','Rehabilitation','Endurance Training','Flexibility & Mobility','Functional Fitness','Nutrition Support','Custom Protocol'];
+// ═══════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════
+const COLORS = ['#0f3460','#0d9488','#7c3aed','#be185d','#b45309','#065f46','#1d4ed8','#9f1239'];
+
+const PROTOCOLS = [
+  'GSV Duplex Mapping',
+  'SSV Duplex Mapping',
+  'CVI Full Assessment',
+  'Reflux Testing Protocol',
+  'Perforator Vein Mapping',
+  'DVT Screening',
+  'Pre-Procedure Vein Mapping',
+  'Post-Procedure Assessment',
+  'CEAP Classification Training',
+  'Thermal Ablation Assistance',
+  'Sclerotherapy Assistance',
+  'Compression Therapy Education',
+  'Patient Consultation Shadowing',
+  'Full SVD Training Track',
+];
+
+const COMPETENCY_AREAS_30 = [
+  {id:'equip', label:'Equipment Setup & Operation'},
+  {id:'anatomy', label:'Venous Anatomy Knowledge'},
+  {id:'bmode', label:'B-Mode Imaging Technique'},
+  {id:'doppler', label:'Color/Spectral Doppler Basics'},
+  {id:'positioning', label:'Patient Positioning & Prep'},
+  {id:'ceap_basic', label:'CVI / CEAP Basics Understanding'},
+  {id:'documentation', label:'Worksheet & Documentation'},
+];
+const COMPETENCY_AREAS_60 = [
+  {id:'gsv', label:'GSV Mapping Accuracy'},
+  {id:'ssv', label:'SSV Mapping Accuracy'},
+  {id:'reflux', label:'Reflux Testing Technique'},
+  {id:'reporting', label:'Report Writing Quality'},
+  {id:'protocol', label:'Protocol Adherence'},
+  {id:'independence', label:'Independent Scanning Confidence'},
+  {id:'patient_comm', label:'Patient Communication'},
+];
+const COMPETENCY_AREAS_90 = [
+  {id:'complex', label:'Complex Case Handling'},
+  {id:'perforator', label:'Perforator Identification'},
+  {id:'pre_map', label:'Pre-Procedure Mapping Accuracy'},
+  {id:'post_assess', label:'Post-Procedure Assessment'},
+  {id:'dvt', label:'DVT Screening Competency'},
+  {id:'ceap_full', label:'Full CEAP Classification'},
+  {id:'readiness', label:'Overall Clinical Readiness'},
+];
 
 function loadData(){
-  const d = localStorage.getItem('trainerHub_v2');
+  const d=localStorage.getItem('veinHub_v1');
   if(!d) return initDefault();
   return JSON.parse(d);
 }
-function saveData(data){ localStorage.setItem('trainerHub_v2', JSON.stringify(data)); }
+function saveData(data){ localStorage.setItem('veinHub_v1',JSON.stringify(data)); }
 
 function initDefault(){
-  const data = {
+  const data={
     trainers:[
-      {id:'t1',name:'Julia Martinez',email:'julia@gym.com',phone:'',color:'#1a2e4a',initials:'JM',notes:'Head trainer, specializes in athletic performance'},
-      {id:'t2',name:'Shirley Thompson',email:'shirley@gym.com',phone:'',color:'#0d9488',initials:'ST',notes:'Certified nutritionist and personal trainer'},
-      {id:'t3',name:'Shawna Williams',email:'shawna@gym.com',phone:'',color:'#7c3aed',initials:'SW',notes:'Rehab specialist and functional fitness expert'},
-      {id:'t4',name:'Trish Garcia',email:'trish@gym.com',phone:'',color:'#be185d',initials:'TG',notes:'Endurance and weight loss specialist'},
+      {id:'t1',name:'Julia',email:'julia@vipmedicalgroup.com',phone:'',color:'#0f3460',initials:'JU',credential:'RVT, RDCS',notes:'Lead preceptor — GSV/SSV mapping & reflux testing'},
+      {id:'t2',name:'Shirley',email:'shirley@vipmedicalgroup.com',phone:'',color:'#0d9488',initials:'SH',credential:'RVT',notes:'CVI assessment & CEAP classification specialist'},
+      {id:'t3',name:'Shawna',email:'shawna@vipmedicalgroup.com',phone:'',color:'#7c3aed',initials:'SW',credential:'RDMS, RVT',notes:'DVT screening & pre-procedure mapping'},
+      {id:'t4',name:'Trish',email:'trish@vipmedicalgroup.com',phone:'',color:'#be185d',initials:'TR',credential:'RVT',notes:'Thermal ablation & sclerotherapy assistance training'},
     ],
     trainees:[],
     assessments:[],
@@ -273,19 +306,19 @@ function initDefault(){
   return data;
 }
 
-let DB = loadData();
-let currentTrainerId = null;
-let currentTraineeId = null;
-let traineeBackPage = 'trainees';
+let DB=loadData();
+let currentTrainerId=null;
+let currentTraineeId=null;
+let traineeBackPage='trainees';
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  NAVIGATION
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  const nb = document.getElementById('nav-'+page);
+  const nb=document.getElementById('nav-'+page);
   if(nb) nb.classList.add('active');
   if(page==='hub') renderHub();
   if(page==='trainers') renderTrainers();
@@ -297,68 +330,70 @@ function goBackFromTrainee(){
   else showPage('trainees');
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  HUB
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 function renderHub(){
-  const totalTrainees = DB.trainees.length;
-  const activeTrainees = DB.trainees.filter(t=>t.status==='active').length;
-  const dueAssessments = getDueAssessmentsCount();
-  const completedAssessments = DB.assessments.length;
+  const totalTrainees=DB.trainees.length;
+  const active=DB.trainees.filter(t=>t.status==='active').length;
+  const due=getDueCount();
+  const doneAsmts=DB.assessments.length;
+  const checkins=DB.checkins.length;
 
-  document.getElementById('hub-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-users"></i></div><div><div class="stat-value">${DB.trainers.length}</div><div class="stat-label">Trainers</div></div></div>
-    <div class="stat-card"><div class="stat-icon si-teal"><i class="fa-solid fa-user-check"></i></div><div><div class="stat-value">${totalTrainees}</div><div class="stat-label">Total Trainees</div></div></div>
-    <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${activeTrainees}</div><div class="stat-label">Active Trainees</div></div></div>
-    <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${dueAssessments}</div><div class="stat-label">Assessments Due</div></div></div>
-    <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-chart-line"></i></div><div><div class="stat-value">${completedAssessments}</div><div class="stat-label">Assessments Done</div></div></div>
+  document.getElementById('hub-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-user-nurse"></i></div><div><div class="stat-value">${DB.trainers.length}</div><div class="stat-label">Preceptors</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-sky"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-value">${totalTrainees}</div><div class="stat-label">Total Trainees</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${active}</div><div class="stat-label">Active Trainees</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value">${due}</div><div class="stat-label">Assessments Due</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-teal"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${doneAsmts}</div><div class="stat-label">Assessments Done</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins}</div><div class="stat-label">Weekly Check-ins</div></div></div>
   `;
 
-  // Trainer cards
-  const el = document.getElementById('hub-trainer-cards');
-  if(!DB.trainers.length){ el.innerHTML='<p style="color:var(--text-light);font-size:.88rem">No trainers yet. Add one above!</p>'; return; }
-  el.innerHTML = DB.trainers.map(t=>trainerCardHTML(t)).join('');
+  const el=document.getElementById('hub-trainer-cards');
+  el.innerHTML=DB.trainers.length
+    ? DB.trainers.map(t=>trainerCardHTML(t)).join('')
+    : '<p style="color:var(--text-light);font-size:.88rem">No preceptors yet.</p>';
 
-  // Recent activity
-  const act = [...DB.activity].reverse().slice(0,8);
-  const ael = document.getElementById('recent-activity');
-  if(!act.length){ ael.innerHTML='<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>No activity yet</p></div>'; return; }
-  ael.innerHTML = act.map(a=>`
-    <div style="display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border)">
-      <div style="width:32px;height:32px;border-radius:50%;background:#e0f2fe;color:#0369a1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.8rem"><i class="fa-solid ${a.icon||'fa-circle-dot'}"></i></div>
-      <div><div style="font-size:.84rem;font-weight:500">${a.text}</div><div style="font-size:.72rem;color:var(--text-light);margin-top:.15rem">${fmtTime(a.ts)}</div></div>
-    </div>`).join('');
+  const act=[...DB.activity].reverse().slice(0,8);
+  const ael=document.getElementById('recent-activity');
+  ael.innerHTML=act.length
+    ? act.map(a=>`<div style="display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border)">
+        <div style="width:32px;height:32px;border-radius:50%;background:#e0f2fe;color:#0369a1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.78rem"><i class="fa-solid ${a.icon||'fa-circle-dot'}"></i></div>
+        <div><div style="font-size:.84rem;font-weight:500">${a.text}</div><div style="font-size:.72rem;color:var(--text-light);margin-top:.12rem">${fmtTime(a.ts)}</div></div>
+      </div>`).join('')
+    : '<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>No activity yet</p></div>';
 }
 
-function getDueAssessmentsCount(){
-  let count=0;
+function getDueCount(){
+  let c=0;
   DB.trainees.forEach(tr=>{
-    if(tr.status!=='active') return;
+    if(tr.status!=='active'||!tr.startDate) return;
     [30,60,90].forEach(day=>{
-      const key=`${tr.id}_${day}`;
-      const done = DB.assessments.find(a=>a.traineeId===tr.id && a.day===day);
-      if(!done && tr.startDate){
-        const due = new Date(tr.startDate);
-        due.setDate(due.getDate()+day);
-        if(new Date()>=due) count++;
+      if(!DB.assessments.find(a=>a.traineeId===tr.id&&a.day===day)){
+        const due=new Date(tr.startDate); due.setDate(due.getDate()+day);
+        if(new Date()>=due) c++;
       }
     });
   });
-  return count;
+  return c;
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  TRAINER CARDS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 function trainerCardHTML(t){
-  const mine = DB.trainees.filter(tr=>tr.trainerId===t.id);
-  const active = mine.filter(tr=>tr.status==='active').length;
-  const completed = mine.filter(tr=>tr.status==='completed').length;
-  const asmts = DB.assessments.filter(a=>mine.find(tr=>tr.id===a.traineeId)).length;
+  const mine=DB.trainees.filter(tr=>tr.trainerId===t.id);
+  const active=mine.filter(tr=>tr.status==='active').length;
+  const completed=mine.filter(tr=>tr.status==='completed').length;
+  const asmts=DB.assessments.filter(a=>mine.find(tr=>tr.id===a.traineeId)).length;
   return `<div class="trainer-card" onclick="showTrainerDetail('${t.id}')">
     <div class="tc-hdr">
-      <div class="trainer-av" style="background:${t.color||'#1a2e4a'}">${t.initials||t.name[0]}</div>
-      <div><div class="trainer-name">${t.name}</div><div class="trainer-role">${t.email||'Trainer'}</div></div>
+      <div class="trainer-av" style="background:${t.color}">${t.initials||t.name[0]}</div>
+      <div>
+        <div class="trainer-name">${t.name}</div>
+        <div class="trainer-role">${t.credential||'Preceptor'}</div>
+        <div style="font-size:.7rem;color:var(--text-light);margin-top:.1rem">${t.email||''}</div>
+      </div>
     </div>
     <div class="tc-stats">
       <div class="tc-stat"><div class="tc-stat-val">${mine.length}</div><div class="tc-stat-lbl">Total</div></div>
@@ -366,36 +401,36 @@ function trainerCardHTML(t){
       <div class="tc-stat"><div class="tc-stat-val">${asmts}</div><div class="tc-stat-lbl">Assessments</div></div>
     </div>
     <div class="tc-foot">
-      <span>${completed} completed</span>
+      <span>${completed} certified</span>
       <span style="color:var(--accent);font-weight:600">View Dashboard <i class="fa-solid fa-arrow-right"></i></span>
     </div>
   </div>`;
 }
 
 function renderTrainers(){
-  const el = document.getElementById('trainers-grid');
-  if(!DB.trainers.length){ el.innerHTML='<div class="empty"><i class="fa-solid fa-users"></i><p>No trainers yet</p></div>'; return; }
-  el.innerHTML = DB.trainers.map(t=>trainerCardHTML(t)).join('');
+  const el=document.getElementById('trainers-grid');
+  el.innerHTML=DB.trainers.length
+    ? DB.trainers.map(t=>trainerCardHTML(t)).join('')
+    : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  TRAINER DETAIL
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 function showTrainerDetail(tid){
-  currentTrainerId = tid;
-  const trainer = DB.trainers.find(t=>t.id===tid);
+  currentTrainerId=tid;
+  const trainer=DB.trainers.find(t=>t.id===tid);
   if(!trainer) return;
-  const trainees = DB.trainees.filter(t=>t.trainerId===tid);
-  const el = document.getElementById('trainer-detail-content');
-
-  el.innerHTML = `
+  const trainees=DB.trainees.filter(t=>t.trainerId===tid);
+  const el=document.getElementById('trainer-detail-content');
+  el.innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
       <div style="display:flex;align-items:center;gap:1rem">
         <div class="av-lg" style="background:${trainer.color}">${trainer.initials||trainer.name[0]}</div>
         <div>
           <h2 style="font-size:1.35rem;font-weight:800">${trainer.name}</h2>
-          <div style="font-size:.83rem;color:var(--text-light)">${trainer.email||''} ${trainer.phone?'· '+trainer.phone:''}</div>
-          ${trainer.notes?`<div style="font-size:.8rem;color:var(--text-light);margin-top:.2rem"><i class="fa-solid fa-note-sticky"></i> ${trainer.notes}</div>`:''}
+          <div style="font-size:.83rem;color:var(--text-light)">${trainer.credential||'Preceptor'}${trainer.email?' · '+trainer.email:''}</div>
+          ${trainer.notes?`<div style="font-size:.78rem;color:var(--text-light);margin-top:.2rem"><i class="fa-solid fa-stethoscope"></i> ${trainer.notes}</div>`:''}
         </div>
       </div>
       <div style="display:flex;gap:.5rem">
@@ -404,56 +439,50 @@ function showTrainerDetail(tid){
       </div>
     </div>
     <div class="stats-grid" style="margin-bottom:1.5rem">
-      <div class="stat-card"><div class="stat-icon si-teal"><i class="fa-solid fa-user-check"></i></div><div><div class="stat-value">${trainees.length}</div><div class="stat-label">Total Trainees</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-sky"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-value">${trainees.length}</div><div class="stat-label">Total Trainees</div></div></div>
       <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${trainees.filter(t=>t.status==='active').length}</div><div class="stat-label">Active</div></div></div>
-      <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-clipboard-check"></i></div><div><div class="stat-value">${DB.assessments.filter(a=>trainees.find(t=>t.id===a.traineeId)).length}</div><div class="stat-label">Assessments Done</div></div></div>
-      <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-comments"></i></div><div><div class="stat-value">${DB.checkins.filter(c=>trainees.find(t=>t.id===c.traineeId)).length}</div><div class="stat-label">Weekly Check-ins</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${DB.assessments.filter(a=>trainees.find(t=>t.id===a.traineeId)).length}</div><div class="stat-label">Assessments</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${DB.checkins.filter(c=>trainees.find(t=>t.id===c.traineeId)).length}</div><div class="stat-label">Check-ins</div></div></div>
     </div>
     <div class="card">
-      <div class="card-hdr">
-        <span class="card-hdr-title">Trainees (${trainees.length})</span>
+      <div class="card-hdr"><span class="card-hdr-title">Assigned Trainees (${trainees.length})</span>
         <button class="btn btn-primary btn-sm" onclick="openAddTrainee('${tid}')"><i class="fa-solid fa-plus"></i> Assign Trainee</button>
       </div>
-      <div class="tbl-wrap">${traineeTableHTML(trainees, tid)}</div>
+      <div class="tbl-wrap">${traineeTableHTML(trainees,tid)}</div>
     </div>`;
-
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-trainer-detail').classList.add('active');
   document.getElementById('nav-trainers').classList.add('active');
 }
 
-function traineeTableHTML(trainees, fromTrainerId){
+function traineeTableHTML(trainees,fromTrainerId){
   if(!trainees.length) return '<div class="empty"><i class="fa-solid fa-user-plus"></i><p>No trainees assigned yet</p></div>';
-  const rows = trainees.map(tr=>{
-    const trainer = DB.trainers.find(t=>t.id===tr.trainerId);
-    const asmts = getAssessmentStatus(tr);
-    const checkins = DB.checkins.filter(c=>c.traineeId===tr.id).length;
+  const rows=trainees.map(tr=>{
+    const trainer=DB.trainers.find(t=>t.id===tr.trainerId);
+    const asmts=getAssessmentStatus(tr);
     return `<tr onclick="showTraineeDetail('${tr.id}','${fromTrainerId||''}')">
-      <td><div style="display:flex;align-items:center;gap:.65rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}</div><div style="font-size:.73rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:.65rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}</div><div style="font-size:.72rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
       ${!fromTrainerId?`<td>${trainer?`<span class="badge badge-gray">${trainer.name}</span>`:'—'}</td>`:''}
-      <td>${tr.protocol?`<span class="protocol-pill"><i class="fa-solid fa-tag" style="font-size:.65rem"></i>${tr.protocol}</span>`:'<span style="color:var(--text-light);font-size:.8rem">None</span>'}</td>
+      <td>${tr.protocol?`<span class="protocol-pill"><i class="fa-solid fa-vial" style="font-size:.63rem"></i>${tr.protocol}</span>`:'<span style="color:var(--text-light);font-size:.8rem">None assigned</span>'}</td>
       <td style="font-size:.8rem;color:var(--text-light)">${tr.startDate?fmtDate(tr.startDate):'—'}</td>
-      <td><div class="a-dots">
-        ${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}" title="${d}-day: ${s}">${d}</div>`}).join('')}
-      </div></td>
-      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
+      <td><div class="a-dots">${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}" title="${d}-day: ${s}">${d}</div>`}).join('')}</div></td>
+      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
       <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditTrainee('${tr.id}')"><i class="fa-solid fa-pen"></i></button></td>
     </tr>`;
   }).join('');
-  return `<table class="tbl"><thead><tr><th>Name</th>${!fromTrainerId?'<th>Trainer</th>':''}<th>Protocol</th><th>Start Date</th><th>Assessments</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  return `<table class="tbl"><thead><tr><th>Name</th>${!fromTrainerId?'<th>Preceptor</th>':''}<th>Protocol Track</th><th>Start Date</th><th>Assessments</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function getAssessmentStatus(trainee){
   const result={};
-  const start = trainee.startDate ? new Date(trainee.startDate) : null;
+  const start=trainee.startDate?new Date(trainee.startDate):null;
   [30,60,90].forEach(day=>{
-    const done = DB.assessments.find(a=>a.traineeId===trainee.id && a.day===day);
-    if(done){ result[day]='done'; return; }
-    if(!start){ result[day]='future'; return; }
-    const dueDate = new Date(start); dueDate.setDate(dueDate.getDate()+day);
-    const now = new Date();
-    const diff = (dueDate-now)/(1000*60*60*24);
+    const done=DB.assessments.find(a=>a.traineeId===trainee.id&&a.day===day);
+    if(done){result[day]='done';return;}
+    if(!start){result[day]='future';return;}
+    const due=new Date(start); due.setDate(due.getDate()+day);
+    const diff=(due-new Date())/(1000*60*60*24);
     if(diff<0) result[day]='due';
     else if(diff<=7) result[day]='soon';
     else result[day]='future';
@@ -461,30 +490,28 @@ function getAssessmentStatus(trainee){
   return result;
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  TRAINEE DETAIL
-// ═══════════════════════════════════════════
-function showTraineeDetail(tid, fromTrainerId){
-  currentTraineeId = tid;
-  traineeBackPage = fromTrainerId ? 'trainer-detail' : 'trainees';
-  if(fromTrainerId) currentTrainerId = fromTrainerId;
-
-  const trainee = DB.trainees.find(t=>t.id===tid);
+// ═══════════════════════════════════════
+function showTraineeDetail(tid,fromTrainerId){
+  currentTraineeId=tid;
+  traineeBackPage=fromTrainerId?'trainer-detail':'trainees';
+  if(fromTrainerId) currentTrainerId=fromTrainerId;
+  const trainee=DB.trainees.find(t=>t.id===tid);
   if(!trainee) return;
-  const trainer = DB.trainers.find(t=>t.id===trainee.trainerId);
-
-  renderTraineeDetailPage(trainee, trainer);
+  const trainer=DB.trainers.find(t=>t.id===trainee.trainerId);
+  renderTraineeDetailPage(trainee,trainer);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-trainee-detail').classList.add('active');
 }
 
-function renderTraineeDetailPage(trainee, trainer){
-  const asmts = getAssessmentStatus(trainee);
-  const daysIn = trainee.startDate ? Math.floor((new Date()-new Date(trainee.startDate))/(1000*60*60*24)) : 0;
-  const weekNum = Math.max(1, Math.ceil(daysIn/7));
-  const checkins = DB.checkins.filter(c=>c.traineeId===trainee.id);
+function renderTraineeDetailPage(trainee,trainer){
+  const asmts=getAssessmentStatus(trainee);
+  const daysIn=trainee.startDate?Math.floor((new Date()-new Date(trainee.startDate))/(1000*60*60*24)):0;
+  const checkins=DB.checkins.filter(c=>c.traineeId===trainee.id);
+  const pct=Math.min(100,Math.round((daysIn/90)*100));
 
-  document.getElementById('trainee-detail-content').innerHTML = `
+  document.getElementById('trainee-detail-content').innerHTML=`
     <div class="trainee-top">
       <div class="av-lg" style="background:${trainer?trainer.color:'#888'}">${trainee.initials||trainee.name[0]}</div>
       <div style="flex:1">
@@ -492,49 +519,56 @@ function renderTraineeDetailPage(trainee, trainer){
           <div>
             <h2 style="font-size:1.35rem;font-weight:800">${trainee.name}</h2>
             <div style="font-size:.83rem;color:var(--text-light);margin-top:.15rem">
-              ${trainer?`<span style="font-weight:600;color:${trainer.color}">${trainer.name}</span> ·`:''} 
-              ${trainee.startDate?`Started ${fmtDate(trainee.startDate)} · Day ${daysIn}`:'No start date'} 
-              ${trainee.protocol?`· <span class="protocol-pill" style="margin:0 0 0 .2rem">${trainee.protocol}</span>`:''}
+              ${trainer?`Preceptor: <span style="font-weight:600;color:${trainer.color}">${trainer.name}</span> ·`:''}
+              ${trainee.startDate?`Started ${fmtDate(trainee.startDate)} · Day <strong>${daysIn}</strong> of 90`:'No start date set'}
             </div>
-            ${trainee.goals?`<div style="font-size:.8rem;color:var(--text-light);margin-top:.35rem"><i class="fa-solid fa-bullseye"></i> ${trainee.goals}</div>`:''}
+            ${trainee.protocol?`<div style="margin-top:.4rem"><span class="protocol-pill"><i class="fa-solid fa-vial" style="font-size:.63rem"></i>${trainee.protocol}</span></div>`:''}
           </div>
-          <div style="display:flex;gap:.5rem">
-            <span class="badge ${trainee.status==='active'?'badge-success':trainee.status==='completed'?'badge-info':'badge-gray'}">${trainee.status||'active'}</span>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+            <span class="badge ${trainee.status==='active'?'badge-success':trainee.status==='certified'?'badge-teal':trainee.status==='completed'?'badge-info':'badge-gray'} " style="font-size:.78rem;padding:.28rem .75rem">${trainee.status||'active'}</span>
             <button class="btn btn-outline btn-sm" onclick="openEditTrainee('${trainee.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
           </div>
         </div>
-        ${trainee.notes?`<div style="font-size:.8rem;background:#f8fafd;padding:.5rem .75rem;border-radius:var(--r-sm);margin-top:.5rem;border-left:3px solid var(--accent)">${trainee.notes}</div>`:''}
+        ${trainee.startDate?`<div style="margin-top:.75rem">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-light);margin-bottom:.3rem"><span>90-Day Training Progress</span><span>${pct}%</span></div>
+          <div style="height:8px;background:var(--border);border-radius:100px;overflow:hidden"><div style="height:100%;width:${pct}%;border-radius:100px;background:linear-gradient(90deg,var(--accent),#0284c7)"></div></div>
+        </div>`:''}
+        ${trainee.goals?`<div style="font-size:.8rem;margin-top:.6rem;padding:.5rem .75rem;border-radius:var(--r-sm);background:#f0f9ff;border-left:3px solid var(--accent)"><i class="fa-solid fa-bullseye" style="color:var(--accent)"></i> <strong>Training Goals:</strong> ${trainee.goals}</div>`:''}
+        ${trainee.notes?`<div style="font-size:.8rem;margin-top:.5rem;padding:.5rem .75rem;border-radius:var(--r-sm);background:#f8fafd;border-left:3px solid #cbd5e1">${trainee.notes}</div>`:''}
       </div>
     </div>
 
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>
       <button class="tab-btn" onclick="switchTab(this,'tab-checkins')"><i class="fa-solid fa-calendar-check"></i> Weekly Check-ins</button>
-      <button class="tab-btn" onclick="switchTab(this,'tab-notes')"><i class="fa-solid fa-note-sticky"></i> Progress Notes</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-notes')"><i class="fa-solid fa-note-sticky"></i> Clinical Notes</button>
     </div>
 
     <div id="tab-assessments">
-      <div style="margin-bottom:1rem" class="alert alert-info"><i class="fa-solid fa-circle-info"></i> Click an assessment card to complete or view it.</div>
+      <div class="alert alert-info"><i class="fa-solid fa-circle-info" style="flex-shrink:0;margin-top:.1rem"></i><span>Click a card to complete or view that assessment. Each assessment evaluates specific sonography competencies for that stage of training.</span></div>
       <div class="a-grid">
         ${[30,60,90].map(day=>{
-          const status = asmts[day];
-          const done = DB.assessments.find(a=>a.traineeId===trainee.id && a.day===day);
-          const dueDate = trainee.startDate ? new Date(new Date(trainee.startDate).getTime()+day*86400000) : null;
+          const status=asmts[day];
+          const done=DB.assessments.find(a=>a.traineeId===trainee.id&&a.day===day);
+          const dueDate=trainee.startDate?new Date(new Date(trainee.startDate).getTime()+day*86400000):null;
+          const labels={30:'Foundation Skills',60:'Intermediate Competency',90:'Clinical Readiness'};
           return `<div class="a-card ${status} clickable" onclick="openAssessment('${trainee.id}',${day})">
-            <div class="a-card-hdr" style="background:${status==='done'?'#d1fae5':status==='due'?'#fee2e2':status==='soon'?'#fef3c7':'#f8fafd'}">
+            <div class="a-card-hdr" style="background:${status==='done'?'#dcfce7':status==='due'?'#fef2f2':status==='soon'?'#fefce8':'#f8fafd'}">
               <div>
-                <div style="font-size:1.4rem;font-weight:800;line-height:1">${day}</div>
-                <div class="a-day-lbl">Day Assessment</div>
+                <div style="font-size:1.4rem;font-weight:800;line-height:1">${day}<span style="font-size:.75rem;font-weight:600;color:var(--text-light)"> day</span></div>
+                <div style="font-size:.7rem;color:var(--text-light);margin-top:.15rem">${labels[day]}</div>
               </div>
               <span class="badge ${status==='done'?'badge-success':status==='due'?'badge-danger':status==='soon'?'badge-warning':'badge-gray'}">
-                ${status==='done'?'✓ Done':status==='due'?'⚠ Due':status==='soon'?'Soon':'Upcoming'}
+                ${status==='done'?'✓ Done':status==='due'?'⚠ Due':status==='soon'?'Coming Soon':'Upcoming'}
               </span>
             </div>
             <div class="a-card-body">
-              ${dueDate?`<div style="font-size:.75rem;color:var(--text-light);margin-bottom:.4rem"><i class="fa-solid fa-calendar"></i> Due: ${fmtDate(dueDate.toISOString().split('T')[0])}</div>`:''}
-              ${done?`<div style="font-size:.78rem"><i class="fa-solid fa-check-circle" style="color:var(--success)"></i> Completed ${fmtDate(done.completedDate)}</div>
-              <div style="margin-top:.4rem;font-size:.75rem;color:var(--text-light)">Overall: ${done.overall||'—'}/10 · ${done.summary?done.summary.substring(0,50)+'…':''}</div>`
-              :`<div style="font-size:.78rem;color:var(--text-light)">Not yet completed. Click to start.</div>`}
+              ${dueDate?`<div style="font-size:.75rem;color:var(--text-light);margin-bottom:.45rem"><i class="fa-solid fa-calendar"></i> Due: ${fmtDate(dueDate.toISOString().split('T')[0])}</div>`:''}
+              ${done
+                ? `<div style="font-size:.78rem"><i class="fa-solid fa-check-circle" style="color:var(--success)"></i> Completed ${fmtDate(done.completedDate)}</div>
+                   <div style="margin-top:.4rem;font-size:.75rem;color:var(--text-light)">Overall: ${done.overall||'—'}/10${done.readiness?` · ${done.readiness}`:''}</div>
+                   ${done.summary?`<div style="margin-top:.3rem;font-size:.73rem;color:var(--text-light)">${done.summary.substring(0,60)}${done.summary.length>60?'…':''}</div>`:''}`
+                : `<div style="font-size:.78rem;color:var(--text-light)">Not yet completed. Click to begin.</div>`}
             </div>
           </div>`;
         }).join('')}
@@ -546,171 +580,177 @@ function renderTraineeDetailPage(trainee, trainer){
         <span class="sec-title">Weekly Check-ins (${checkins.length})</span>
         <button class="btn btn-primary btn-sm" onclick="openCheckin('${trainee.id}')"><i class="fa-solid fa-plus"></i> New Check-in</button>
       </div>
-      ${checkins.length===0?`<div class="empty"><i class="fa-solid fa-calendar-check"></i><p>No check-ins yet. Start Week 1!</p></div>`:''}
-      <div id="checkins-list-${trainee.id}">
-        ${[...checkins].reverse().map(ci=>checkinItemHTML(ci)).join('')}
-      </div>
+      ${checkins.length===0?`<div class="empty"><i class="fa-solid fa-calendar-check"></i><p>No check-ins yet — start Week 1!</p></div>`:''}
+      <div>${[...checkins].reverse().map(ci=>checkinItemHTML(ci)).join('')}</div>
     </div>
 
     <div id="tab-notes" style="display:none">
       <div class="sec-hdr">
-        <span class="sec-title">Progress Notes</span>
+        <span class="sec-title">Clinical Progress Notes</span>
         <button class="btn btn-primary btn-sm" onclick="openProgressNote('${trainee.id}')"><i class="fa-solid fa-plus"></i> Add Note</button>
       </div>
-      <div id="notes-list-${trainee.id}">
-        ${renderProgressNotes(trainee.id)}
-      </div>
+      <div>${renderProgressNotes(trainee.id)}</div>
     </div>
   `;
 }
 
 function checkinItemHTML(ci){
   return `<div class="ci-item" onclick="viewCheckin('${ci.id}')">
-    <div class="ci-week-badge">W${ci.week||'?'}</div>
+    <div class="ci-week-badge">W${ci.week}</div>
     <div style="flex:1">
       <div style="font-weight:600;font-size:.88rem">Week ${ci.week} Check-in</div>
-      <div style="font-size:.75rem;color:var(--text-light)">${fmtDate(ci.date)} · Energy: ${ci.energy||'—'}/10 · Motivation: ${ci.motivation||'—'}/10</div>
+      <div style="font-size:.75rem;color:var(--text-light)">${fmtDate(ci.date)} · Confidence: ${ci.confidence||'—'}/10 · Cases: ${ci.cases||'0'}</div>
     </div>
-    <div style="font-size:.78rem;color:var(--text-light);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ci.summary||ci.wins||''}</div>
-    <i class="fa-solid fa-chevron-right" style="color:var(--text-light);font-size:.75rem"></i>
+    <div style="font-size:.77rem;color:var(--text-light);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ci.summary||ci.wins||''}</div>
+    <i class="fa-solid fa-chevron-right" style="color:var(--text-light);font-size:.73rem"></i>
   </div>`;
 }
 
 function renderProgressNotes(tid){
-  const notes = (DB.trainees.find(t=>t.id===tid)||{}).progressNotes||[];
-  if(!notes.length) return '<div class="empty"><i class="fa-solid fa-note-sticky"></i><p>No progress notes yet</p></div>';
+  const notes=(DB.trainees.find(t=>t.id===tid)||{}).progressNotes||[];
+  if(!notes.length) return '<div class="empty"><i class="fa-solid fa-note-sticky"></i><p>No clinical notes yet</p></div>';
   return [...notes].reverse().map(n=>`
     <div class="card" style="margin-bottom:.75rem">
       <div class="card-body" style="padding:1rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
           <span style="font-size:.8rem;font-weight:600">${fmtDate(n.date)}</span>
-          <span class="badge badge-gray">${n.category||'General'}</span>
+          <span class="badge badge-info">${n.category||'General'}</span>
         </div>
         <p style="font-size:.84rem">${n.text}</p>
       </div>
     </div>`).join('');
 }
 
-function switchTab(btn, tabId){
-  const detail = document.getElementById('trainee-detail-content');
+function switchTab(btn,tabId){
+  const detail=document.getElementById('trainee-detail-content');
   detail.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   ['tab-assessments','tab-checkins','tab-notes'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el) el.style.display = id===tabId?'block':'none';
+    if(el) el.style.display=id===tabId?'block':'none';
   });
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  ALL TRAINEES
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 function renderAllTrainees(){
-  const q = (document.getElementById('trainee-search')||{}).value||'';
-  const filtered = DB.trainees.filter(t=>!q||t.name.toLowerCase().includes(q.toLowerCase()));
-  const tbody = document.getElementById('all-trainees-body');
-  if(!filtered.length){ tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><i class="fa-solid fa-user-slash"></i><p>No trainees found</p></div></td></tr>`; return; }
-  tbody.innerHTML = filtered.map(tr=>{
-    const trainer = DB.trainers.find(t=>t.id===tr.trainerId);
-    const asmts = getAssessmentStatus(tr);
+  const q=(document.getElementById('trainee-search')||{}).value||'';
+  const filtered=DB.trainees.filter(t=>!q||t.name.toLowerCase().includes(q.toLowerCase()));
+  const tbody=document.getElementById('all-trainees-body');
+  if(!filtered.length){tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><i class="fa-solid fa-user-slash"></i><p>No trainees found</p></div></td></tr>`;return;}
+  tbody.innerHTML=filtered.map(tr=>{
+    const trainer=DB.trainers.find(t=>t.id===tr.trainerId);
+    const asmts=getAssessmentStatus(tr);
     return `<tr onclick="showTraineeDetail('${tr.id}','')">
-      <td><div style="display:flex;align-items:center;gap:.65rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}</div><div style="font-size:.73rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:.65rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}</div><div style="font-size:.72rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
       <td>${trainer?`<span class="badge badge-gray">${trainer.name}</span>`:'<span style="color:var(--text-light)">Unassigned</span>'}</td>
       <td>${tr.protocol?`<span class="protocol-pill">${tr.protocol}</span>`:'—'}</td>
       <td style="font-size:.8rem;color:var(--text-light)">${tr.startDate?fmtDate(tr.startDate):'—'}</td>
       <td><div class="a-dots">${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}">${d}</div>`}).join('')}</div></td>
-      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
+      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
       <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditTrainee('${tr.id}')"><i class="fa-solid fa-pen"></i></button></td>
     </tr>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════
-//  MODALS
-// ═══════════════════════════════════════════
-function showModal(html){ document.getElementById('modal-root').innerHTML=`<div class="overlay" onclick="closeModal(event)">${html}</div>`; }
-function closeModal(e){ if(!e||e.target.classList.contains('overlay')) document.getElementById('modal-root').innerHTML=''; }
-function forceClose(){ document.getElementById('modal-root').innerHTML=''; }
+// ═══════════════════════════════════════
+//  MODALS — PRECEPTOR
+// ═══════════════════════════════════════
+function showModal(html){document.getElementById('modal-root').innerHTML=`<div class="overlay" onclick="closeModal(event)">${html}</div>`;}
+function closeModal(e){if(!e||e.target.classList.contains('overlay')) document.getElementById('modal-root').innerHTML='';}
+function forceClose(){document.getElementById('modal-root').innerHTML='';}
 
-// ADD/EDIT TRAINER
-function openAddTrainer(){ renderTrainerModal(null); }
-function openEditTrainer(tid){ renderTrainerModal(DB.trainers.find(t=>t.id===tid)); }
+function openAddTrainer(){renderTrainerModal(null);}
+function openEditTrainer(tid){renderTrainerModal(DB.trainers.find(t=>t.id===tid));}
 function renderTrainerModal(trainer){
-  const isEdit = !!trainer;
+  const isEdit=!!trainer;
   showModal(`<div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-hdr"><span class="modal-title">${isEdit?'Edit Trainer':'Add Trainer'}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-hdr"><span class="modal-title">${isEdit?'Edit Preceptor':'Add Preceptor'}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="f-tname" value="${trainer?trainer.name:''}" placeholder="e.g. Julia Martinez"></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="f-temail" value="${trainer?trainer.email||'':''}" placeholder="email@gym.com"></div>
+        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="f-tname" value="${trainer?trainer.name:''}" placeholder="e.g. Julia"></div>
+        <div class="form-group"><label class="form-label">Credential(s)</label><input class="form-control" id="f-tcred" value="${trainer?trainer.credential||'':''}" placeholder="e.g. RVT, RDCS"></div>
       </div>
       <div class="form-grid">
+        <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="f-temail" value="${trainer?trainer.email||'':''}" placeholder="email@vipmedicalgroup.com"></div>
         <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="f-tphone" value="${trainer?trainer.phone||'':''}" placeholder="(555) 000-0000"></div>
-        <div class="form-group"><label class="form-label">Color</label><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.35rem">${COLORS.map(c=>`<div onclick="document.getElementById('f-tcolor').value='${c}';document.querySelectorAll('.color-pick').forEach(x=>x.style.outline='none');this.style.outline='3px solid #00b4d8'" class="color-pick" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;outline:${trainer&&trainer.color===c?'3px solid #00b4d8':'none'}"></div>`).join('')}<input type="hidden" id="f-tcolor" value="${trainer?trainer.color||COLORS[0]:COLORS[0]}"></div></div>
       </div>
-      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="f-tnotes" placeholder="Specializations, certifications...">${trainer?trainer.notes||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Color</label>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.35rem">${COLORS.map(c=>`<div onclick="document.getElementById('f-tcolor').value='${c}';document.querySelectorAll('.color-pick').forEach(x=>x.style.outline='none');this.style.outline='3px solid #0ea5e9'" class="color-pick" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;outline:${trainer&&trainer.color===c?'3px solid #0ea5e9':'none'}"></div>`).join('')}
+        <input type="hidden" id="f-tcolor" value="${trainer?trainer.color||COLORS[0]:COLORS[0]}"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Specialization / Notes</label><textarea class="form-control" id="f-tnotes" placeholder="Areas of expertise, focus protocols...">${trainer?trainer.notes||'':''}</textarea></div>
     </div>
     <div class="modal-foot">
       ${isEdit?`<button class="btn btn-danger btn-sm" onclick="deleteTrainer('${trainer.id}')"><i class="fa-solid fa-trash"></i> Delete</button><div style="flex:1"></div>`:''}
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveTrainer('${isEdit?trainer.id:''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Add Trainer'}</button>
+      <button class="btn btn-primary" onclick="saveTrainer('${isEdit?trainer.id:''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Add Preceptor'}</button>
     </div>
   </div>`);
 }
 
 function saveTrainer(id){
-  const name = document.getElementById('f-tname').value.trim();
+  const name=document.getElementById('f-tname').value.trim();
   if(!name) return alert('Name is required');
-  const color = document.getElementById('f-tcolor').value||COLORS[0];
-  const parts = name.split(' ');
-  const initials = parts.map(p=>p[0]).join('').substring(0,2).toUpperCase();
-  if(id){
-    const t = DB.trainers.find(x=>x.id===id);
-    Object.assign(t,{name,email:document.getElementById('f-temail').value,phone:document.getElementById('f-tphone').value,notes:document.getElementById('f-tnotes').value,color,initials});
-  } else {
-    DB.trainers.push({id:'t'+Date.now(),name,email:document.getElementById('f-temail').value,phone:document.getElementById('f-tphone').value,notes:document.getElementById('f-tnotes').value,color,initials});
-    logActivity(`Added trainer ${name}`,'fa-user-plus');
-  }
-  saveData(DB); forceClose(); refresh();
+  const color=document.getElementById('f-tcolor').value||COLORS[0];
+  const parts=name.split(' ');
+  const initials=parts.map(p=>p[0]).join('').substring(0,2).toUpperCase();
+  const obj={name,email:document.getElementById('f-temail').value,phone:document.getElementById('f-tphone').value,credential:document.getElementById('f-tcred').value,notes:document.getElementById('f-tnotes').value,color,initials};
+  if(id){Object.assign(DB.trainers.find(x=>x.id===id),obj);}
+  else{DB.trainers.push({id:'t'+Date.now(),...obj});logActivity(`Added preceptor ${name}`,'fa-user-nurse');}
+  saveData(DB);forceClose();refresh();
 }
 
 function deleteTrainer(id){
-  if(!confirm('Delete this trainer? Their trainees will become unassigned.')) return;
+  if(!confirm('Delete this preceptor? Their trainees will become unassigned.')) return;
   DB.trainees.filter(t=>t.trainerId===id).forEach(t=>t.trainerId=null);
-  DB.trainers = DB.trainers.filter(t=>t.id!==id);
-  saveData(DB); forceClose(); showPage('trainers');
+  DB.trainers=DB.trainers.filter(t=>t.id!==id);
+  saveData(DB);forceClose();showPage('trainers');
 }
 
-// ADD/EDIT TRAINEE
-function openAddTrainee(trainerId){ renderTraineeModal(null, trainerId); }
-function openEditTrainee(tid){ renderTraineeModal(DB.trainees.find(t=>t.id===tid), null); }
-function renderTraineeModal(trainee, defaultTrainerId){
-  const isEdit = !!trainee;
+// ═══════════════════════════════════════
+//  MODALS — TRAINEE
+// ═══════════════════════════════════════
+function openAddTrainee(trainerId){renderTraineeModal(null,trainerId);}
+function openEditTrainee(tid){renderTraineeModal(DB.trainees.find(t=>t.id===tid),null);}
+function renderTraineeModal(trainee,defaultTrainerId){
+  const isEdit=!!trainee;
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr"><span class="modal-title">${isEdit?'Edit Trainee':'Assign New Trainee'}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="modal-body">
-      <div class="form-section">Personal Info</div>
+      <div class="form-section">Personal Information</div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="f-nname" value="${trainee?trainee.name:''}" placeholder="First Last"></div>
         <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="f-nemail" value="${trainee?trainee.email||'':''}" placeholder="trainee@email.com"></div>
       </div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="f-nphone" value="${trainee?trainee.phone||'':''}" placeholder="(555) 000-0000"></div>
-        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-control" id="f-ndob" type="date" value="${trainee?trainee.dob||'':''}"></div>
-      </div>
-      <div class="form-section">Assignment</div>
-      <div class="form-grid">
-        <div class="form-group"><label class="form-label">Assigned Trainer</label>
-          <select class="form-control" id="f-ntrainer">
-            <option value="">-- Unassigned --</option>
-            ${DB.trainers.map(t=>`<option value="${t.id}" ${(trainee?trainee.trainerId:defaultTrainerId)===t.id?'selected':''}>${t.name}</option>`).join('')}
+        <div class="form-group"><label class="form-label">Prior Sonography Experience</label>
+          <select class="form-control" id="f-nexperience">
+            <option value="">Select...</option>
+            <option value="None" ${trainee&&trainee.experience==='None'?'selected':''}>None — new to sonography</option>
+            <option value="Student" ${trainee&&trainee.experience==='Student'?'selected':''}>Student / In school</option>
+            <option value="General" ${trainee&&trainee.experience==='General'?'selected':''}>General ultrasound background</option>
+            <option value="Vascular" ${trainee&&trainee.experience==='Vascular'?'selected':''}>Vascular ultrasound background</option>
+            <option value="Other" ${trainee&&trainee.experience==='Other'?'selected':''}>Other clinical background</option>
           </select>
         </div>
-        <div class="form-group"><label class="form-label">Start Date</label><input class="form-control" id="f-nstart" type="date" value="${trainee?trainee.startDate||'':todayStr()}"></div>
+      </div>
+      <div class="form-section">Training Assignment</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Assigned Preceptor</label>
+          <select class="form-control" id="f-ntrainer">
+            <option value="">-- Unassigned --</option>
+            ${DB.trainers.map(t=>`<option value="${t.id}" ${(trainee?trainee.trainerId:defaultTrainerId)===t.id?'selected':''}>${t.name} (${t.credential||'Preceptor'})</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Training Start Date</label><input class="form-control" id="f-nstart" type="date" value="${trainee?trainee.startDate||'':todayStr()}"></div>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Protocol</label>
+        <div class="form-group"><label class="form-label">Protocol Track</label>
           <select class="form-control" id="f-nprotocol">
-            <option value="">-- None --</option>
+            <option value="">-- None assigned --</option>
             ${PROTOCOLS.map(p=>`<option value="${p}" ${trainee&&trainee.protocol===p?'selected':''}>${p}</option>`).join('')}
           </select>
         </div>
@@ -719,107 +759,115 @@ function renderTraineeModal(trainee, defaultTrainerId){
             <option value="active" ${!trainee||trainee.status==='active'?'selected':''}>Active</option>
             <option value="paused" ${trainee&&trainee.status==='paused'?'selected':''}>Paused</option>
             <option value="completed" ${trainee&&trainee.status==='completed'?'selected':''}>Completed</option>
+            <option value="certified" ${trainee&&trainee.status==='certified'?'selected':''}>Certified ✓</option>
           </select>
         </div>
       </div>
-      <div class="form-section">Goals & Notes</div>
-      <div class="form-group"><label class="form-label">Goals</label><textarea class="form-control" id="f-ngoals" placeholder="What are their main training goals?">${trainee?trainee.goals||'':''}</textarea></div>
-      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="f-nnotes" placeholder="Medical history, injuries, preferences...">${trainee?trainee.notes||'':''}</textarea></div>
+      <div class="form-section">Goals & Clinical Notes</div>
+      <div class="form-group"><label class="form-label">Training Goals</label><textarea class="form-control" id="f-ngoals" placeholder="What competencies should this trainee achieve?">${trainee?trainee.goals||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Clinical Notes</label><textarea class="form-control" id="f-nnotes" placeholder="Learning style, special accommodations, prior knowledge gaps...">${trainee?trainee.notes||'':''}</textarea></div>
     </div>
     <div class="modal-foot">
       ${isEdit?`<button class="btn btn-danger btn-sm" onclick="deleteTrainee('${trainee.id}')"><i class="fa-solid fa-trash"></i> Remove</button><div style="flex:1"></div>`:''}
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveTrainee('${isEdit?trainee.id:''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Add Trainee'}</button>
+      <button class="btn btn-primary" onclick="saveTrainee('${isEdit?trainee.id:''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Assign Trainee'}</button>
     </div>
   </div>`);
 }
 
 function saveTrainee(id){
-  const name = document.getElementById('f-nname').value.trim();
+  const name=document.getElementById('f-nname').value.trim();
   if(!name) return alert('Name is required');
-  const parts = name.split(' ');
-  const initials = parts.map(p=>p[0]).join('').substring(0,2).toUpperCase();
-  const obj = {
-    name, initials,
-    email: document.getElementById('f-nemail').value,
-    phone: document.getElementById('f-nphone').value,
-    dob: document.getElementById('f-ndob').value,
-    trainerId: document.getElementById('f-ntrainer').value||null,
-    startDate: document.getElementById('f-nstart').value,
-    protocol: document.getElementById('f-nprotocol').value,
-    status: document.getElementById('f-nstatus').value||'active',
-    goals: document.getElementById('f-ngoals').value,
-    notes: document.getElementById('f-nnotes').value,
-  };
-  if(id){
-    const t=DB.trainees.find(x=>x.id===id);
-    Object.assign(t,obj);
-    logActivity(`Updated trainee ${name}`,'fa-pen');
-  } else {
-    const newT={id:'tr'+Date.now(),...obj,progressNotes:[]};
-    DB.trainees.push(newT);
-    logActivity(`Assigned new trainee ${name} to ${DB.trainers.find(t=>t.id===obj.trainerId)?.name||'no trainer'}`,'fa-user-plus');
-  }
-  saveData(DB); forceClose(); refresh();
+  const initials=name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
+  const obj={name,initials,email:document.getElementById('f-nemail').value,phone:document.getElementById('f-nphone').value,experience:document.getElementById('f-nexperience').value,trainerId:document.getElementById('f-ntrainer').value||null,startDate:document.getElementById('f-nstart').value,protocol:document.getElementById('f-nprotocol').value,status:document.getElementById('f-nstatus').value||'active',goals:document.getElementById('f-ngoals').value,notes:document.getElementById('f-nnotes').value};
+  if(id){const t=DB.trainees.find(x=>x.id===id);Object.assign(t,obj);logActivity(`Updated trainee ${name}`,'fa-pen');}
+  else{DB.trainees.push({id:'tr'+Date.now(),...obj,progressNotes:[]});logActivity(`Assigned new trainee ${name} to ${DB.trainers.find(t=>t.id===obj.trainerId)?.name||'no preceptor'}`,'fa-user-graduate');}
+  saveData(DB);forceClose();refresh();
 }
 
 function deleteTrainee(id){
   if(!confirm('Remove this trainee and all their records?')) return;
-  const t=DB.trainees.find(x=>x.id===id);
   DB.trainees=DB.trainees.filter(x=>x.id!==id);
   DB.assessments=DB.assessments.filter(a=>a.traineeId!==id);
   DB.checkins=DB.checkins.filter(c=>c.traineeId!==id);
-  saveData(DB); forceClose();
+  saveData(DB);forceClose();
   if(traineeBackPage==='trainer-detail') showTrainerDetail(currentTrainerId);
   else showPage('trainees');
 }
 
-// ── ASSESSMENT MODAL ──
-function openAssessment(traineeId, day){
-  const done = DB.assessments.find(a=>a.traineeId===traineeId && a.day===day);
-  const trainee = DB.trainees.find(t=>t.id===traineeId);
+// ═══════════════════════════════════════
+//  ASSESSMENT MODAL
+// ═══════════════════════════════════════
+function openAssessment(traineeId,day){
+  const done=DB.assessments.find(a=>a.traineeId===traineeId&&a.day===day);
+  const trainee=DB.trainees.find(t=>t.id===traineeId);
+  const compAreas=day===30?COMPETENCY_AREAS_30:day===60?COMPETENCY_AREAS_60:COMPETENCY_AREAS_90;
+  const titles={30:'Foundation Skills Assessment',60:'Intermediate Competency Assessment',90:'Clinical Readiness Assessment'};
+  const subtitles={30:'Evaluate core equipment, anatomy, and imaging fundamentals',60:'Assess mapping technique, reflux testing, and reporting',90:'Evaluate readiness for independent clinical practice'};
+
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr">
-      <span class="modal-title"><i class="fa-solid fa-clipboard-list"></i> ${day}-Day Assessment — ${trainee.name}</span>
+      <div>
+        <div class="modal-title"><i class="fa-solid fa-clipboard-list" style="color:var(--accent)"></i> ${day}-Day ${titles[day]}</div>
+        <div style="font-size:.75rem;color:var(--text-light);margin-top:.15rem">${trainee.name} · ${subtitles[day]}</div>
+      </div>
       <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      ${done?`<div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> Completed on ${fmtDate(done.completedDate)} · <a href="#" onclick="event.preventDefault();deleteAssessment('${done.id}','${traineeId}',${day})" style="color:var(--danger);font-size:.8rem">Delete & redo</a></div>`:''}
-      <div class="form-section">Physical Measurements</div>
+      ${done?`<div class="alert alert-success"><i class="fa-solid fa-circle-check" style="flex-shrink:0"></i><span>Completed on ${fmtDate(done.completedDate)} · <a href="#" onclick="event.preventDefault();deleteAssessment('${done.id}','${traineeId}',${day})" style="color:var(--danger)">Delete & redo</a></span></div>`:''}
+
+      <div class="form-section">Competency Ratings (1–10 each)</div>
+      ${compAreas.map(c=>`
+        <div class="form-group">
+          <label class="form-label">${c.label}</label>
+          <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn ${done&&done['comp_'+c.id]==n?'on':''}" onclick="setRating(this,'comp_${c.id}',${n})">${n}</div>`).join('')}<input type="hidden" id="comp_${c.id}" value="${done?done['comp_'+c.id]||'':''}"></div>
+        </div>`).join('')}
+
+      ${day===30?`
+      <div class="form-section">Physical / Practical Measures</div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Weight (lbs)</label><input class="form-control" id="a-weight" value="${done?done.weight||'':''}" placeholder="e.g. 165"></div>
-        <div class="form-group"><label class="form-label">Body Fat %</label><input class="form-control" id="a-bf" value="${done?done.bodyFat||'':''}" placeholder="e.g. 18"></div>
+        <div class="form-group"><label class="form-label">Equipment Setup Time (min)</label><input class="form-control" id="a-setuptime" value="${done?done.setupTime||'':''}" placeholder="e.g. 5"></div>
+        <div class="form-group"><label class="form-label">Supervised Cases Completed</label><input class="form-control" id="a-cases" type="number" value="${done?done.cases||'':''}" placeholder="e.g. 12"></div>
+      </div>`:''}
+
+      ${day===60?`
+      <div class="form-section">Scanning Performance</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Avg Scan Time — GSV (min)</label><input class="form-control" id="a-gsv-time" value="${done?done.gsvTime||'':''}" placeholder="e.g. 20"></div>
+        <div class="form-group"><label class="form-label">Independent Cases This Period</label><input class="form-control" id="a-cases" type="number" value="${done?done.cases||'':''}" placeholder="e.g. 30"></div>
       </div>
+      <div class="form-group"><label class="form-label">Report Accuracy Rate (%)</label><input class="form-control" id="a-report-acc" value="${done?done.reportAccuracy||'':''}" placeholder="e.g. 92"></div>`:''}
+
+      ${day===90?`
+      <div class="form-section">Certification Readiness</div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Resting HR (bpm)</label><input class="form-control" id="a-hr" value="${done?done.restingHR||'':''}" placeholder="e.g. 68"></div>
-        <div class="form-group"><label class="form-label">Blood Pressure</label><input class="form-control" id="a-bp" value="${done?done.bloodPressure||'':''}" placeholder="e.g. 120/80"></div>
-      </div>
-      <div class="form-section">Fitness Testing</div>
-      <div class="form-grid">
-        <div class="form-group"><label class="form-label">Max Push-ups</label><input class="form-control" id="a-pushup" value="${done?done.pushups||'':''}" placeholder="e.g. 25"></div>
-        <div class="form-group"><label class="form-label">1-Mile Run Time</label><input class="form-control" id="a-run" value="${done?done.runTime||'':''}" placeholder="e.g. 9:30"></div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group"><label class="form-label">Plank Hold (seconds)</label><input class="form-control" id="a-plank" value="${done?done.plank||'':''}" placeholder="e.g. 90"></div>
-        <div class="form-group"><label class="form-label">Flexibility Score (1-10)</label>
-          <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn ${done&&done.flexibility==n?'on':''}" onclick="setRating(this,'a-flex-val',${n})">${n}</div>`).join('')}<input type="hidden" id="a-flex-val" value="${done?done.flexibility||'':''}"></div>
+        <div class="form-group"><label class="form-label">Total Cases Completed</label><input class="form-control" id="a-cases" type="number" value="${done?done.cases||'':''}" placeholder="e.g. 80"></div>
+        <div class="form-group"><label class="form-label">Independent Practice Readiness</label>
+          <select class="form-control" id="a-readiness">
+            <option value="">Select...</option>
+            <option value="Ready for independent practice" ${done&&done.readiness==='Ready for independent practice'?'selected':''}>✅ Ready for independent practice</option>
+            <option value="Ready with supervision" ${done&&done.readiness==='Ready with supervision'?'selected':''}>⚠️ Ready with continued supervision</option>
+            <option value="Needs extended training" ${done&&done.readiness==='Needs extended training'?'selected':''}>🔄 Needs extended training</option>
+          </select>
         </div>
       </div>
-      <div class="form-section">Trainer Evaluation</div>
-      <div class="form-group"><label class="form-label">Overall Progress (1-10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn ${done&&done.overall==n?'on':''}" onclick="setRating(this,'a-overall-val',${n})">${n}</div>`).join('')}<input type="hidden" id="a-overall-val" value="${done?done.overall||'':''}"></div>
-      </div>
-      <div class="form-group"><label class="form-label">Goals Met?</label>
-        <select class="form-control" id="a-goals">
+      <div class="form-group"><label class="form-label">Recommend for Certification?</label>
+        <select class="form-control" id="a-cert-rec">
           <option value="">Select...</option>
-          <option value="exceeded" ${done&&done.goalsMet==='exceeded'?'selected':''}>Exceeded expectations</option>
-          <option value="met" ${done&&done.goalsMet==='met'?'selected':''}>Met goals</option>
-          <option value="partial" ${done&&done.goalsMet==='partial'?'selected':''}>Partially met</option>
-          <option value="notmet" ${done&&done.goalsMet==='notmet'?'selected':''}>Not yet met</option>
+          <option value="Yes — recommend now" ${done&&done.certRec==='Yes — recommend now'?'selected':''}>Yes — recommend for certification now</option>
+          <option value="Yes — 30 more days" ${done&&done.certRec==='Yes — 30 more days'?'selected':''}>Yes — after 30 additional days</option>
+          <option value="Not yet" ${done&&done.certRec==='Not yet'?'selected':''}>Not yet — requires more training</option>
         </select>
+      </div>`:''}
+
+      <div class="form-section">Overall Evaluation</div>
+      <div class="form-group"><label class="form-label">Overall Score (1–10)</label>
+        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn ${done&&done.overall==n?'on':''}" onclick="setRating(this,'a-overall',${n})">${n}</div>`).join('')}<input type="hidden" id="a-overall" value="${done?done.overall||'':''}"></div>
       </div>
-      <div class="form-group"><label class="form-label">Summary & Key Observations</label><textarea class="form-control" id="a-summary" placeholder="Describe overall progress, wins, areas needing attention...">${done?done.summary||'':''}</textarea></div>
-      <div class="form-group"><label class="form-label">Next Steps & Recommendations</label><textarea class="form-control" id="a-next" placeholder="Adjustments to protocol, focus areas for next period...">${done?done.nextSteps||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Key Strengths</label><textarea class="form-control" id="a-strengths" placeholder="What is this trainee doing well?">${done?done.strengths||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Areas Needing Improvement</label><textarea class="form-control" id="a-improvements" placeholder="What needs more work or focus?">${done?done.improvements||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Summary & Clinical Observations</label><textarea class="form-control" id="a-summary" placeholder="Overall narrative of progress and performance...">${done?done.summary||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Recommended Next Steps</label><textarea class="form-control" id="a-next" placeholder="Protocol adjustments, focus areas, additional training needed...">${done?done.nextSteps||'':''}</textarea></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
@@ -828,79 +876,92 @@ function openAssessment(traineeId, day){
   </div>`);
 }
 
-function setRating(el, hiddenId, val){
+function setRating(el,hiddenId,val){
   el.closest('.rating-wrap').querySelectorAll('.r-btn').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
   document.getElementById(hiddenId).value=val;
 }
 
-function saveAssessment(traineeId, day, existingId){
-  const obj={
-    id: existingId||'a'+Date.now(),
-    traineeId, day,
-    completedDate: todayStr(),
-    weight: document.getElementById('a-weight').value,
-    bodyFat: document.getElementById('a-bf').value,
-    restingHR: document.getElementById('a-hr').value,
-    bloodPressure: document.getElementById('a-bp').value,
-    pushups: document.getElementById('a-pushup').value,
-    runTime: document.getElementById('a-run').value,
-    plank: document.getElementById('a-plank').value,
-    flexibility: document.getElementById('a-flex-val').value,
-    overall: document.getElementById('a-overall-val').value,
-    goalsMet: document.getElementById('a-goals').value,
-    summary: document.getElementById('a-summary').value,
-    nextSteps: document.getElementById('a-next').value,
-  };
+function saveAssessment(traineeId,day,existingId){
+  const compAreas=day===30?COMPETENCY_AREAS_30:day===60?COMPETENCY_AREAS_60:COMPETENCY_AREAS_90;
+  const obj={id:existingId||'a'+Date.now(),traineeId,day,completedDate:todayStr()};
+  compAreas.forEach(c=>{obj['comp_'+c.id]=document.getElementById('comp_'+c.id).value;});
+  obj.overall=document.getElementById('a-overall').value;
+  obj.strengths=document.getElementById('a-strengths').value;
+  obj.improvements=document.getElementById('a-improvements').value;
+  obj.summary=document.getElementById('a-summary').value;
+  obj.nextSteps=document.getElementById('a-next').value;
+  obj.cases=(document.getElementById('a-cases')||{}).value||'';
+  if(day===30){obj.setupTime=(document.getElementById('a-setuptime')||{}).value||'';}
+  if(day===60){obj.gsvTime=(document.getElementById('a-gsv-time')||{}).value||'';obj.reportAccuracy=(document.getElementById('a-report-acc')||{}).value||'';}
+  if(day===90){obj.readiness=(document.getElementById('a-readiness')||{}).value||'';obj.certRec=(document.getElementById('a-cert-rec')||{}).value||'';}
   if(existingId) DB.assessments=DB.assessments.filter(a=>a.id!==existingId);
   DB.assessments.push(obj);
   const trainee=DB.trainees.find(t=>t.id===traineeId);
   logActivity(`${day}-day assessment completed for ${trainee?.name}`,'fa-clipboard-check');
-  saveData(DB); forceClose();
-  showTraineeDetail(traineeId, traineeBackPage==='trainer-detail'?currentTrainerId:'');
+  saveData(DB);forceClose();
+  showTraineeDetail(traineeId,traineeBackPage==='trainer-detail'?currentTrainerId:'');
 }
 
-function deleteAssessment(id, traineeId, day){
+function deleteAssessment(id,traineeId,day){
   DB.assessments=DB.assessments.filter(a=>a.id!==id);
-  saveData(DB); forceClose();
-  openAssessment(traineeId, day);
+  saveData(DB);forceClose();
+  openAssessment(traineeId,day);
 }
 
-// ── WEEKLY CHECK-IN MODAL ──
+// ═══════════════════════════════════════
+//  WEEKLY CHECK-IN MODAL
+// ═══════════════════════════════════════
 function openCheckin(traineeId){
-  const existing = DB.checkins.filter(c=>c.traineeId===traineeId);
-  const week = existing.length+1;
+  const existing=DB.checkins.filter(c=>c.traineeId===traineeId);
+  const week=existing.length+1;
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
-    <div class="modal-hdr"><span class="modal-title"><i class="fa-solid fa-calendar-check"></i> Week ${week} Check-in</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-hdr">
+      <div><div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Week ${week} Clinical Check-in</div>
+      <div style="font-size:.75rem;color:var(--text-light);margin-top:.1rem">Weekly sonographer trainee progress questionnaire</div></div>
+      <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
     <div class="modal-body">
-      <div class="form-section">Wellbeing</div>
-      <div class="form-group"><label class="form-label">Energy Level (1-10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-energy',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-energy"></div>
+      <div class="form-section">Scanning Confidence & Volume</div>
+      <div class="form-group"><label class="form-label">Overall Scanning Confidence This Week (1–10)</label>
+        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-confidence',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-confidence"></div>
       </div>
-      <div class="form-group"><label class="form-label">Motivation Level (1-10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-motivation',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-motivation"></div>
-      </div>
-      <div class="form-group"><label class="form-label">Sleep Quality (1-10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-sleep',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-sleep"></div>
-      </div>
-      <div class="form-group"><label class="form-label">Stress Level (1-10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-stress',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-stress"></div>
-      </div>
-      <div class="form-section">Training This Week</div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Sessions Completed</label><input class="form-control" id="ci-sessions" type="number" min="0" max="14" placeholder="e.g. 4"></div>
-        <div class="form-group"><label class="form-label">Soreness Level (1-10)</label>
-          <div class="rating-wrap" style="margin-top:.35rem">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-sore',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-sore"></div>
+        <div class="form-group"><label class="form-label">Cases Completed This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 8"></div>
+        <div class="form-group"><label class="form-label">Supervised vs Independent</label>
+          <select class="form-control" id="ci-supervision">
+            <option value="">Select...</option>
+            <option>Fully supervised</option>
+            <option>Mostly supervised</option>
+            <option>Mix of both</option>
+            <option>Mostly independent</option>
+            <option>Fully independent</option>
+          </select>
         </div>
       </div>
-      <div class="form-group"><label class="form-label">This Week's Wins 🏆</label><textarea class="form-control" id="ci-wins" placeholder="What went well? Any PRs, milestones, or positive changes?"></textarea></div>
-      <div class="form-group"><label class="form-label">Challenges & Struggles</label><textarea class="form-control" id="ci-challenges" placeholder="What was hard? Any obstacles or setbacks?"></textarea></div>
-      <div class="form-section">Nutrition & Recovery</div>
-      <div class="form-group"><label class="form-label">Nutrition Adherence (1-10)</label>
-        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-nutrition',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-nutrition"></div>
+
+      <div class="form-section">Protocol-Specific Confidence</div>
+      <div class="form-group"><label class="form-label">GSV Mapping Confidence (1–10)</label>
+        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-gsv',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-gsv"></div>
       </div>
-      <div class="form-group"><label class="form-label">Water Intake (cups/day avg)</label><input class="form-control" id="ci-water" placeholder="e.g. 8"></div>
-      <div class="form-group"><label class="form-label">Summary / Trainer Notes</label><textarea class="form-control" id="ci-summary" placeholder="Overall weekly summary and trainer observations..."></textarea></div>
+      <div class="form-group"><label class="form-label">SSV Mapping Confidence (1–10)</label>
+        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-ssv',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-ssv"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Reflux Testing Confidence (1–10)</label>
+        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-reflux',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-reflux"></div>
+      </div>
+
+      <div class="form-section">Learning & Progress</div>
+      <div class="form-group"><label class="form-label">Anatomy Comfort Level (1–10)</label>
+        <div class="rating-wrap">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="r-btn" onclick="setRating(this,'ci-anatomy',${n})">${n}</div>`).join('')}<input type="hidden" id="ci-anatomy"></div>
+      </div>
+      <div class="form-group"><label class="form-label">This Week's Clinical Wins 🏆</label><textarea class="form-control" id="ci-wins" placeholder="Skills mastered, successful scans, positive patient interactions, new protocols learned..."></textarea></div>
+      <div class="form-group"><label class="form-label">Challenges & Difficult Cases</label><textarea class="form-control" id="ci-challenges" placeholder="What was difficult? Any cases that didn't go well? Anatomy that was hard to visualize?"></textarea></div>
+      <div class="form-group"><label class="form-label">Questions for Preceptor</label><textarea class="form-control" id="ci-questions" placeholder="Topics to review, techniques to practice, concepts that are unclear..."></textarea></div>
+
+      <div class="form-section">Preceptor Notes & Feedback</div>
+      <div class="form-group"><label class="form-label">Preceptor Feedback & Observations</label><textarea class="form-control" id="ci-summary" placeholder="Overall weekly assessment, coaching notes, areas to focus on next week..."></textarea></div>
+      <div class="form-group"><label class="form-label">Focus for Next Week</label><textarea class="form-control" id="ci-focus" placeholder="Specific protocols, skills, or cases to prioritize next week..."></textarea></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
@@ -909,28 +970,26 @@ function openCheckin(traineeId){
   </div>`);
 }
 
-function saveCheckin(traineeId, week){
-  const obj={
-    id: 'ci'+Date.now(),
-    traineeId, week,
-    date: todayStr(),
-    energy: document.getElementById('ci-energy').value,
-    motivation: document.getElementById('ci-motivation').value,
-    sleep: document.getElementById('ci-sleep').value,
-    stress: document.getElementById('ci-stress').value,
-    sessions: document.getElementById('ci-sessions').value,
-    soreness: document.getElementById('ci-sore').value,
-    wins: document.getElementById('ci-wins').value,
-    challenges: document.getElementById('ci-challenges').value,
-    nutrition: document.getElementById('ci-nutrition').value,
-    water: document.getElementById('ci-water').value,
-    summary: document.getElementById('ci-summary').value,
+function saveCheckin(traineeId,week){
+  const obj={id:'ci'+Date.now(),traineeId,week,date:todayStr(),
+    confidence:document.getElementById('ci-confidence').value,
+    cases:document.getElementById('ci-cases').value,
+    supervision:document.getElementById('ci-supervision').value,
+    gsv:document.getElementById('ci-gsv').value,
+    ssv:document.getElementById('ci-ssv').value,
+    reflux:document.getElementById('ci-reflux').value,
+    anatomy:document.getElementById('ci-anatomy').value,
+    wins:document.getElementById('ci-wins').value,
+    challenges:document.getElementById('ci-challenges').value,
+    questions:document.getElementById('ci-questions').value,
+    summary:document.getElementById('ci-summary').value,
+    focus:document.getElementById('ci-focus').value,
   };
   DB.checkins.push(obj);
   const trainee=DB.trainees.find(t=>t.id===traineeId);
   logActivity(`Week ${week} check-in for ${trainee?.name}`,'fa-calendar-check');
-  saveData(DB); forceClose();
-  showTraineeDetail(traineeId, traineeBackPage==='trainer-detail'?currentTrainerId:'');
+  saveData(DB);forceClose();
+  showTraineeDetail(traineeId,traineeBackPage==='trainer-detail'?currentTrainerId:'');
 }
 
 function viewCheckin(id){
@@ -939,18 +998,23 @@ function viewCheckin(id){
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr"><span class="modal-title">Week ${ci.week} Check-in — ${fmtDate(ci.date)}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="modal-body">
-      <div class="form-grid" style="margin-bottom:1rem">
-        ${[['Energy',ci.energy],['Motivation',ci.motivation],['Sleep',ci.sleep],['Stress',ci.stress],['Soreness',ci.soreness],['Nutrition',ci.nutrition]].map(([l,v])=>`
-          <div style="background:#f8fafd;border-radius:var(--r-sm);padding:.75rem;border:1px solid var(--border)">
-            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--text-light);margin-bottom:.25rem">${l}</div>
-            <div style="font-size:1.4rem;font-weight:800;color:var(--primary)">${v||'—'}<span style="font-size:.75rem;color:var(--text-light)">/10</span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.1rem">
+        ${[['Confidence',ci.confidence],['GSV',ci.gsv],['SSV',ci.ssv],['Reflux',ci.reflux],['Anatomy',ci.anatomy]].map(([l,v])=>`
+          <div style="background:#f8fafd;border-radius:var(--r-sm);padding:.7rem;border:1px solid var(--border);text-align:center">
+            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--text-light);margin-bottom:.2rem">${l}</div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--primary)">${v||'—'}<span style="font-size:.7rem;color:var(--text-light)">/10</span></div>
           </div>`).join('')}
+        <div style="background:#f8fafd;border-radius:var(--r-sm);padding:.7rem;border:1px solid var(--border);text-align:center">
+          <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--text-light);margin-bottom:.2rem">Cases</div>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--primary)">${ci.cases||'0'}</div>
+        </div>
       </div>
-      ${ci.sessions?`<div style="margin-bottom:.75rem"><span class="badge badge-info"><i class="fa-solid fa-dumbbell"></i> ${ci.sessions} sessions this week</span></div>`:''}
-      ${ci.wins?`<div class="form-group"><div class="form-label">🏆 Wins</div><div style="background:#d1fae5;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.wins}</div></div>`:''}
-      ${ci.challenges?`<div class="form-group"><div class="form-label">⚡ Challenges</div><div style="background:#fee2e2;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.challenges}</div></div>`:''}
-      ${ci.water?`<div style="font-size:.82rem;color:var(--text-light);margin-bottom:.5rem"><i class="fa-solid fa-droplet"></i> ~${ci.water} cups water/day</div>`:''}
-      ${ci.summary?`<div class="form-group"><div class="form-label">Trainer Notes</div><div style="background:#f1f5f9;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.summary}</div></div>`:''}
+      ${ci.supervision?`<div style="margin-bottom:.75rem"><span class="badge badge-info"><i class="fa-solid fa-eye"></i> ${ci.supervision}</span></div>`:''}
+      ${ci.wins?`<div class="form-group"><div class="form-label" style="color:var(--success)">🏆 Clinical Wins</div><div style="background:#dcfce7;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.wins}</div></div>`:''}
+      ${ci.challenges?`<div class="form-group"><div class="form-label" style="color:var(--danger)">⚡ Challenges</div><div style="background:#fee2e2;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.challenges}</div></div>`:''}
+      ${ci.questions?`<div class="form-group"><div class="form-label">❓ Questions for Preceptor</div><div style="background:#fef3c7;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.questions}</div></div>`:''}
+      ${ci.summary?`<div class="form-group"><div class="form-label">📋 Preceptor Feedback</div><div style="background:#f1f5f9;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.summary}</div></div>`:''}
+      ${ci.focus?`<div class="form-group"><div class="form-label">🎯 Focus Next Week</div><div style="background:#e0f2fe;border-radius:var(--r-sm);padding:.75rem;font-size:.84rem">${ci.focus}</div></div>`:''}
     </div>
     <div class="modal-foot">
       <button class="btn btn-danger btn-sm" onclick="deleteCheckin('${ci.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
@@ -961,27 +1025,38 @@ function viewCheckin(id){
 }
 
 function deleteCheckin(id){
-  const ci=DB.checkins.find(c=>c.id===id);
   if(!confirm('Delete this check-in?')) return;
   DB.checkins=DB.checkins.filter(c=>c.id!==id);
-  saveData(DB); forceClose();
-  showTraineeDetail(currentTraineeId, traineeBackPage==='trainer-detail'?currentTrainerId:'');
+  saveData(DB);forceClose();
+  showTraineeDetail(currentTraineeId,traineeBackPage==='trainer-detail'?currentTrainerId:'');
 }
 
-// ── PROGRESS NOTE ──
+// ═══════════════════════════════════════
+//  PROGRESS NOTES
+// ═══════════════════════════════════════
 function openProgressNote(traineeId){
   showModal(`<div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-hdr"><span class="modal-title">Add Progress Note</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-hdr"><span class="modal-title">Add Clinical Note</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="modal-body">
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Date</label><input class="form-control" id="pn-date" type="date" value="${todayStr()}"></div>
         <div class="form-group"><label class="form-label">Category</label>
           <select class="form-control" id="pn-cat">
-            <option>General</option><option>Performance</option><option>Nutrition</option><option>Injury/Concern</option><option>Milestone</option><option>Behavioral</option>
+            <option>Scanning Technique</option>
+            <option>Anatomy Knowledge</option>
+            <option>Image Quality</option>
+            <option>Protocol Adherence</option>
+            <option>Report Writing</option>
+            <option>Patient Interaction</option>
+            <option>Equipment Operation</option>
+            <option>Clinical Judgment</option>
+            <option>Milestone Achieved</option>
+            <option>Concern / Follow-up</option>
+            <option>General</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label class="form-label">Note *</label><textarea class="form-control" id="pn-text" style="min-height:100px" placeholder="Document your observation or note..."></textarea></div>
+      <div class="form-group"><label class="form-label">Note *</label><textarea class="form-control" id="pn-text" style="min-height:110px" placeholder="Document your clinical observation, coaching note, or milestone..."></textarea></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
@@ -996,14 +1071,14 @@ function saveProgressNote(traineeId){
   const trainee=DB.trainees.find(t=>t.id===traineeId);
   if(!trainee.progressNotes) trainee.progressNotes=[];
   trainee.progressNotes.push({id:'n'+Date.now(),date:document.getElementById('pn-date').value,category:document.getElementById('pn-cat').value,text});
-  saveData(DB); forceClose();
-  showTraineeDetail(traineeId, traineeBackPage==='trainer-detail'?currentTrainerId:'');
+  saveData(DB);forceClose();
+  showTraineeDetail(traineeId,traineeBackPage==='trainer-detail'?currentTrainerId:'');
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 //  HELPERS
-// ═══════════════════════════════════════════
-function todayStr(){ return new Date().toISOString().split('T')[0]; }
+// ═══════════════════════════════════════
+function todayStr(){return new Date().toISOString().split('T')[0];}
 function fmtDate(s){
   if(!s) return '—';
   const d=new Date(s+'T12:00:00');
@@ -1011,32 +1086,26 @@ function fmtDate(s){
 }
 function fmtTime(ts){
   if(!ts) return '';
-  const d=new Date(ts);
-  const now=new Date();
-  const diff=Math.floor((now-d)/1000);
+  const diff=Math.floor((Date.now()-ts)/1000);
   if(diff<60) return 'just now';
   if(diff<3600) return Math.floor(diff/60)+'m ago';
   if(diff<86400) return Math.floor(diff/3600)+'h ago';
-  return fmtDate(d.toISOString().split('T')[0]);
+  return fmtDate(new Date(ts).toISOString().split('T')[0]);
 }
-function logActivity(text, icon){
+function logActivity(text,icon){
   DB.activity.push({ts:Date.now(),text,icon});
   if(DB.activity.length>50) DB.activity=DB.activity.slice(-50);
 }
 function refresh(){
-  const activePage = [...document.querySelectorAll('.page')].find(p=>p.classList.contains('active'));
-  if(activePage){
-    if(activePage.id==='page-hub') renderHub();
-    else if(activePage.id==='page-trainers') renderTrainers();
-    else if(activePage.id==='page-trainees') renderAllTrainees();
-    else if(activePage.id==='page-trainer-detail') showTrainerDetail(currentTrainerId);
-    else if(activePage.id==='page-trainee-detail') showTraineeDetail(currentTraineeId, traineeBackPage==='trainer-detail'?currentTrainerId:'');
-  }
+  const active=[...document.querySelectorAll('.page')].find(p=>p.classList.contains('active'));
+  if(!active) return;
+  if(active.id==='page-hub') renderHub();
+  else if(active.id==='page-trainers') renderTrainers();
+  else if(active.id==='page-trainees') renderAllTrainees();
+  else if(active.id==='page-trainer-detail') showTrainerDetail(currentTrainerId);
+  else if(active.id==='page-trainee-detail') showTraineeDetail(currentTraineeId,traineeBackPage==='trainer-detail'?currentTrainerId:'');
 }
 
-// ═══════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════
 renderHub();
 </script>
 </body>
