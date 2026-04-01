@@ -595,7 +595,31 @@ const BUILTIN_MODULES = [
           <tr><td style="padding:.45rem .7rem;border:1px solid var(--border)">Wall</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Smooth</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Thickened, irregular</td></tr>
           <tr style="background:#f8fafd"><td style="padding:.45rem .7rem;border:1px solid var(--border)">Collaterals</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Absent or early</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Often present</td></tr>
         </tbody>
-      </table>`,
+      </table>
+
+      <h4 style="margin:.9rem 0 .4rem">EHIT — Endovenous Heat-Induced Thrombosis</h4>
+      <p style="line-height:1.65;margin-bottom:.6rem">EHIT is a specific type of thrombus that can occur as a complication of thermal ablation procedures (RFA, laser). It forms at the treated vein's junction with the deep venous system — most commonly at the Saphenofemoral Junction (SFJ) after GSV RFA, or the Saphenopopliteal Junction (SPJ) after SSV RFA. Unlike DVT, EHIT originates from heat-induced injury to the vein wall rather than venous stasis or hypercoagulability.</p>
+      <p style="line-height:1.65;margin-bottom:.8rem">EHIT is classified into four classes based on the extent of thrombus extension into the deep venous system:</p>
+      <table style="width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:.75rem">
+        <thead><tr style="background:#f0f9ff"><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Class</th><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Description</th><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Management</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 1</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Thrombus at the junction but does not cross into the deep vein — remains in the treated saphenous vein at the SFJ/SPJ level</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Monitor with follow-up duplex; typically resolves spontaneously</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 2</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Thrombus extends into the deep vein (CFV or popliteal) but occludes less than 50% of the lumen</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Close monitoring; physician may initiate anticoagulation therapy</td></tr>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 3</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Thrombus extends into the deep vein and occludes 50% or more of the lumen</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Anticoagulation typically required; urgent physician notification</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 4</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Complete occlusion of the deep vein — considered a true DVT</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Treat as DVT; anticoagulation required; urgent management</td></tr>
+        </tbody>
+      </table>
+      <h4 style="margin:.9rem 0 .4rem">Identifying EHIT on Ultrasound</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Perform post-procedure duplex at the SFJ/SPJ — assess for any thrombus extending into the deep vein</li>
+        <li>Evaluate the deep vein for compressibility and measure any thrombus extension in millimeters</li>
+        <li>Document: thrombus location, extent into deep vein, percent occlusion, and compressibility</li>
+        <li>EHIT most commonly occurs within the first 72 hours post-procedure</li>
+        <li>Follow-up duplex is typically scheduled 48–72 hours post-procedure to assess for EHIT</li>
+      </ul>
+      <div style="background:#fff8e1;border-left:4px solid #f4a261;border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.65rem .85rem;margin-top:.65rem;font-size:.85rem;line-height:1.6">
+        <strong>⚠️ Key Point:</strong> Any thrombus that extends beyond the junction into the deep vein (Class 2 or higher) must be reported to the physician immediately for evaluation and management decisions.
+      </div>`,
     questions:[
       {type:'mc',text:'What is the PRIMARY ultrasound criterion for diagnosing DVT?',options:['Hyperechoic material in the vein','Absent color flow on Doppler','Non-compressibility of the vein','Vein diameter >10 mm'],correct:2,explanation:'Non-compressibility is the primary diagnostic criterion for DVT. A normal vein collapses completely with gentle probe pressure; a thrombosed vein does not.'},
       {type:'mc',text:'Virchow\'s Triad includes venous stasis, hypercoagulability, and:',options:['Arterial hypertension','Endothelial injury','Venous reflux','Lymphatic obstruction'],correct:1,explanation:'Virchow\'s Triad — the three factors that contribute to DVT formation — are: venous stasis, hypercoagulability, and endothelial injury.'},
@@ -605,6 +629,12 @@ const BUILTIN_MODULES = [
       {type:'tf',text:'A vein with partial thrombus will still show some color Doppler flow.',correct:true,explanation:'Partial (non-occlusive) thrombus allows some blood flow to continue, so color Doppler may show residual flow around the clot. This is why compressibility testing is still essential.'},
       {type:'fill',text:'Squeezing the calf during DVT scanning to assess venous flow is called ________.',answer:'augmentation',explanation:'Augmentation (squeezing the calf or foot) increases venous flow and is used to confirm patency of deep veins proximal to the site of compression.'},
       {type:'mc',text:'Compared to acute DVT, chronic DVT thrombus is usually:',options:['Hypoechoic and soft','Hyperechoic and the vein wall is thickened','The same appearance','Anechoic with a thin wall'],correct:1,explanation:'Chronic DVT is characterized by hyperechoic (bright), heterogeneous thrombus with a thickened, irregular vein wall, and the vein may be contracted. Collateral vessels are often present.'},
+      {type:'mc',text:'What does EHIT stand for?',options:['External Heat-Induced Thrombosis','Endovenous Heat-Induced Thrombosis','Endothelial Hypertension-Induced Thrombus','Early Hematoma in Treated veins'],correct:1,explanation:'EHIT stands for Endovenous Heat-Induced Thrombosis — a thrombus that forms as a complication of thermal ablation (RFA/laser) at the junction of the treated vein with the deep venous system.'},
+      {type:'mc',text:'In which EHIT class does thrombus extend into the deep vein but occupy less than 50% of the lumen?',options:['Class 1','Class 2','Class 3','Class 4'],correct:1,explanation:'EHIT Class 2 is defined as thrombus that extends into the deep vein (CFV or popliteal) but occludes less than 50% of the lumen. Class 3 is 50% or more, and Class 4 is complete occlusion.'},
+      {type:'tf',text:'EHIT Class 4 is considered equivalent to a true DVT and requires anticoagulation.',correct:true,explanation:'EHIT Class 4 represents complete occlusion of the deep vein and is treated as a true DVT, requiring anticoagulation and urgent physician management.'},
+      {type:'mc',text:'After a GSV RFA procedure, where would you look for EHIT on the post-procedure duplex?',options:['Mid-thigh femoral vein','Popliteal vein','Saphenofemoral Junction (SFJ)','Calf veins'],correct:2,explanation:'EHIT after GSV RFA is assessed at the Saphenofemoral Junction (SFJ), where the treated GSV meets the Common Femoral Vein. After SSV RFA, assess the Saphenopopliteal Junction (SPJ).'},
+      {type:'fill',text:'EHIT most commonly occurs within the first ________ hours after a thermal ablation procedure.',answer:'72',explanation:'EHIT typically develops within the first 72 hours post-procedure. This is why follow-up duplex scanning is scheduled 48–72 hours after RFA to assess for this complication.'},
+      {type:'mc',text:'Which EHIT class requires immediate physician notification and typically requires anticoagulation?',options:['Class 1 only','Class 2 and above','Class 3 and above','Class 4 only'],correct:2,explanation:'EHIT Class 3 (≥50% occlusion of deep vein) and Class 4 (complete occlusion) require anticoagulation and urgent physician notification. Class 2 is monitored closely and may require anticoagulation at physician discretion.'},
     ]
   },
   {
