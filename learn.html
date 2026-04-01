@@ -1229,8 +1229,8 @@ async function loadAdminAssign() {
 }
 
 // Secondary app for creating accounts
-const secondaryApp2 = firebase.app('secondary') || firebase.initializeApp(firebase.app().options,'secondary2');
-const secondaryAuth2 = firebase.auth(firebase.app('secondary'));
+let _secondaryApp2;
+try { _secondaryApp2 = firebase.app('secondary'); } catch(e) { _secondaryApp2 = firebase.initializeApp(firebase.app().options,'secondary'); }
 
 function openCreateTraineeAccount() {
   showModal(`<div class="modal" onclick="event.stopPropagation()">
@@ -1257,7 +1257,7 @@ async function createTraineeAccount() {
   if(pass.length<6) return showEl('ta-error','Password must be at least 6 characters.');
   setBtn('ta-btn',true,'Creating...');
   try {
-    const sec = firebase.app('secondary');
+    const sec = _secondaryApp2;
     const secAuth = firebase.auth(sec);
     const cred = await secAuth.createUserWithEmailAndPassword(email,pass);
     await secAuth.signOut();
