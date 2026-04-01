@@ -884,10 +884,10 @@ async function openTraineeModal(tid, defaultTrainerId) {
       </div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="fn-phone" value="${trainee?trainee.phone||'':''}" placeholder="(555) 000-0000"></div>
-        <div class="form-group"><label class="form-label">Prior Experience</label>
+        <div class="form-group"><label class="form-label">Training Tier</label>
           <select class="form-control" id="fn-exp">
             <option value="">Select...</option>
-            ${['None — new to sonography','Student / In school','General ultrasound background','Vascular ultrasound background','Other clinical background'].map(o=>`<option ${trainee&&trainee.experience===o?'selected':''}>${o}</option>`).join('')}
+            ${['Tier 1','Tier 2','Tier 3','MA Tier'].map(o=>`<option ${trainee&&trainee.experience===o?'selected':''}>${o}</option>`).join('')}
           </select>
         </div>
       </div>
