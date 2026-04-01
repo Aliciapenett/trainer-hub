@@ -1112,28 +1112,45 @@ async function loadAdminProgress() {
     const uniquePassed = [...new Set(passed.map(r=>r.moduleId))].length;
     const avg = myR.length ? Math.round(myR.reduce((a,b)=>a+(b.percent||0),0)/myR.length) : null;
     const scoreColor = avg===null?'var(--text-light)':avg>=80?'var(--success)':avg>=60?'var(--warning)':'var(--danger)';
-    return `<tr onclick="viewUserDetail('${u.id}')" style="cursor:pointer">
-      <td><div style="font-weight:600">${u.name}</div><div style="font-size:.72rem;color:var(--text-light)">${u.email}</div></td>
-      <td>${uniquePassed} / ${BUILTIN_MODULES.length}</td>
-      <td>${myR.length}</td>
-      <td><strong style="color:${scoreColor}">${avg!==null?avg+'%':'—'}</strong></td>
-      <td>
-        <div style="display:flex;gap:.25rem;flex-wrap:wrap">
-          ${BUILTIN_MODULES.map(m=>{
-            const best = myR.filter(r=>r.moduleId===m.id);
-            const p = best.some(r=>r.passed);
-            const tried = best.length>0;
-            return `<div title="${m.title}" style="width:20px;height:20px;border-radius:4px;background:${p?m.color:tried?'#fef3c7':'#f1f5f9'};border:1px solid ${p?m.color:tried?'#fcd34d':'var(--border)'}"></div>`;
-          }).join('')}
-        </div>
+
+    // Per-module best score cells
+    const moduleCells = BUILTIN_MODULES.map(m=>{
+      const attempts = myR.filter(r=>r.moduleId===m.id);
+      const best = attempts.length ? Math.max(...attempts.map(r=>r.percent||0)) : null;
+      const p = attempts.some(r=>r.passed);
+      const tried = attempts.length>0;
+      const bg = p?m.color:tried?'#d97706':'#94a3b8';
+      const textColor = (p||tried)?'#fff':'#fff';
+      return `<td style="text-align:center;padding:.6rem .5rem">
+        ${best!==null
+          ? `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:.15rem">
+              <span style="font-size:.82rem;font-weight:800;color:${best>=80?'var(--success)':'var(--danger)'}">${best}%</span>
+              <span class="badge ${p?'badge-success':tried?'badge-warning':'badge-gray'}" style="font-size:.62rem">${p?'Passed':tried?'Attempted':'—'}</span>
+             </div>`
+          : `<span style="color:var(--text-light);font-size:.78rem">—</span>`}
+      </td>`;
+    }).join('');
+
+    return `<tr>
+      <td style="min-width:160px"><div style="font-weight:600">${u.name}</div><div style="font-size:.71rem;color:var(--text-light)">${u.email}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:.3rem;font-size:.72rem;padding:.18rem .45rem" onclick="viewUserDetail('${u.id}')"><i class="fa-solid fa-clock-rotate-left"></i> Full History</button>
       </td>
+      <td style="text-align:center"><strong style="font-size:1rem">${uniquePassed}</strong><span style="color:var(--text-light);font-size:.75rem"> / ${BUILTIN_MODULES.length}</span></td>
+      <td style="text-align:center"><strong style="color:${scoreColor};font-size:1rem">${avg!==null?avg+'%':'—'}</strong></td>
+      ${moduleCells}
     </tr>`;
   }).join('');
 
+  const moduleHeaders = BUILTIN_MODULES.map(m=>`<th style="text-align:center;min-width:95px;font-size:.65rem;padding:.6rem .4rem"><div style="width:18px;height:18px;border-radius:4px;background:${m.color};margin:0 auto .25rem"></div>${m.title}</th>`).join('');
+
   el.innerHTML = `
-    <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info"></i><span>Color tiles show module completion: <strong style="color:var(--primary)">Colored</strong> = passed, <strong style="color:#92400e">Yellow</strong> = attempted, <strong style="color:var(--text-light)">Gray</strong> = not started. Click a row for details.</span></div>
     <div class="card"><div class="tbl-wrap"><table class="tbl">
-      <thead><tr><th>Trainee</th><th>Modules Passed</th><th>Total Attempts</th><th>Avg Score</th><th>Module Progress</th></tr></thead>
+      <thead><tr>
+        <th style="min-width:160px">Trainee</th>
+        <th style="text-align:center">Passed</th>
+        <th style="text-align:center">Avg Score</th>
+        ${moduleHeaders}
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table></div></div>`;
 }
