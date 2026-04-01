@@ -648,6 +648,23 @@ const BUILTIN_MODULES = [
         <li>Review of assessment/plan from last visit</li>
         <li>Any concerns, questions, or changes since last visit</li>
       </ol>
+      <h4 style="margin:.9rem 0 .4rem">The Time Out Procedure</h4>
+      <p style="line-height:1.65;margin-bottom:.5rem">A Time Out must be performed immediately before beginning any procedure. It is a verbal confirmation between all members of the clinical team to ensure patient safety. Everyone stops what they are doing and actively participates.</p>
+      <div style="background:#f0f9ff;border-left:4px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.75rem 1rem;margin-bottom:.75rem;font-size:.85rem">
+        <strong>Time Out Checklist — Confirm the Following Out Loud:</strong>
+        <ol style="padding-left:1.2rem;line-height:2.1;margin-top:.4rem">
+          <li><strong>Patient Name</strong> — Verbally confirm the patient's full name</li>
+          <li><strong>Date of Birth</strong> — Confirm patient's date of birth</li>
+          <li><strong>Procedure Being Performed</strong> — State the exact procedure (e.g., RFA, Varithena, Phlebectomy)</li>
+          <li><strong>Vein Being Treated</strong> — Confirm which vein (e.g., GSV, SSV, tributary)</li>
+          <li><strong>Correct Side / Leg</strong> — Confirm left or right leg</li>
+          <li><strong>Allergies</strong> — Confirm any known allergies (especially lidocaine, betadine, latex)</li>
+          <li><strong>Consent</strong> — Confirm informed consent has been signed and is on file</li>
+          <li><strong>Prior Authorization</strong> — Confirm Prior Auth is approved for today's procedure</li>
+        </ol>
+      </div>
+      <p style="line-height:1.65;background:#fee2e2;border-left:4px solid var(--danger);padding:.65rem .85rem;border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:.85rem"><strong>⚠️ Important:</strong> The Time Out must be completed before the procedure begins — not during or after. If any item cannot be confirmed, the procedure should not proceed until it is resolved.</p>
+
       <h4 style="margin:.9rem 0 .4rem">Post-Procedure Patient Instructions</h4>
       <ul style="padding-left:1.2rem;line-height:2">
         <li>Apply and explain compression bandage/stocking</li>
@@ -664,6 +681,9 @@ const BUILTIN_MODULES = [
       {type:'tf',text:'A patient should be instructed to stay seated and rest immediately after a vein procedure.',correct:false,explanation:'Patients should ambulate immediately after vein procedures. Remaining sedentary increases the risk of venous stasis and DVT. Walking activates the calf muscle pump.'},
       {type:'mc',text:'Which allergy is most critical to verify before a vein ablation procedure?',options:['Penicillin','Aspirin','Lidocaine (local anesthetic)','Sulfa drugs'],correct:2,explanation:'Lidocaine allergy is critical to verify since tumescent anesthesia contains lidocaine. Betadine (iodine) and latex allergies should also be checked.'},
       {type:'fill',text:'The process of confirming the correct patient, correct procedure, and correct side before starting is called ________ verification.',answer:'site',explanation:'Site and side verification (sometimes called "time-out") confirms correct patient, correct procedure, and correct surgical site before beginning any invasive procedure.'},
+      {type:'mc',text:'When must the Time Out be completed?',options:['During the procedure','After the procedure is finished','Immediately before the procedure begins','Only if the patient requests it'],correct:2,explanation:'The Time Out must be completed immediately before the procedure begins. If any item cannot be confirmed, the procedure should not proceed until it is resolved.'},
+      {type:'tf',text:'During the Time Out, the team must confirm which vein is being treated and which leg.',correct:true,explanation:'Confirming the specific vein (e.g., GSV, SSV) and the correct side (left or right leg) is a required part of the Time Out to prevent wrong-site procedures.'},
+      {type:'mc',text:'Which of the following is confirmed during the Time Out?',options:['Patient\'s insurance policy number','Patient name, DOB, procedure, vein, side, allergies, consent, and Prior Auth','Only the patient\'s name and allergies','The physician\'s credentials'],correct:1,explanation:'The Time Out confirms: patient name, date of birth, procedure being performed, vein being treated, correct side/leg, allergies, signed consent, and Prior Authorization approval.'},
       {type:'tf',text:'Bruising and firmness along the treated vein after RFA is a normal expected finding.',correct:true,explanation:'Bruising, tenderness, and a firm/cord-like feeling along the treated vein are normal expected findings after RFA and typically resolve over several weeks.'},
     ]
   },
