@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIP Vein Training Hub</title>
+<title>VIP Training Progress Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -168,7 +168,7 @@ textarea.form-control{resize:vertical;min-height:76px}
 <!-- LOADING -->
 <div id="screen-loading">
   <div class="spinner"></div>
-  <p style="color:rgba(255,255,255,.7);font-size:.88rem;margin-top:.5rem">Loading VIP Vein Training Hub...</p>
+  <p style="color:rgba(255,255,255,.7);font-size:.88rem;margin-top:.5rem">Loading VIP Training Progress Tracker...</p>
 </div>
 
 <!-- FIRST TIME SETUP -->
@@ -177,7 +177,7 @@ textarea.form-control{resize:vertical;min-height:76px}
     <div class="auth-card">
       <div class="auth-logo">
         <div class="auth-logo-icon"><i class="fa-solid fa-wave-square"></i></div>
-        <div><div class="auth-title">VIP Vein Training Hub</div><div class="auth-sub">First Time Setup</div></div>
+        <div><div class="auth-title">VIP Training Progress Tracker</div><div class="auth-sub">First Time Setup</div></div>
       </div>
       <div class="auth-form-title">Create Admin Account</div>
       <div class="auth-form-sub">Set up your administrator account. This only needs to be done once.</div>
@@ -198,7 +198,7 @@ textarea.form-control{resize:vertical;min-height:76px}
     <div class="auth-card">
       <div class="auth-logo">
         <div class="auth-logo-icon"><i class="fa-solid fa-wave-square"></i></div>
-        <div><div class="auth-title">VIP Vein Training Hub</div><div class="auth-sub">Sonographer Training Program</div></div>
+        <div><div class="auth-title">VIP Training Progress Tracker</div><div class="auth-sub">Sonographer Training Program</div></div>
       </div>
       <div class="auth-form-title">Sign In</div>
       <div class="auth-form-sub">Sign in with your VIP Medical Group credentials.</div>
@@ -218,8 +218,8 @@ textarea.form-control{resize:vertical;min-height:76px}
     <div class="hdr-logo" onclick="goHome()">
       <div class="hdr-logo-icon"><i class="fa-solid fa-wave-square" style="color:#fff"></i></div>
       <div class="hdr-logo-text">
-        <div class="title">VIP Vein Training Hub</div>
-        <div class="sub">SVD Sonographer Training</div>
+        <div class="title">VIP Training Progress Tracker</div>
+        <div class="sub">Trainee Progress Tracker</div>
       </div>
     </div>
     <nav class="hdr-nav" id="main-nav"></nav>
@@ -236,6 +236,7 @@ textarea.form-control{resize:vertical;min-height:76px}
 
 <div id="modal-root"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -335,6 +336,7 @@ const INITIAL_TRAINERS = [
 let currentUser = null; // {uid, name, email, role, trainerId}
 let viewTrainerId = null;
 let viewTraineeId = null;
+let viewTraineeName = '';
 let traineeBackContext = 'trainees';
 let activeListeners = [];
 
@@ -814,6 +816,7 @@ async function renderTraineeDetail(tid, fromTid) {
   ]);
   if(!trDoc.exists){document.getElementById('trainee-detail-body').innerHTML='<p>Trainee not found.</p>';return;}
   const trainee = {id:trDoc.id,...trDoc.data()};
+  viewTraineeName = trainee.name;
   const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
   const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.week-b.week);
   const trainers = trainerSnap.docs.map(d=>({id:d.id,...d.data()}));
@@ -1202,6 +1205,7 @@ async function openAssessmentModal(traineeId, day) {
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-outline btn-sm" onclick="downloadAssessmentPDF('${traineeId}',${day})" style="color:#0f3460;border-color:#0f3460"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
       <button class="btn btn-primary" id="asmt-save-btn" onclick="saveAssessment('${traineeId}',${day},'${done?done.id:''}')"><i class="fa-solid fa-check"></i> Save Assessment</button>
     </div>
   </div>`);
@@ -1453,7 +1457,9 @@ async function viewCheckinModal(id) {
     </div>
     <div class="modal-foot">
       <button class="btn btn-danger btn-sm" onclick="deleteCheckin('${ci.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
-      <div style="flex:1"></div><button class="btn btn-outline" onclick="forceClose()">Close</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline btn-sm" onclick="downloadCheckinPDF('${ci.id}','${viewTraineeName||'Trainee'}')" style="color:#0f3460;border-color:#0f3460"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+      <button class="btn btn-outline" onclick="forceClose()">Close</button>
     </div>
   </div>`);
 }
@@ -1551,6 +1557,115 @@ function refreshCurrentPage() {
   else if(path==='trainer-detail') renderTrainerDetail(viewTrainerId);
   else if(path==='trainee-detail') renderTraineeDetail(viewTraineeId, traineeBackContext);
   else renderHub();
+}
+
+// ═══════════════════════════════════════
+//  PDF DOWNLOAD
+// ═══════════════════════════════════════
+function buildAssessmentPDFContent(trainee, day, done, prev) {
+  const titles = {30:'30-Day Assessment',60:'60-Day Assessment',90:'90-Day Assessment'};
+  const gradeColor = {O:'#15803d',S:'#1d4ed8',P:'#d97706',N:'#dc2626','N/A':'#64748b'};
+  function gradeCell(g) {
+    if (!g) return '<span style="color:#94a3b8;font-size:.75rem">—</span>';
+    return `<span style="display:inline-block;padding:.1rem .45rem;border-radius:4px;background:${gradeColor[g]||'#64748b'};color:#fff;font-size:.75rem;font-weight:700">${g}</span>`;
+  }
+  function sectionRows(items) {
+    return items.map(item => {
+      const cur = done ? (done['sk_'+item.id]||'') : '';
+      const prv = prev ? (prev['sk_'+item.id]||'') : '';
+      return `<tr><td style="padding:.45rem .6rem;font-size:.78rem;border-bottom:1px solid #e2e8f0">${item.label}</td><td style="padding:.45rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0">${gradeCell(cur)}</td>${prev?`<td style="padding:.45rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0">${gradeCell(prv)}</td>`:''}</tr>`;
+    }).join('');
+  }
+  function renderSection(title, sections, isSono) {
+    const rows = isSono
+      ? sectionRows(sections)
+      : sections.flatMap(sec => [`<tr><td colspan="${prev?3:2}" style="padding:.4rem .6rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0369a1;background:#f0f9ff;border-bottom:1px solid #e2e8f0">${sec.section}</td></tr>`, sectionRows(sec.items)]).join('');
+    return `<div style="margin-bottom:1.25rem"><div style="background:#0f3460;color:#fff;padding:.45rem .8rem;border-radius:6px 6px 0 0;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">${title}</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-top:none"><thead><tr style="background:#f8fafd"><th style="padding:.4rem .6rem;text-align:left;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Skill</th><th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Score</th>${prev?'<th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Prev</th>':''}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  const allItems = [...PROGRAM_KNOWLEDGE.flatMap(s=>s.items),...CLINICAL_KNOWLEDGE.flatMap(s=>s.items),...SONO_SKILLS];
+  const graded = done ? allItems.map(i=>done['sk_'+i.id]).filter(g=>g&&g!=='N/A') : [];
+  const positive = graded.filter(g=>g==='O'||g==='S').length;
+  const score = graded.length ? Math.round((positive/graded.length)*100) : null;
+  return `<div style="font-family:Arial,sans-serif;color:#1e293b;max-width:740px;margin:0 auto;padding:1.5rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:2px solid #0f3460">
+      <div style="background:#0ea5e9;border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:800">V</div>
+      <div><div style="font-size:1.15rem;font-weight:800;color:#0f3460">VIP Training Progress Tracker</div><div style="font-size:.7rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Trainee Progress Tracker</div></div>
+      <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:800;color:#0f3460">${titles[day]}</div><div style="font-size:.78rem;color:#64748b">${done?'Completed: '+fmtDate(done.completedDate):'Not yet completed'}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Trainee</div><div style="font-size:.92rem;font-weight:700">${trainee.name}</div><div style="font-size:.75rem;color:#64748b">${trainee.protocol||''}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Start Date</div><div style="font-size:.92rem;font-weight:700">${fmtDate(trainee.startDate)}</div>${score!==null?`<div style="font-size:.75rem;color:#15803d;font-weight:600">Overall: ${score}% positive</div>`:''}</div>
+    </div>
+    <div style="margin-bottom:.6rem;font-size:.72rem;color:#64748b"><strong>Grading Key:</strong> &nbsp;<span style="background:#15803d;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">O</span> Outstanding &nbsp;<span style="background:#1d4ed8;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">S</span> Satisfactory &nbsp;<span style="background:#d97706;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">P</span> Progressing &nbsp;<span style="background:#dc2626;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">N</span> Needs Improvement &nbsp;<span style="background:#64748b;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">N/A</span> Not Applicable</div>
+    ${renderSection('Program Knowledge', PROGRAM_KNOWLEDGE, false)}
+    ${done&&done.clinicalSignoff?`<div style="font-size:.78rem;color:#64748b;margin-bottom:1rem"><strong>Clinical Knowledge Sign-off:</strong> ${done.clinicalSignoff}</div>`:''}
+    ${renderSection('Clinical Knowledge', CLINICAL_KNOWLEDGE, false)}
+    ${renderSection('Ultrasonographer Skills', SONO_SKILLS, true)}
+    ${done&&done.comments?`<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;margin-bottom:.3rem;color:#0f3460">Additional Comments</div><div style="background:#f8fafd;border:1px solid #e2e8f0;border-radius:6px;padding:.65rem;font-size:.8rem">${done.comments}</div></div>`:''}
+    <div style="border-top:2px solid #e2e8f0;padding-top:1rem;margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Ultrasonographer Sign-off</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${done&&done.sonoSignoff||''}</div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor Sign-off</div><div style="border-bottom:1px solid #1e293b;min-height:28px"></div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Date</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${done&&done.signoffDate?fmtDate(done.signoffDate):''}</div></div>
+    </div>
+    <div style="margin-top:1.25rem;font-size:.65rem;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:.6rem">Generated by VIP Training Progress Tracker · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+  </div>`;
+}
+
+async function downloadAssessmentPDF(traineeId, day) {
+  const [aSnap, trDoc] = await Promise.all([
+    db.collection('assessments').where('traineeId','==',traineeId).get(),
+    db.collection('trainees').doc(traineeId).get()
+  ]);
+  const allAsmts = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const done = allAsmts.find(a=>a.day===day)||null;
+  const prev = day===60?allAsmts.find(a=>a.day===30):day===90?allAsmts.find(a=>a.day===60):null;
+  const trainee = {id:trDoc.id,...trDoc.data()};
+  const el = document.createElement('div');
+  el.innerHTML = buildAssessmentPDFContent(trainee, day, done, prev);
+  document.body.appendChild(el);
+  await html2pdf().set({margin:.4,filename:`${trainee.name.replace(/\s+/g,'-')}_${day}-Day-Assessment.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}}).from(el).save();
+  document.body.removeChild(el);
+}
+
+async function downloadCheckinPDF(checkinId, traineeName) {
+  const doc = await db.collection('checkins').doc(checkinId).get();
+  if(!doc.exists) return;
+  const ci = {id:doc.id,...doc.data()};
+  const isMA = ci.formType==='ma';
+  const colors = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
+  function ratingRow(label, val, comment) {
+    if(!val) return '';
+    return `<tr><td style="padding:.4rem .6rem;font-size:.78rem;border-bottom:1px solid #e2e8f0">${label}</td><td style="padding:.4rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0"><span style="display:inline-block;padding:.1rem .5rem;border-radius:4px;background:${colors[val]||'#64748b'};color:#fff;font-size:.72rem;font-weight:700">${val}</span></td></tr>${comment?`<tr><td colspan="2" style="padding:.25rem .6rem .5rem 1.2rem;font-size:.74rem;color:#64748b;border-bottom:1px solid #e2e8f0;font-style:italic">${comment}</td></tr>`:''}`;
+  }
+  const sonoRows = [ratingRow('Technical Scanning Skills',ci.technical,''),ratingRow('Anatomy & Protocol Knowledge',ci.anatomy,''),ratingRow('Probe Handling & Technique',ci.probe,''),ratingRow('Workflow & Efficiency',ci.workflow,''),ratingRow('Patient Interaction',ci.patient,''),ratingRow('Clinical Understanding',ci.clinical,''),ratingRow('Documentation & Reporting',ci.documentation,ci.documentationComment),ratingRow('Independence & Confidence',ci.independence,ci.independenceComment),ratingRow('Doctor Presentation',ci.doctor,ci.doctorComment)].join('');
+  const maRows = [ratingRow('Procedure Preparation',ci.maPrep,''),ratingRow('Medication Preparation',ci.maMed,''),ratingRow('Patient Consent Process',ci.maConsent,''),ratingRow('Patient Intake & Presentation',ci.maIntake,''),ratingRow('Patient Preparation & Draping',ci.maDraping,''),ratingRow('Aseptic Technique',ci.maAseptic,''),ratingRow('Procedure Assistance',ci.maAssist,ci.maAssistComment),ratingRow('Equipment Handling',ci.maEquipment,ci.maEquipmentComment),ratingRow('Post-Procedure Duties',ci.maPost,''),ratingRow('Workflow & Efficiency',ci.maWorkflow,''),ratingRow('Professionalism & Patient Interaction',ci.maProfessionalism,ci.maProfessionalismComment)].join('');
+  const html = `<div style="font-family:Arial,sans-serif;color:#1e293b;max-width:740px;margin:0 auto;padding:1.5rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:2px solid #0f3460">
+      <div style="background:#0ea5e9;border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:800">V</div>
+      <div><div style="font-size:1.15rem;font-weight:800;color:#0f3460">VIP Training Progress Tracker</div><div style="font-size:.7rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Weekly Check-in Report</div></div>
+      <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:800;color:#0f3460">Week ${ci.week} Check-in</div><div style="font-size:.78rem;color:#64748b">${fmtDate(ci.date)}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Trainee</div><div style="font-size:.9rem;font-weight:700">${traineeName}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">${isMA?'Procedures':'Cases'}</div><div style="font-size:.9rem;font-weight:700">${ci.cases||'—'}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Supervision</div><div style="font-size:.9rem;font-weight:700">${ci.supervision||'—'}</div></div>
+    </div>
+    <div style="background:#0f3460;color:#fff;padding:.45rem .8rem;border-radius:6px 6px 0 0;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Weekly Evaluation — ${isMA?'MA / FD·MA':'Sonographer'} Form</div>
+    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-top:none;margin-bottom:1.25rem"><thead><tr style="background:#f8fafd"><th style="padding:.4rem .6rem;text-align:left;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Skill Area</th><th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0;width:140px">Rating</th></tr></thead><tbody>${isMA?maRows:sonoRows}</tbody></table>
+    ${ci.strengths?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#15803d;margin-bottom:.3rem">Key Strengths</div><div style="background:#dcfce7;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #86efac">${ci.strengths}</div></div>`:''}
+    ${ci.improvements?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#dc2626;margin-bottom:.3rem">Areas Needing Improvement</div><div style="background:#fee2e2;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #fca5a5">${ci.improvements}</div></div>`:''}
+    ${ci.additional?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#1e293b;margin-bottom:.3rem">Additional Comments</div><div style="background:#f1f5f9;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #e2e8f0">${ci.additional}</div></div>`:''}
+    <div style="border-top:2px solid #e2e8f0;padding-top:1rem;margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor Signature</div><div style="border-bottom:1px solid #1e293b;min-height:28px"></div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Date</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${fmtDate(ci.date)}</div></div>
+    </div>
+    <div style="margin-top:1.25rem;font-size:.65rem;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:.6rem">Generated by VIP Training Progress Tracker · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+  </div>`;
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  await html2pdf().set({margin:.4,filename:`${traineeName.replace(/\s+/g,'-')}_Week-${ci.week}-Checkin.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}}).from(el).save();
+  document.body.removeChild(el);
 }
 
 // Track current page for refreshes
