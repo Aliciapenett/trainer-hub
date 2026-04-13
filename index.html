@@ -237,6 +237,7 @@ textarea.form-control{resize:vertical;min-height:76px}
 <div id="modal-root"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -544,7 +545,7 @@ function trainerCardHTML(t, trainees, assessments) {
       <div class="tc-stat"><div class="tc-stat-val">${active}</div><div class="tc-stat-lbl">Active</div></div>
       <div class="tc-stat"><div class="tc-stat-val">${asmts}</div><div class="tc-stat-lbl">Assessments</div></div>
     </div>
-    <div class="tc-foot"><span>${certified} certified</span><span style="color:var(--accent);font-weight:600">View <i class="fa-solid fa-arrow-right"></i></span></div>
+    <div class="tc-foot"><span>${certified} certified</span><div style="display:flex;align-items:center;gap:.6rem"><button class="btn btn-sm" onclick="event.stopPropagation();sendAssessmentReminder('${t.id}',this)" style="color:#d97706;border:1px solid #d97706;background:transparent;font-size:.7rem;padding:.2rem .55rem;border-radius:5px"><i class="fa-solid fa-envelope"></i> Remind</button><span style="color:var(--accent);font-weight:600">View <i class="fa-solid fa-arrow-right"></i></span></div></div>
   </div>`;
 }
 
@@ -601,6 +602,7 @@ async function renderTrainerDetail(tid) {
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         ${!trainer.userId?`<button class="btn btn-success btn-sm" onclick="openCreateLoginModal('${tid}')"><i class="fa-solid fa-key"></i> Create Login</button>`:''}
         <button class="btn btn-outline btn-sm" onclick="openTrainerModal('${tid}')"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="btn btn-outline btn-sm" id="remind-btn-${tid}" onclick="sendAssessmentReminder('${tid}',this)" style="color:#d97706;border-color:#d97706"><i class="fa-solid fa-envelope"></i> Send Reminder</button>
         <button class="btn btn-primary btn-sm" onclick="openTraineeModal(null,'${tid}')"><i class="fa-solid fa-plus"></i> Assign Trainee</button>
       </div>
     </div>
@@ -1666,6 +1668,76 @@ async function downloadCheckinPDF(checkinId, traineeName) {
   document.body.appendChild(el);
   await html2pdf().set({margin:.4,filename:`${traineeName.replace(/\s+/g,'-')}_Week-${ci.week}-Checkin.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}}).from(el).save();
   document.body.removeChild(el);
+}
+
+// ═══════════════════════════════════════
+//  EMAILJS — ASSESSMENT REMINDERS
+// ═══════════════════════════════════════
+emailjs.init('JeI4EaHZq9fT_iwQi');
+
+async function sendAssessmentReminder(trainerId, btnEl) {
+  const origHTML = btnEl.innerHTML;
+  btnEl.disabled = true;
+  btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+  try {
+    // Load trainer
+    const trainerDoc = await db.collection('trainers').doc(trainerId).get();
+    const trainer = {id: trainerDoc.id, ...trainerDoc.data()};
+
+    // Load their trainees + assessments
+    const [tSnap, aSnap] = await Promise.all([
+      db.collection('trainees').where('trainerId', '==', trainerId).get(),
+      db.collection('assessments').get()
+    ]);
+    const trainees = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
+    const assessments = aSnap.docs.map(d => ({id: d.id, ...d.data()}));
+
+    // Find overdue assessments
+    const dueList = [];
+    trainees.forEach(t => {
+      const days = getAssessmentsDue(t, assessments);
+      days.forEach(d => dueList.push(`• ${t.name} — ${d}-Day Assessment`));
+    });
+
+    if (!dueList.length) {
+      btnEl.disabled = false;
+      btnEl.innerHTML = origHTML;
+      alert(`${trainer.name} has no overdue assessments right now!`);
+      return;
+    }
+
+    if (!trainer.email) {
+      btnEl.disabled = false;
+      btnEl.innerHTML = origHTML;
+      alert(`No email address found for ${trainer.name}. Please add one to their profile.`);
+      return;
+    }
+
+    await emailjs.send('service_zbd6z5n', 'template_51iol4q', {
+      to_name: trainer.name,
+      to_email: trainer.email,
+      trainee_list: dueList.join('\n'),
+    });
+
+    await logActivity(`Assessment reminder sent to ${trainer.name}`, 'fa-envelope');
+    btnEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> Sent!';
+    btnEl.style.background = '#15803d';
+    btnEl.style.color = '#fff';
+    btnEl.style.borderColor = '#15803d';
+    setTimeout(() => {
+      btnEl.disabled = false;
+      btnEl.innerHTML = origHTML;
+      btnEl.style.background = '';
+      btnEl.style.color = '';
+      btnEl.style.borderColor = '';
+    }, 3000);
+  } catch(e) {
+    console.error(e);
+    btnEl.disabled = false;
+    btnEl.innerHTML = origHTML;
+    alert('Failed to send email: ' + (e.text || e.message || 'Unknown error'));
+  }
 }
 
 // Track current page for refreshes
