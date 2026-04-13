@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIP Training Progress Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#0f3460;--primary-light:#1a4a7a;--accent:#0ea5e9;--accent-light:#38bdf8;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--bg:#f0f5fb;--card:#fff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 12px 28px rgba(0,0,0,.13);--r:14px;--r-sm:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* LOADING */
+#screen-loading{position:fixed;inset:0;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;z-index:9999}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* AUTH / SETUP SCREENS */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary) 0%,#1a4a7a 100%);padding:1rem}
+.auth-card{background:#fff;border-radius:18px;padding:2.25rem 2rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg)}
+.auth-logo{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem}
+.auth-logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),#0284c7);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.15rem;flex-shrink:0}
+.auth-title{font-size:1.25rem;font-weight:800;color:var(--primary);line-height:1.1}
+.auth-sub{font-size:.72rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.07em}
+.auth-form-title{font-size:1.05rem;font-weight:700;margin-bottom:.35rem}
+.auth-form-sub{font-size:.83rem;color:var(--text-light);margin-bottom:1.5rem}
+.auth-error{background:#fee2e2;color:#991b1b;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:1rem;display:none}
+.auth-success{background:#dcfce7;color:#15803d;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:1rem;display:none}
+/* HEADER */
+.hdr{background:var(--primary);color:#fff;padding:0 1.5rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md)}
+.hdr-logo{display:flex;align-items:center;gap:.7rem;cursor:pointer;user-select:none}
+.hdr-logo-icon{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.hdr-logo-text .title{font-size:.95rem;font-weight:800;color:#fff;line-height:1.1}
+.hdr-logo-text .sub{font-size:.6rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em}
+.hdr-nav{display:flex;gap:.1rem}
+.nav-btn{background:none;border:none;color:rgba(255,255,255,.65);padding:.4rem .8rem;border-radius:var(--r-sm);cursor:pointer;font-size:.82rem;font-family:inherit;font-weight:500;transition:.15s;display:flex;align-items:center;gap:.3rem}
+.nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,.14);color:#fff}
+.hdr-user{display:flex;align-items:center;gap:.6rem}
+.hdr-user-name{font-size:.8rem;color:rgba(255,255,255,.75);font-weight:500}
+.hdr-user-role{font-size:.65rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em}
+/* MAIN */
+.main{max-width:1160px;margin:0 auto;padding:2rem 1.5rem}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:.84rem;font-weight:600;transition:.15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-light);transform:translateY(-1px)}
+.btn-secondary{background:var(--primary);color:#fff}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ghost{background:transparent;color:var(--text-light);padding:.35rem .65rem}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{opacity:.88}
+.btn-success{background:var(--success);color:#fff}
+.btn-sm{padding:.3rem .7rem;font-size:.77rem}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-hdr{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:1.4rem}
+.card-hdr-title{font-weight:700;font-size:.93rem}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:.2rem;padding:.17rem .52rem;border-radius:100px;font-size:.71rem;font-weight:600}
+.badge-success{background:#dcfce7;color:#15803d}
+.badge-warning{background:#fef3c7;color:#92400e}
+.badge-danger{background:#fee2e2;color:#991b1b}
+.badge-info{background:#dbeafe;color:#1e40af}
+.badge-gray{background:#f1f5f9;color:#475569}
+.badge-teal{background:#ccfbf1;color:#0f766e}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.75rem}
+.stat-card{background:var(--card);border-radius:var(--r);padding:1rem 1.1rem;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:.85rem}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.si-blue{background:#dbeafe;color:#1d4ed8}.si-teal{background:#ccfbf1;color:#0f766e}.si-green{background:#dcfce7;color:#15803d}.si-orange{background:#ffedd5;color:#c2410c}.si-purple{background:#ede9fe;color:#6d28d9}.si-sky{background:#e0f2fe;color:#0369a1}
+.stat-value{font-size:1.55rem;font-weight:800;line-height:1}
+.stat-label{font-size:.72rem;color:var(--text-light);margin-top:.18rem}
+/* TRAINER CARDS */
+.trainers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:1rem;margin-bottom:1.5rem}
+.trainer-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:.18s}
+.trainer-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
+.tc-hdr{padding:1.1rem;display:flex;align-items:center;gap:.85rem}
+.trainer-av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;color:#fff;flex-shrink:0}
+.trainer-name{font-size:1rem;font-weight:700}
+.trainer-meta{font-size:.72rem;color:var(--text-light);margin-top:.08rem}
+.tc-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border)}
+.tc-stat{padding:.8rem;text-align:center;border-right:1px solid var(--border)}
+.tc-stat:last-child{border-right:none}
+.tc-stat-val{font-size:1.15rem;font-weight:800;color:var(--primary)}
+.tc-stat-lbl{font-size:.66rem;color:var(--text-light);margin-top:.1rem}
+.tc-foot{padding:.75rem 1.1rem;background:#f8fafd;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.76rem;color:var(--text-light)}
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;min-width:600px}
+.tbl th{text-align:left;padding:.6rem 1rem;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);background:#f8fafd;border-bottom:1px solid var(--border)}
+.tbl td{padding:.8rem 1rem;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:#f0f9ff;cursor:pointer}
+.av-sm{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0}
+/* ASSESSMENT DOTS */
+.a-dots{display:flex;gap:.3rem}
+.a-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;border:2px solid}
+.a-done{background:var(--success);border-color:var(--success);color:#fff}
+.a-due{background:#fef2f2;border-color:var(--danger);color:var(--danger)}
+.a-soon{background:#fffbeb;border-color:var(--warning);color:var(--warning)}
+.a-future{background:#f1f5f9;border-color:var(--border);color:var(--text-light)}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:570px;max-height:92vh;overflow-y:auto;animation:slideUp .2s ease}
+.modal-lg{max-width:730px}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hdr{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.modal-title{font-size:1.02rem;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:1.1rem;padding:.2rem .4rem;border-radius:4px;transition:.15s}
+.modal-close:hover{color:var(--danger)}
+.modal-body{padding:1.4rem}
+.modal-foot{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem;background:#fff;position:sticky;bottom:0;z-index:2}
+/* FORMS */
+.form-group{margin-bottom:1.05rem}
+.form-label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.32rem}
+.form-hint{font-size:.72rem;color:var(--text-light);margin-top:.18rem}
+.form-control{width:100%;padding:.56rem .78rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.83rem;color:var(--text);background:#fff;transition:.15s;outline:none}
+.form-control:focus{border-color:var(--accent)}
+textarea.form-control{resize:vertical;min-height:76px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-section{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:1.35rem 0 .85rem;padding-bottom:.4rem;border-bottom:2px solid #e0f2fe}
+/* RATING */
+.rating-wrap{display:flex;gap:.26rem;flex-wrap:wrap;margin-top:.38rem}
+.r-btn{width:31px;height:31px;border-radius:50%;border:2px solid var(--border);background:#fff;cursor:pointer;font-size:.73rem;font-weight:600;transition:.12s;display:flex;align-items:center;justify-content:center}
+.r-btn:hover{border-color:var(--accent);color:var(--accent)}
+.r-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.4rem;overflow-x:auto}
+.tab-btn{padding:.6rem 1rem;border:none;background:none;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;display:flex;align-items:center;gap:.3rem;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+/* MISC */
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--accent);cursor:pointer;font-size:.83rem;font-weight:500;margin-bottom:1.2rem;border:none;background:none;font-family:inherit;padding:0}
+.back-btn:hover{text-decoration:underline}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.05rem}
+.sec-title{font-size:1.05rem;font-weight:700}
+.av-lg{width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#fff;flex-shrink:0}
+.a-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.a-card{border-radius:var(--r);border:2px solid var(--border);overflow:hidden;transition:.18s}
+.a-card.done{border-color:var(--success)}.a-card.due{border-color:var(--danger)}
+.a-card.clickable:hover{border-color:var(--accent);cursor:pointer;transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.a-card-hdr{padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between}
+.a-card-body{padding:.9rem 1rem;border-top:1px solid var(--border);font-size:.81rem}
+.ci-item{display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:.4rem;cursor:pointer;transition:.13s}
+.ci-item:hover{border-color:var(--accent);background:#f0f9ff}
+.ci-week-badge{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0}
+.empty{text-align:center;padding:2.75rem 1rem;color:var(--text-light)}
+.empty i{font-size:2rem;opacity:.3;margin-bottom:.7rem;display:block}
+.empty p{font-size:.86rem}
+.protocol-pill{display:inline-flex;align-items:center;gap:.22rem;padding:.2rem .58rem;border-radius:100px;background:#e0f2fe;color:#0369a1;font-size:.71rem;font-weight:600;margin:.08rem}
+.alert{padding:.7rem .95rem;border-radius:var(--r-sm);font-size:.82rem;margin-bottom:.95rem;display:flex;align-items:flex-start;gap:.55rem}
+.alert-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--accent)}
+.alert-success{background:#dcfce7;color:#15803d;border-left:4px solid var(--success)}
+.alert-warning{background:#fef3c7;color:#92400e;border-left:4px solid var(--warning)}
+.account-status{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;padding:.22rem .6rem;border-radius:100px;font-weight:600}
+.account-active{background:#dcfce7;color:#15803d}
+.account-pending{background:#fef3c7;color:#92400e}
+@media(max-width:620px){.a-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.trainers-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="screen-loading">
+  <div class="spinner"></div>
+  <p style="color:rgba(255,255,255,.7);font-size:.88rem;margin-top:.5rem">Loading VIP Training Progress Tracker...</p>
+</div>
+
+<!-- FIRST TIME SETUP -->
+<div id="screen-setup" style="display:none">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon"><i class="fa-solid fa-wave-square"></i></div>
+        <div><div class="auth-title">VIP Training Progress Tracker</div><div class="auth-sub">First Time Setup</div></div>
+      </div>
+      <div class="auth-form-title">Create Admin Account</div>
+      <div class="auth-form-sub">Set up your administrator account. This only needs to be done once.</div>
+      <div id="setup-error" class="auth-error"></div>
+      <div id="setup-success" class="auth-success"></div>
+      <div class="form-group"><label class="form-label">Your Full Name</label><input class="form-control" id="setup-name" placeholder="e.g. Alicia Penett"></div>
+      <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="setup-email" type="email" placeholder="alicia@vipmedicalgroup.com"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-control" id="setup-password" type="password" placeholder="Create a strong password"></div>
+      <div class="form-group"><label class="form-label">Setup Code <span style="color:var(--text-light);font-weight:400;font-size:.75rem">(provided by your IT contact)</span></label><input class="form-control" id="setup-code" type="password" placeholder="Enter setup code"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.5rem" onclick="runSetup()" id="setup-btn"><i class="fa-solid fa-rocket"></i> Initialize System</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="screen-auth" style="display:none">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon"><i class="fa-solid fa-wave-square"></i></div>
+        <div><div class="auth-title">VIP Training Progress Tracker</div><div class="auth-sub">Sonographer Training Program</div></div>
+      </div>
+      <div class="auth-form-title">Sign In</div>
+      <div class="auth-form-sub">Sign in with your VIP Medical Group credentials.</div>
+      <div id="login-error" class="auth-error"></div>
+      <div id="login-success" class="auth-success"></div>
+      <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="login-email" type="email" placeholder="you@vipmedicalgroup.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-control" id="login-password" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.25rem" onclick="doLogin()" id="login-btn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+      <div style="text-align:center;margin-top:1rem"><a href="#" onclick="event.preventDefault();showForgotPassword()" style="font-size:.8rem;color:var(--accent)">Forgot password?</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="screen-app" style="display:none">
+  <header class="hdr">
+    <div class="hdr-logo" onclick="goHome()">
+      <div class="hdr-logo-icon"><i class="fa-solid fa-wave-square" style="color:#fff"></i></div>
+      <div class="hdr-logo-text">
+        <div class="title">VIP Training Progress Tracker</div>
+        <div class="sub">Trainee Progress Tracker</div>
+      </div>
+    </div>
+    <nav class="hdr-nav" id="main-nav"></nav>
+    <div class="hdr-user">
+      <div>
+        <div class="hdr-user-name" id="hdr-user-name"></div>
+        <div class="hdr-user-role" id="hdr-user-role"></div>
+      </div>
+      <button class="btn btn-sm btn-outline" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)" onclick="doLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+    </div>
+  </header>
+  <main class="main" id="main-content"></main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+// ═══════════════════════════════════════
+//  FIREBASE INIT
+// ═══════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyCmVslcWotuoFMQDLDAb_5T90njHg6rygg",
+  authDomain: "vip-trainer-hub.firebaseapp.com",
+  projectId: "vip-trainer-hub",
+  storageBucket: "vip-trainer-hub.firebasestorage.app",
+  messagingSenderId: "693318725233",
+  appId: "1:693318725233:web:aef47accc31f1c98fbf5d0"
+};
+firebase.initializeApp(firebaseConfig);
+// Secondary app — creates trainer accounts without signing out admin
+const secondaryApp = firebase.initializeApp(firebaseConfig, 'secondary');
+const auth = firebase.auth();
+const secondaryAuth = secondaryApp.auth();
+const db = firebase.firestore();
+
+// ═══════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════
+const SETUP_CODE = 'VIPMED2024';
+const COLORS = ['#0f3460','#0d9488','#7c3aed','#be185d','#b45309','#065f46','#1d4ed8','#9f1239'];
+const PROTOCOLS = ['Sonographer/MA Training','MA Training Only','FD/MA Training','Sonography Training Only'];
+// Grading options used across all assessments
+const GRADES = ['O','S','P','N','N/A'];
+const GRADE_LABELS = {O:'Outstanding',S:'Satisfactory',P:'Progressing',N:'Needs Improvement','N/A':'Not Applicable'};
+const GRADE_COLORS = {O:'#15803d',S:'#1d4ed8',P:'#d97706',N:'#dc2626','N/A':'#64748b'};
+
+// Assessment skill items — same form used at 30, 60, and 90 days for comparison
+const PROGRAM_KNOWLEDGE = [
+  {section:'Nextech', items:[
+    {id:'nx_a', label:'Create, reschedule, cancel appointments'},
+    {id:'nx_b', label:'Checking patients in and out'},
+    {id:'nx_c', label:'Patient Forms and Signatures'},
+    {id:'nx_d', label:'Select proper EMN, fill out note appropriately, consent patient'},
+    {id:'nx_e', label:'Ability to create a Prior Auth Note and fill out doctor/clinic/needed procedures appropriately'},
+    {id:'nx_f', label:'Send E prescriptions and scan documents into patient chart'},
+  ]},
+  {section:'Medwork', items:[
+    {id:'mw_a', label:'Mark Procedures as completed with date, scheduling next appointment'},
+    {id:'mw_b', label:'Ability to read Prior Auth information — date range, approved status'},
+  ]},
+  {section:'Ring Central', items:[
+    {id:'rc_a', label:'Logging in, using correct phone numbers (by location)'},
+    {id:'rc_b', label:'Sending Patient Texts post procedure'},
+  ]},
+  {section:'Miscellaneous', items:[
+    {id:'misc_a', label:'Creating Prescriptions for Lymph Pumps and other Specialties'},
+  ]},
+];
+const CLINICAL_KNOWLEDGE = [
+  {section:'Tray Set Ups', items:[
+    {id:'tray_a', label:'Vein Procedures (sclerotherapy, ablations, varithena, phlebectomy) — including proper sterile technique'},
+    {id:'tray_b', label:'Properly draw up medications (including tumescent bag)'},
+  ]},
+  {section:'Patient Presentation', items:[
+    {id:'pp_a', label:'Present name, age, what patient is here for, original clinical complaint, if this is first procedure, next scheduled appointment, how patient is feeling, review assessment/plan'},
+    {id:'pp_b', label:'If patient is or isn\'t feeling good (if not — figure out why and present to doctor)'},
+  ]},
+  {section:'Miscellaneous', items:[
+    {id:'cmisc_a', label:'Proper Sharps disposal'},
+    {id:'cmisc_b', label:'Trash/recycling schedule and protocol'},
+  ]},
+];
+const SONO_SKILLS = [
+  {id:'sono_1', label:'Input patient information and select correct settings on u/s (preset vascular lower extremity)'},
+  {id:'sono_2', label:'Perform a high quality initial scan within 40–50 minutes'},
+  {id:'sono_3', label:'Identify anatomy (correct vein, lymph node, etc.)'},
+  {id:'sono_4', label:'Ability to scan deep system and check for DVT'},
+  {id:'sono_5', label:'Ability to identify perforators, anterior accessory veins, duplicate veins and tributaries'},
+  {id:'sono_6', label:'Correctly scan/measure for venous reflux'},
+  {id:'sono_7', label:'Ability to identify clots (either deep or superficial)'},
+  {id:'sono_8', label:'Inputting correct measurements and duration of reflux in patient\'s chart'},
+  {id:'sono_9', label:'Ability to predict the physician\'s treatment plan based on the initial scan'},
+  {id:'sono_10', label:'Ability to identify after effects of vein treatment: hyperpigmentation, thrombophlebitis, etc.'},
+  {id:'sono_11', label:'Identify issues that still need to be addressed — open segments of veins, residual refluxing varicosities? Predict how the Doctor will treat them and submit to insurance accordingly'},
+  {id:'sono_12', label:'Know most insurance diameter and reflux requirements'},
+];
+
+// Legacy comp arrays (kept for backward compat)
+const COMP_30=[],COMP_60=[],COMP_90=[];
+const INITIAL_TRAINERS = [
+  {name:'Julia Ward',email:'julia@vipmedicalgroup.com',color:'#0f3460',initials:'JW',credential:'RVT',notes:'Lead preceptor — GSV/SSV mapping & reflux testing',userId:null},
+  {name:'Shirley Pierre',email:'shirley@vipmedicalgroup.com',color:'#0d9488',initials:'SP',credential:'RVT',notes:'CVI assessment & CEAP classification specialist',userId:null},
+  {name:'Shawna Finizio',email:'shawna@vipmedicalgroup.com',color:'#7c3aed',initials:'SF',credential:'',notes:'DVT screening & pre-procedure mapping',userId:null},
+  {name:'Trish Rivera',email:'trish@vipmedicalgroup.com',color:'#be185d',initials:'TR',credential:'RVT',notes:'Thermal ablation & sclerotherapy assistance training',userId:null},
+];
+
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+let currentUser = null; // {uid, name, email, role, trainerId}
+let viewTrainerId = null;
+let viewTraineeId = null;
+let viewTraineeName = '';
+let traineeBackContext = 'trainees';
+let activeListeners = [];
+
+// ═══════════════════════════════════════
+//  AUTH STATE
+// ═══════════════════════════════════════
+auth.onAuthStateChanged(async (fbUser) => {
+  if (fbUser) {
+    try {
+      const doc = await db.collection('users').doc(fbUser.uid).get();
+      if (doc.exists) {
+        currentUser = { uid: fbUser.uid, ...doc.data() };
+        showScreen('app');
+        initApp();
+      } else {
+        await auth.signOut();
+        showScreen('auth');
+      }
+    } catch(e) {
+      console.error(e);
+      showScreen('auth');
+    }
+  } else {
+    currentUser = null;
+    clearListeners();
+    try {
+      const cfg = await db.collection('config').doc('setup').get();
+      if (!cfg.exists || !cfg.data().initialized) showScreen('setup');
+      else showScreen('auth');
+    } catch(e) { showScreen('auth'); }
+  }
+});
+
+function showScreen(name) {
+  document.getElementById('screen-loading').style.display = 'none';
+  ['setup','auth','app'].forEach(s => document.getElementById('screen-'+s).style.display = s===name ? 'flex' : 'none');
+  if(name==='app') document.getElementById('screen-app').style.display = 'block';
+}
+
+// ═══════════════════════════════════════
+//  SETUP WIZARD
+// ═══════════════════════════════════════
+async function runSetup() {
+  const name = v('setup-name'), email = v('setup-email'), password = v('setup-password'), code = v('setup-code');
+  hideEl('setup-error'); hideEl('setup-success');
+  if (code !== SETUP_CODE) return showEl('setup-error', 'Invalid setup code.');
+  if (!name || !email || !password) return showEl('setup-error', 'All fields are required.');
+  if (password.length < 6) return showEl('setup-error', 'Password must be at least 6 characters.');
+  setBtn('setup-btn', true, 'Setting up...');
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    const batch = db.batch();
+    batch.set(db.collection('users').doc(cred.user.uid), {name, email, role:'admin', createdAt: ts()});
+    batch.set(db.collection('config').doc('setup'), {initialized:true, adminEmail:email, createdAt: ts()});
+    await batch.commit();
+    for (const t of INITIAL_TRAINERS) {
+      await db.collection('trainers').add({...t, createdAt: ts()});
+    }
+    await logActivity('System initialized by ' + name, 'fa-rocket');
+  } catch(e) {
+    setBtn('setup-btn', false, '<i class="fa-solid fa-rocket"></i> Initialize System');
+    showEl('setup-error', authErr(e.code) || e.message);
+  }
+}
+
+// ═══════════════════════════════════════
+//  LOGIN / LOGOUT
+// ═══════════════════════════════════════
+async function doLogin() {
+  const email = v('login-email'), password = v('login-password');
+  hideEl('login-error'); hideEl('login-success');
+  if (!email || !password) return showEl('login-error', 'Please enter your email and password.');
+  setBtn('login-btn', true, 'Signing in...');
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch(e) {
+    setBtn('login-btn', false, '<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In');
+    showEl('login-error', authErr(e.code));
+  }
+}
+
+async function doLogout() {
+  clearListeners();
+  await auth.signOut();
+}
+
+async function showForgotPassword() {
+  const email = prompt('Enter your email address to receive a password reset link:');
+  if (!email) return;
+  try {
+    await auth.sendPasswordResetEmail(email);
+    alert('Password reset email sent! Check your inbox.');
+  } catch(e) { alert('Error: ' + (authErr(e.code) || e.message)); }
+}
+
+function authErr(code) {
+  const m = {'auth/user-not-found':'No account found with that email.','auth/wrong-password':'Incorrect password.','auth/invalid-email':'Invalid email address.','auth/too-many-requests':'Too many attempts. Try again later.','auth/invalid-credential':'Invalid email or password.','auth/email-already-in-use':'An account with that email already exists.'};
+  return m[code] || 'Something went wrong. Please try again.';
+}
+
+// ═══════════════════════════════════════
+//  APP INIT
+// ═══════════════════════════════════════
+function initApp() {
+  clearListeners();
+  document.getElementById('hdr-user-name').textContent = currentUser.name;
+  document.getElementById('hdr-user-role').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Preceptor';
+  renderNav();
+  if (currentUser.role === 'admin') renderHub();
+  else { viewTrainerId = currentUser.trainerId; renderTrainerDashboard(currentUser.trainerId); }
+}
+
+function renderNav() {
+  const nav = document.getElementById('main-nav');
+  if (currentUser.role === 'admin') {
+    nav.innerHTML = `
+      <button class="nav-btn" id="nav-hub" onclick="renderHub()"><i class="fa-solid fa-house"></i> Hub</button>
+      <button class="nav-btn" id="nav-trainers" onclick="renderTrainersPage()"><i class="fa-solid fa-user-nurse"></i> Preceptors</button>
+      <button class="nav-btn" id="nav-trainees" onclick="renderTraineesPage()"><i class="fa-solid fa-user-graduate"></i> Trainees</button>`;
+  } else {
+    nav.innerHTML = `<button class="nav-btn active" id="nav-dashboard"><i class="fa-solid fa-house"></i> My Dashboard</button>`;
+  }
+}
+
+function goHome() {
+  if (currentUser.role === 'admin') renderHub();
+  else renderTrainerDashboard(currentUser.trainerId);
+}
+
+function setNavActive(id) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+function clearListeners() { activeListeners.forEach(u => u()); activeListeners = []; }
+
+// ═══════════════════════════════════════
+//  ADMIN HUB
+// ═══════════════════════════════════════
+async function renderHub() {
+  setNavActive('nav-hub');
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div style="margin-bottom:1.75rem"><h1 style="font-size:1.45rem;font-weight:800">Training Dashboard</h1><p style="color:var(--text-light);font-size:.86rem;margin-top:.22rem">Superficial Venous Disease Sonographer Training Program</p></div>
+    <div class="stats-grid" id="hub-stats"><div class="stat-card"><div style="color:var(--text-light);font-size:.8rem">Loading stats...</div></div></div>
+    <div class="sec-hdr"><span class="sec-title">Preceptors</span><button class="btn btn-primary btn-sm" onclick="openTrainerModal(null)"><i class="fa-solid fa-plus"></i> Add Preceptor</button></div>
+    <div class="trainers-grid" id="hub-trainer-cards"><p style="color:var(--text-light);font-size:.85rem">Loading...</p></div>
+    <div class="sec-hdr" style="margin-top:1.25rem"><span class="sec-title">Recent Activity</span></div>
+    <div class="card"><div class="card-body" id="hub-activity"><p style="color:var(--text-light);font-size:.83rem">Loading...</p></div></div>`;
+
+  // Real-time trainers
+  const unsub1 = db.collection('trainers').orderBy('name').onSnapshot(async snap => {
+    const trainers = snap.docs.map(d => ({id:d.id,...d.data()}));
+    // Get trainees + assessments counts
+    const [tSnap, aSnap, cSnap] = await Promise.all([
+      db.collection('trainees').get(),
+      db.collection('assessments').get(),
+      db.collection('checkins').get()
+    ]);
+    const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const active = trainees.filter(t=>t.status==='active').length;
+    const due = getDueCount(trainees, assessments);
+    const statsEl = document.getElementById('hub-stats');
+    if(statsEl) statsEl.innerHTML = `
+      <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-user-nurse"></i></div><div><div class="stat-value">${trainers.length}</div><div class="stat-label">Preceptors</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-sky"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-value">${trainees.length}</div><div class="stat-label">Total Trainees</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${active}</div><div class="stat-label">Active Trainees</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value">${due}</div><div class="stat-label">Assessments Due</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-teal"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${assessments.length}</div><div class="stat-label">Assessments Done</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.length}</div><div class="stat-label">Weekly Check-ins</div></div></div>`;
+    const cardsEl = document.getElementById('hub-trainer-cards');
+    if(cardsEl) cardsEl.innerHTML = trainers.length ? trainers.map(t=>trainerCardHTML(t,trainees,assessments)).join('') : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
+  }, e=>console.error(e));
+  activeListeners.push(unsub1);
+
+  // Activity feed
+  const unsub2 = db.collection('activity').orderBy('ts','desc').limit(10).onSnapshot(snap => {
+    const el2 = document.getElementById('hub-activity');
+    if(!el2) return;
+    if(snap.empty){el2.innerHTML='<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>No activity yet</p></div>';return;}
+    el2.innerHTML = snap.docs.map(d=>{const a=d.data();return`<div style="display:flex;align-items:flex-start;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--border)"><div style="width:30px;height:30px;border-radius:50%;background:#e0f2fe;color:#0369a1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem"><i class="fa-solid ${a.icon||'fa-circle-dot'}"></i></div><div><div style="font-size:.82rem;font-weight:500">${a.text||''}</div><div style="font-size:.7rem;color:var(--text-light);margin-top:.1rem">${a.ts?fmtTime(a.ts.toDate?a.ts.toDate():new Date(a.ts)):''}</div></div></div>`;}).join('');
+  }, e=>console.error(e));
+  activeListeners.push(unsub2);
+}
+
+function trainerCardHTML(t, trainees, assessments) {
+  const mine = trainees.filter(tr=>tr.trainerId===t.id);
+  const active = mine.filter(tr=>tr.status==='active').length;
+  const certified = mine.filter(tr=>tr.status==='certified').length;
+  const asmts = assessments.filter(a=>mine.find(tr=>tr.id===a.traineeId)).length;
+  const hasAccount = !!t.userId;
+  return `<div class="trainer-card" onclick="renderTrainerDetail('${t.id}')">
+    <div class="tc-hdr">
+      <div class="trainer-av" style="background:${t.color||'#0f3460'}">${t.initials||t.name[0]}</div>
+      <div style="flex:1">
+        <div class="trainer-name">${t.name}</div>
+        <div class="trainer-meta">${t.credential||'Preceptor'}</div>
+        <div style="margin-top:.25rem"><span class="account-status ${hasAccount?'account-active':'account-pending'}"><i class="fa-solid ${hasAccount?'fa-circle-check':'fa-circle-exclamation'}"></i>${hasAccount?'Account Active':'No Login Yet'}</span></div>
+      </div>
+    </div>
+    <div class="tc-stats">
+      <div class="tc-stat"><div class="tc-stat-val">${mine.length}</div><div class="tc-stat-lbl">Total</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">${active}</div><div class="tc-stat-lbl">Active</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">${asmts}</div><div class="tc-stat-lbl">Assessments</div></div>
+    </div>
+    <div class="tc-foot"><span>${certified} certified</span><span style="color:var(--accent);font-weight:600">View <i class="fa-solid fa-arrow-right"></i></span></div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+//  TRAINERS PAGE (ADMIN)
+// ═══════════════════════════════════════
+async function renderTrainersPage() {
+  setNavActive('nav-trainers');
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">Preceptors</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Manage preceptor profiles and logins</p></div><button class="btn btn-primary" onclick="openTrainerModal(null)"><i class="fa-solid fa-plus"></i> Add Preceptor</button></div>
+    <div class="trainers-grid" id="trainers-grid-page"></div>`;
+  const snap = await db.collection('trainers').orderBy('name').get();
+  const trainers = snap.docs.map(d=>({id:d.id,...d.data()}));
+  const [tSnap, aSnap] = await Promise.all([db.collection('trainees').get(), db.collection('assessments').get()]);
+  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  document.getElementById('trainers-grid-page').innerHTML = trainers.length ? trainers.map(t=>trainerCardHTML(t,trainees,assessments)).join('') : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
+}
+
+// ═══════════════════════════════════════
+//  TRAINER DETAIL (ADMIN VIEW)
+// ═══════════════════════════════════════
+async function renderTrainerDetail(tid) {
+  setNavActive('nav-trainers');
+  viewTrainerId = tid;
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<button class="back-btn" onclick="renderTrainersPage()"><i class="fa-solid fa-arrow-left"></i> Back to Preceptors</button><div id="trainer-detail-body"><p style="color:var(--text-light)">Loading...</p></div>`;
+  const [tDoc, tSnap, aSnap, cSnap] = await Promise.all([
+    db.collection('trainers').doc(tid).get(),
+    db.collection('trainees').where('trainerId','==',tid).get(),
+    db.collection('assessments').get(),
+    db.collection('checkins').get()
+  ]);
+  if(!tDoc.exists){document.getElementById('trainer-detail-body').innerHTML='<p>Trainer not found.</p>';return;}
+  const trainer = {id:tDoc.id,...tDoc.data()};
+  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const checkinsDue = trainees.filter(t=>isCheckinDue(t,checkins));
+  const assessmentsDueList = trainees.map(t=>({trainee:t,days:getAssessmentsDue(t,assessments)})).filter(x=>x.days.length>0);
+  const body = document.getElementById('trainer-detail-body');
+  if(!body) return;
+  body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.75rem">
+      <div style="display:flex;align-items:center;gap:1rem">
+        <div class="av-lg" style="background:${trainer.color}">${trainer.initials||trainer.name[0]}</div>
+        <div>
+          <h2 style="font-size:1.3rem;font-weight:800">${trainer.name}</h2>
+          <div style="font-size:.82rem;color:var(--text-light)">${trainer.credential||'Preceptor'}${trainer.email?' · '+trainer.email:''}</div>
+          ${trainer.notes?`<div style="font-size:.76rem;color:var(--text-light);margin-top:.15rem"><i class="fa-solid fa-stethoscope"></i> ${trainer.notes}</div>`:''}
+          <div style="margin-top:.3rem"><span class="account-status ${trainer.userId?'account-active':'account-pending'}"><i class="fa-solid ${trainer.userId?'fa-circle-check':'fa-circle-exclamation'}"></i>${trainer.userId?'Login Active':'No Login Created'}</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        ${!trainer.userId?`<button class="btn btn-success btn-sm" onclick="openCreateLoginModal('${tid}')"><i class="fa-solid fa-key"></i> Create Login</button>`:''}
+        <button class="btn btn-outline btn-sm" onclick="openTrainerModal('${tid}')"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="btn btn-primary btn-sm" onclick="openTraineeModal(null,'${tid}')"><i class="fa-solid fa-plus"></i> Assign Trainee</button>
+      </div>
+    </div>
+    <div class="stats-grid" style="margin-bottom:1.4rem">
+      <div class="stat-card"><div class="stat-icon si-sky"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-value">${trainees.length}</div><div class="stat-label">Total Trainees</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${trainees.filter(t=>t.status==='active').length}</div><div class="stat-label">Active</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${assessments.filter(a=>trainees.find(t=>t.id===a.traineeId)).length}</div><div class="stat-label">Assessments</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.filter(c=>trainees.find(t=>t.id===c.traineeId)).length}</div><div class="stat-label">Check-ins</div></div></div>
+    </div>
+    ${assessmentsDueList.length?`<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:var(--r);padding:.85rem 1.1rem;margin-bottom:.65rem;display:flex;align-items:center;gap:.6rem"><i class="fa-solid fa-triangle-exclamation" style="color:#dc2626"></i><span style="font-size:.88rem;color:#991b1b;font-weight:600">${assessmentsDueList.length} milestone assessment${assessmentsDueList.length>1?'s':''} due: ${assessmentsDueList.map(x=>`${x.trainee.name} (${x.days.map(d=>d+'-day').join(', ')})`).join(' · ')}</span></div>`:''}
+    ${checkinsDue.length?`<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem"><i class="fa-solid fa-bell" style="color:#d97706"></i><span style="font-size:.88rem;color:#92400e;font-weight:600">${checkinsDue.length} trainee${checkinsDue.length>1?'s':''} need a weekly check-in: ${checkinsDue.map(t=>t.name).join(', ')}</span></div>`:''}
+    <div class="card">
+      <div class="card-hdr"><span class="card-hdr-title">Assigned Trainees (${trainees.length})</span>
+        <button class="btn btn-primary btn-sm" onclick="openTraineeModal(null,'${tid}')"><i class="fa-solid fa-plus"></i> Assign Trainee</button></div>
+      <div class="tbl-wrap">${traineeTableHTML(trainees, assessments, tid, true, checkins)}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════
+//  TRAINER DASHBOARD (TRAINER ROLE)
+// ═══════════════════════════════════════
+// Returns true if a trainee's check-in is due (active + no check-in in past 7 days)
+function isCheckinDue(trainee, checkins) {
+  if(trainee.status !== 'active') return false;
+  const mine = checkins.filter(c=>c.traineeId===trainee.id);
+  if(!mine.length) return true; // never had one
+  const latest = mine.reduce((a,b)=>(a.date||'') > (b.date||'') ? a : b);
+  const daysSince = Math.floor((new Date() - new Date(latest.date+'T12:00:00')) / (1000*60*60*24));
+  return daysSince >= 7;
+}
+
+// Returns array of assessment days that are due but not yet completed
+function getAssessmentsDue(trainee, assessments) {
+  if(trainee.status !== 'active' || !trainee.startDate) return [];
+  const due = [];
+  [30,60,90].forEach(day=>{
+    const alreadyDone = assessments.find(a=>a.traineeId===trainee.id && a.day===day);
+    if(alreadyDone) return;
+    const dueDate = new Date(trainee.startDate+'T12:00:00');
+    dueDate.setDate(dueDate.getDate() + day);
+    if(new Date() >= dueDate) due.push(day);
+  });
+  return due;
+}
+
+async function renderTrainerDashboard(tid) {
+  setNavActive('nav-dashboard');
+  viewTrainerId = tid;
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div id="trainer-dash-body"><p style="color:var(--text-light)">Loading your dashboard...</p></div>`;
+  const [tDoc, tSnap, aSnap, cSnap] = await Promise.all([
+    db.collection('trainers').doc(tid).get(),
+    db.collection('trainees').where('trainerId','==',tid).get(),
+    db.collection('assessments').get(),
+    db.collection('checkins').get()
+  ]);
+  if(!tDoc.exists){document.getElementById('trainer-dash-body').innerHTML='<div class="alert alert-warning"><i class="fa-solid fa-triangle-exclamation"></i> Your preceptor profile was not found. Please contact the administrator.</div>';return;}
+  const trainer = {id:tDoc.id,...tDoc.data()};
+  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+  // Find active trainees with check-in due
+  const checkinsDue = trainees.filter(t=>isCheckinDue(t, checkins));
+  // Find trainees with assessment(s) due
+  const assessmentsDueList = trainees
+    .map(t=>({trainee:t, days:getAssessmentsDue(t, assessments)}))
+    .filter(x=>x.days.length>0);
+
+  const body = document.getElementById('trainer-dash-body');
+  if(!body) return;
+  body.innerHTML = `
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+      <div class="av-lg" style="background:${trainer.color}">${trainer.initials||trainer.name[0]}</div>
+      <div>
+        <h1 style="font-size:1.35rem;font-weight:800">Welcome, ${trainer.name}</h1>
+        <div style="font-size:.82rem;color:var(--text-light);margin-top:.15rem">${trainer.credential||'Preceptor'} · Your Trainee Dashboard</div>
+      </div>
+    </div>
+
+    ${assessmentsDueList.length ? `
+    <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.65rem">
+        <i class="fa-solid fa-triangle-exclamation" style="color:#dc2626;font-size:1rem"></i>
+        <span style="font-weight:700;font-size:.95rem;color:#991b1b">Milestone Assessments Due (${assessmentsDueList.length})</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        ${assessmentsDueList.map(({trainee:t, days})=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--r-sm);padding:.55rem .85rem;border:1px solid #fca5a5;flex-wrap:wrap;gap:.4rem">
+            <div style="font-size:.84rem;font-weight:600">${t.name}
+              <span style="font-weight:400;color:var(--text-light);font-size:.75rem">· ${days.map(d=>`${d}-day`).join(', ')} assessment${days.length>1?'s':''} due</span>
+            </div>
+            <div style="display:flex;gap:.35rem">
+              ${days.map(d=>`<button style="background:#dc2626;color:#fff;border:none;padding:.26rem .65rem;font-size:.74rem;border-radius:6px;cursor:pointer;font-weight:600" onclick="renderTraineeDetail('${t.id}','${tid}')">
+                <i class="fa-solid fa-clipboard-list"></i> ${d}-Day
+              </button>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    ${checkinsDue.length ? `
+    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.65rem">
+        <i class="fa-solid fa-bell" style="color:#d97706;font-size:1rem"></i>
+        <span style="font-weight:700;font-size:.95rem;color:#92400e">Weekly Check-ins Due (${checkinsDue.length})</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        ${checkinsDue.map(t=>{
+          const myCheckins = checkins.filter(c=>c.traineeId===t.id);
+          const nextWeek = myCheckins.length + 1;
+          const lastDate = myCheckins.length ? myCheckins.reduce((a,b)=>(a.date||'')>(b.date||'')?a:b).date : null;
+          return `<div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--r-sm);padding:.55rem .85rem;border:1px solid #fcd34d">
+            <div style="font-size:.84rem;font-weight:600">${t.name} <span style="font-weight:400;color:var(--text-light);font-size:.75rem">· Week ${nextWeek}${lastDate?' · Last: '+fmtDate(lastDate):' · No check-ins yet'}</span></div>
+            <button style="background:#d97706;color:#fff;border:none;padding:.28rem .7rem;font-size:.76rem;border-radius:6px;cursor:pointer;font-weight:600" onclick="renderTraineeDetail('${t.id}','${tid}')">
+              <i class="fa-solid fa-clipboard-list"></i> Start Check-in
+            </button>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+
+    ${!assessmentsDueList.length && !checkinsDue.length ? `
+    <div style="background:#dcfce7;border:1px solid #86efac;border-radius:var(--r);padding:.85rem 1.1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem">
+      <i class="fa-solid fa-circle-check" style="color:#15803d"></i>
+      <span style="font-size:.88rem;color:#15803d;font-weight:600">All check-ins and assessments are up to date! ✓</span>
+    </div>` : ''}
+
+    <div class="stats-grid" style="margin-bottom:1.5rem">
+      <div class="stat-card"><div class="stat-icon si-sky"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-value">${trainees.length}</div><div class="stat-label">My Trainees</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${trainees.filter(t=>t.status==='active').length}</div><div class="stat-label">Active</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value">${checkinsDue.length}</div><div class="stat-label">Check-ins Due</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${assessmentsDueList.length}</div><div class="stat-label">Assessments Due</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.filter(c=>trainees.find(t=>t.id===c.traineeId)).length}</div><div class="stat-label">Total Check-ins</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-hdr-title">My Trainees (${trainees.length})</span>
+        <button class="btn btn-primary btn-sm" onclick="openTraineeModal(null,'${tid}')"><i class="fa-solid fa-plus"></i> Add Trainee</button></div>
+      <div class="tbl-wrap">${traineeTableHTML(trainees, assessments, tid, true, checkins)}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════
+//  ALL TRAINEES PAGE (ADMIN)
+// ═══════════════════════════════════════
+async function renderTraineesPage() {
+  setNavActive('nav-trainees');
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">All Trainees</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">All trainees across the program</p></div>
+    <button class="btn btn-primary" onclick="openTraineeModal(null,null)"><i class="fa-solid fa-plus"></i> Add Trainee</button></div>
+    <div class="card"><div class="card-hdr"><span class="card-hdr-title">All Trainees</span>
+    <input class="form-control" style="width:200px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()"></div>
+    <div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>`;
+  const [tSnap, aSnap, trainerSnap] = await Promise.all([
+    db.collection('trainees').orderBy('name').get(),
+    db.collection('assessments').get(),
+    db.collection('trainers').get()
+  ]);
+  window._allTrainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._allAssessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._allTrainers = trainerSnap.docs.map(d=>({id:d.id,...d.data()}));
+  renderTraineesTable(window._allTrainees);
+}
+
+function filterTraineesTable() {
+  const q = (document.getElementById('trainee-search')||{}).value||'';
+  const filtered = (window._allTrainees||[]).filter(t=>!q||t.name.toLowerCase().includes(q.toLowerCase()));
+  renderTraineesTable(filtered);
+}
+
+function renderTraineesTable(trainees) {
+  const el = document.getElementById('trainees-tbl-wrap');
+  if(!el) return;
+  el.innerHTML = traineeTableHTML(trainees, window._allAssessments||[], null, false);
+}
+
+function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, checkins=[]) {
+  if(!trainees.length) return '<div class="empty"><i class="fa-solid fa-user-plus"></i><p>No trainees assigned yet</p></div>';
+  const rows = trainees.map(tr=>{
+    const trainer = (window._allTrainers||[]).find(t=>t.id===tr.trainerId);
+    const asmts = getAsmtStatus(tr, assessments);
+    const ciDue = isCheckinDue(tr, checkins);
+    const aDue = getAssessmentsDue(tr, assessments);
+    return `<tr onclick="renderTraineeDetail('${tr.id}','${fromTrainerId||''}')">
+      <td><div style="display:flex;align-items:center;gap:.6rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}${aDue.length?` <span style="font-size:.63rem;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">${aDue.map(d=>d+'-DAY').join(' ')}</span>`:''}${ciDue?` <span style="font-size:.63rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">CHECK-IN DUE</span>`:''}</div><div style="font-size:.71rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
+      ${!hideTrainerCol?`<td>${trainer?`<span class="badge badge-gray">${trainer.name}</span>`:'—'}</td>`:''}
+      <td>${tr.protocol?`<span class="protocol-pill">${tr.protocol}</span>`:'<span style="color:var(--text-light);font-size:.78rem">None</span>'}</td>
+      <td style="font-size:.78rem;color:var(--text-light)">${tr.startDate?fmtDate(tr.startDate):'—'}</td>
+      <td><div class="a-dots">${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}" title="${d}-day: ${s}">${d}</div>`}).join('')}</div></td>
+      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTraineeModal('${tr.id}','${tr.trainerId||''}')"><i class="fa-solid fa-pen"></i></button></td>
+    </tr>`;
+  }).join('');
+  return `<table class="tbl"><thead><tr><th>Name</th>${!hideTrainerCol?'<th>Preceptor</th>':''}<th>Protocol</th><th>Start Date</th><th>Assessments</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ═══════════════════════════════════════
+//  TRAINEE DETAIL
+// ═══════════════════════════════════════
+async function renderTraineeDetail(tid, fromTid) {
+  viewTraineeId = tid;
+  traineeBackContext = fromTid || '';
+  const el = document.getElementById('main-content');
+  const backFn = fromTid ? (currentUser.role==='admin'?`renderTrainerDetail('${fromTid}')`:`renderTrainerDashboard('${fromTid}')`) : `renderTraineesPage()`;
+  const backLabel = fromTid ? 'Back to Preceptor' : 'Back to Trainees';
+  el.innerHTML = `<button class="back-btn" onclick="${backFn}"><i class="fa-solid fa-arrow-left"></i> ${backLabel}</button><div id="trainee-detail-body"><p style="color:var(--text-light)">Loading...</p></div>`;
+
+  const [trDoc, aSnap, cSnap, trainerSnap] = await Promise.all([
+    db.collection('trainees').doc(tid).get(),
+    db.collection('assessments').where('traineeId','==',tid).get(),
+    db.collection('checkins').where('traineeId','==',tid).get(),
+    db.collection('trainers').get()
+  ]);
+  if(!trDoc.exists){document.getElementById('trainee-detail-body').innerHTML='<p>Trainee not found.</p>';return;}
+  const trainee = {id:trDoc.id,...trDoc.data()};
+  viewTraineeName = trainee.name;
+  const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.week-b.week);
+  const trainers = trainerSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._allTrainers = trainers;
+  const trainer = trainers.find(t=>t.id===trainee.trainerId);
+  const daysIn = trainee.startDate ? Math.floor((new Date()-new Date(trainee.startDate))/(1000*60*60*24)) : 0;
+  const pct = Math.min(100, Math.round((daysIn/90)*100));
+  const asmts = getAsmtStatus(trainee, assessments);
+  const body = document.getElementById('trainee-detail-body');
+  if(!body) return;
+  body.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:1.1rem;margin-bottom:1.6rem;flex-wrap:wrap">
+      <div class="av-lg" style="background:${trainer?trainer.color:'#888'}">${trainee.initials||trainee.name[0]}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+          <div>
+            <h2 style="font-size:1.3rem;font-weight:800">${trainee.name}</h2>
+            <div style="font-size:.81rem;color:var(--text-light);margin-top:.14rem">
+              ${trainer?`Preceptor: <strong style="color:${trainer.color}">${trainer.name}</strong> · `:''}
+              ${trainee.startDate?`Started ${fmtDate(trainee.startDate)} · Day <strong>${daysIn}</strong> of 90`:'No start date set'}
+            </div>
+            ${trainee.protocol?`<div style="margin-top:.35rem"><span class="protocol-pill"><i class="fa-solid fa-vial" style="font-size:.62rem"></i>${trainee.protocol}</span></div>`:''}
+          </div>
+          <div style="display:flex;gap:.45rem;align-items:center;flex-wrap:wrap">
+            <span class="badge ${trainee.status==='active'?'badge-success':trainee.status==='certified'?'badge-teal':trainee.status==='completed'?'badge-info':'badge-gray'}">${trainee.status||'active'}</span>
+            <button class="btn btn-outline btn-sm" onclick="openTraineeModal('${trainee.id}','${trainee.trainerId||''}')"><i class="fa-solid fa-pen"></i> Edit</button>
+          </div>
+        </div>
+        ${trainee.startDate?`<div style="margin-top:.7rem"><div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--text-light);margin-bottom:.28rem"><span>90-Day Training Progress</span><span>${pct}%</span></div><div style="height:7px;background:var(--border);border-radius:100px;overflow:hidden"><div style="height:100%;width:${pct}%;border-radius:100px;background:linear-gradient(90deg,var(--accent),#0284c7)"></div></div></div>`:''}
+        ${trainee.goals?`<div style="font-size:.79rem;margin-top:.55rem;padding:.48rem .72rem;border-radius:var(--r-sm);background:#f0f9ff;border-left:3px solid var(--accent)"><i class="fa-solid fa-bullseye" style="color:var(--accent)"></i> <strong>Goals:</strong> ${trainee.goals}</div>`:''}
+        ${trainee.notes?`<div style="font-size:.78rem;margin-top:.4rem;padding:.45rem .7rem;border-radius:var(--r-sm);background:#f8fafd;border-left:3px solid #cbd5e1">${trainee.notes}</div>`:''}
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-checkins')"><i class="fa-solid fa-calendar-check"></i> Weekly Check-ins</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-notes')"><i class="fa-solid fa-note-sticky"></i> Clinical Notes</button>
+    </div>
+    <div id="tab-assessments">
+      <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0;margin-top:.1rem"></i><span>Click a card to complete or view the assessment for that milestone.</span></div>
+      <div class="a-grid">
+        ${[30,60,90].map(day=>{
+          const status=asmts[day];
+          const done=assessments.find(a=>a.day===day);
+          const dueDate=trainee.startDate?new Date(new Date(trainee.startDate).getTime()+day*86400000):null;
+          const labels={30:'Foundation Skills',60:'Intermediate Competency',90:'Clinical Readiness'};
+          return `<div class="a-card ${status} clickable" onclick="openAssessmentModal('${trainee.id}',${day})">
+            <div class="a-card-hdr" style="background:${status==='done'?'#dcfce7':status==='due'?'#fef2f2':status==='soon'?'#fefce8':'#f8fafd'}">
+              <div><div style="font-size:1.35rem;font-weight:800;line-height:1">${day}<span style="font-size:.72rem;font-weight:500;color:var(--text-light)"> day</span></div><div style="font-size:.68rem;color:var(--text-light);margin-top:.12rem">${labels[day]}</div></div>
+              <span class="badge ${status==='done'?'badge-success':status==='due'?'badge-danger':status==='soon'?'badge-warning':'badge-gray'}">${status==='done'?'✓ Done':status==='due'?'⚠ Due':status==='soon'?'Soon':'Upcoming'}</span>
+            </div>
+            <div class="a-card-body">
+              ${dueDate?`<div style="font-size:.73rem;color:var(--text-light);margin-bottom:.4rem"><i class="fa-solid fa-calendar"></i> Due: ${fmtDate(dueDate.toISOString().split('T')[0])}</div>`:''}
+              ${done?`<div style="font-size:.77rem"><i class="fa-solid fa-check-circle" style="color:var(--success)"></i> Completed ${fmtDate(done.completedDate)}</div><div style="margin-top:.3rem;font-size:.73rem;color:var(--text-light)">${done.sonoSignoff?'Signed off: '+done.sonoSignoff:''}</div>${done.comments?`<div style="margin-top:.25rem;font-size:.71rem;color:var(--text-light)">${done.comments.substring(0,60)}${done.comments.length>60?'…':''}</div>`:''}`
+              :`<div style="font-size:.77rem;color:var(--text-light)">Not yet completed. Click to begin.</div>`}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div id="tab-checkins" style="display:none">
+      <div class="sec-hdr"><span class="sec-title">Weekly Check-ins (${checkins.length})</span><button class="btn btn-primary btn-sm" onclick="openCheckinModal('${trainee.id}',${checkins.length+1})"><i class="fa-solid fa-plus"></i> New Check-in</button></div>
+      ${checkins.length===0?`<div class="empty"><i class="fa-solid fa-calendar-check"></i><p>No check-ins yet — start Week 1!</p></div>`:''}
+      ${[...checkins].reverse().map(ci=>`<div class="ci-item" onclick="viewCheckinModal('${ci.id}')">
+        <div class="ci-week-badge">W${ci.week}</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:.87rem">Week ${ci.week} Check-in</div><div style="font-size:.73rem;color:var(--text-light)">${fmtDate(ci.date)} · Cases: ${ci.cases||'0'} · ${ci.technical||'Not rated'}</div></div>
+        <div style="font-size:.75rem;color:var(--text-light);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ci.summary||ci.wins||''}</div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-light);font-size:.72rem"></i>
+      </div>`).join('')}
+    </div>
+    <div id="tab-notes" style="display:none">
+      <div class="sec-hdr"><span class="sec-title">Clinical Notes</span><button class="btn btn-primary btn-sm" onclick="openNoteModal('${trainee.id}')"><i class="fa-solid fa-plus"></i> Add Note</button></div>
+      ${(trainee.progressNotes&&trainee.progressNotes.length)?[...trainee.progressNotes].reverse().map(n=>`<div class="card" style="margin-bottom:.7rem"><div class="card-body" style="padding:.95rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem"><span style="font-size:.79rem;font-weight:600">${fmtDate(n.date)}</span><span class="badge badge-info">${n.category||'General'}</span></div><p style="font-size:.83rem">${n.text}</p></div></div>`).join(''):'<div class="empty"><i class="fa-solid fa-note-sticky"></i><p>No clinical notes yet</p></div>'}
+    </div>`;
+}
+
+function switchTab(btn, tabId) {
+  const p = btn.closest('.main') || document.getElementById('trainee-detail-body') || document.getElementById('main-content');
+  p.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['tab-assessments','tab-checkins','tab-notes'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=id===tabId?'block':'none';
+  });
+}
+
+// ═══════════════════════════════════════
+//  MODALS — SHARED
+// ═══════════════════════════════════════
+function showModal(html){document.getElementById('modal-root').innerHTML=`<div class="overlay" onclick="closeModal(event)">${html}</div>`;}
+function closeModal(e){if(!e||e.target.classList.contains('overlay'))document.getElementById('modal-root').innerHTML='';}
+function forceClose(){document.getElementById('modal-root').innerHTML='';}
+
+// ═══════════════════════════════════════
+//  TRAINER MODAL (ADD/EDIT)
+// ═══════════════════════════════════════
+async function openTrainerModal(tid) {
+  let trainer = null;
+  if (tid) { const d = await db.collection('trainers').doc(tid).get(); if(d.exists) trainer={id:d.id,...d.data()}; }
+  const isEdit = !!trainer;
+  showModal(`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title">${isEdit?'Edit Preceptor':'Add Preceptor'}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="ft-name" value="${trainer?trainer.name:''}" placeholder="e.g. Julia Ward"></div>
+        <div class="form-group"><label class="form-label">Credential(s)</label><input class="form-control" id="ft-cred" value="${trainer?trainer.credential||'':''}" placeholder="e.g. RVT, RDCS"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="ft-email" value="${trainer?trainer.email||'':''}" placeholder="email@vipmedicalgroup.com"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="ft-phone" value="${trainer?trainer.phone||'':''}" placeholder="(555) 000-0000"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Color</label>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.3rem">${COLORS.map(c=>`<div onclick="document.getElementById('ft-color').value='${c}';document.querySelectorAll('.cpick').forEach(x=>x.style.outline='none');this.style.outline='3px solid #0ea5e9'" class="cpick" style="width:27px;height:27px;border-radius:50%;background:${c};cursor:pointer;outline:${trainer&&trainer.color===c?'3px solid #0ea5e9':'none'}"></div>`).join('')}<input type="hidden" id="ft-color" value="${trainer?trainer.color:COLORS[0]}"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes / Specialization</label><textarea class="form-control" id="ft-notes" placeholder="Areas of expertise...">${trainer?trainer.notes||'':''}</textarea></div>
+    </div>
+    <div class="modal-foot">
+      ${isEdit?`<button class="btn btn-danger btn-sm" onclick="deleteTrainer('${tid}')"><i class="fa-solid fa-trash"></i></button><div style="flex:1"></div>`:''}
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="trainer-save-btn" onclick="saveTrainer('${tid||''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Add Preceptor'}</button>
+    </div>
+  </div>`);
+}
+
+async function saveTrainer(id) {
+  const name = v('ft-name');
+  if(!name) return alert('Name is required');
+  const color = v('ft-color') || COLORS[0];
+  const initials = name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
+  const obj = {name, initials, email:v('ft-email'), phone:v('ft-phone'), credential:v('ft-cred'), notes:v('ft-notes'), color};
+  setBtn('trainer-save-btn', true, 'Saving...');
+  try {
+    if(id) { await db.collection('trainers').doc(id).update(obj); }
+    else { await db.collection('trainers').add({...obj, userId:null, createdAt:ts()}); await logActivity(`Added preceptor ${name}`,'fa-user-nurse'); }
+    forceClose(); refreshCurrentPage();
+  } catch(e) { alert('Error: '+e.message); setBtn('trainer-save-btn',false,'Save'); }
+}
+
+async function deleteTrainer(id) {
+  if(!confirm('Delete this preceptor? Their trainees will become unassigned.')) return;
+  try {
+    const tSnap = await db.collection('trainees').where('trainerId','==',id).get();
+    const batch = db.batch();
+    tSnap.docs.forEach(d=>batch.update(d.ref,{trainerId:null}));
+    batch.delete(db.collection('trainers').doc(id));
+    await batch.commit();
+    forceClose(); renderTrainersPage();
+  } catch(e){alert('Error: '+e.message);}
+}
+
+// ═══════════════════════════════════════
+//  CREATE TRAINER LOGIN
+// ═══════════════════════════════════════
+function openCreateLoginModal(tid) {
+  showModal(`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title"><i class="fa-solid fa-key" style="color:var(--accent)"></i> Create Preceptor Login</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="alert alert-info"><i class="fa-solid fa-circle-info"></i><span>This will create a login for the preceptor so they can access their own dashboard and document progress for their trainees.</span></div>
+      <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="cl-email" placeholder="preceptor@vipmedicalgroup.com"></div>
+      <div class="form-group"><label class="form-label">Temporary Password</label><input class="form-control" id="cl-pass" type="password" placeholder="They can change it after first login"></div>
+      <div id="cl-error" class="auth-error"></div>
+      <div id="cl-success" class="auth-success"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="cl-btn" onclick="createTrainerLogin('${tid}')"><i class="fa-solid fa-key"></i> Create Login</button>
+    </div>
+  </div>`);
+}
+
+async function createTrainerLogin(tid) {
+  const email = v('cl-email'), pass = v('cl-pass');
+  hideEl('cl-error'); hideEl('cl-success');
+  if(!email||!pass) return showEl('cl-error','Email and password are required.');
+  if(pass.length<6) return showEl('cl-error','Password must be at least 6 characters.');
+  setBtn('cl-btn',true,'Creating...');
+  try {
+    const cred = await secondaryAuth.createUserWithEmailAndPassword(email, pass);
+    const uid = cred.user.uid;
+    await secondaryAuth.signOut();
+    const trainerDoc = await db.collection('trainers').doc(tid).get();
+    const trainerData = trainerDoc.data();
+    await db.collection('users').doc(uid).set({name:trainerData.name, email, role:'trainer', trainerId:tid, createdAt:ts()});
+    await db.collection('trainers').doc(tid).update({userId:uid, email});
+    await logActivity(`Login created for preceptor ${trainerData.name}`,'fa-key');
+    showEl('cl-success','Login created! They can now sign in with these credentials.');
+    setBtn('cl-btn',false,'Done ✓');
+    setTimeout(()=>{forceClose();renderTrainerDetail(tid);},1500);
+  } catch(e) {
+    setBtn('cl-btn',false,'<i class="fa-solid fa-key"></i> Create Login');
+    showEl('cl-error', authErr(e.code)||e.message);
+  }
+}
+
+// ═══════════════════════════════════════
+//  TRAINEE MODAL (ADD/EDIT)
+// ═══════════════════════════════════════
+async function openTraineeModal(tid, defaultTrainerId) {
+  let trainee = null;
+  if(tid) { const d = await db.collection('trainees').doc(tid).get(); if(d.exists) trainee={id:d.id,...d.data()}; }
+  const trainersSnap = await db.collection('trainers').orderBy('name').get();
+  const trainers = trainersSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const isEdit = !!trainee;
+  showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title">${isEdit?'Edit Trainee':'Assign New Trainee'}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-section">Personal Information</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="fn-name" value="${trainee?trainee.name:''}" placeholder="First Last"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="fn-email" value="${trainee?trainee.email||'':''}" placeholder="trainee@email.com"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="fn-phone" value="${trainee?trainee.phone||'':''}" placeholder="(555) 000-0000"></div>
+        <div class="form-group"><label class="form-label">Training Tier</label>
+          <select class="form-control" id="fn-exp">
+            <option value="">Select...</option>
+            ${['Tier 1','Tier 2','Tier 3','MA Tier'].map(o=>`<option ${trainee&&trainee.experience===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-section">Training Assignment</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Assigned Preceptor</label>
+          <select class="form-control" id="fn-trainer">
+            <option value="">-- Unassigned --</option>
+            ${trainers.map(t=>`<option value="${t.id}" ${(trainee?trainee.trainerId:defaultTrainerId)===t.id?'selected':''}>${t.name}${t.credential?' ('+t.credential+')':''}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Training Start Date</label><input class="form-control" id="fn-start" type="date" value="${trainee?trainee.startDate||'':todayStr()}"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Protocol Track</label>
+          <select class="form-control" id="fn-protocol">
+            <option value="">-- None --</option>
+            ${PROTOCOLS.map(p=>`<option ${trainee&&trainee.protocol===p?'selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Status</label>
+          <select class="form-control" id="fn-status">
+            <option value="active" ${!trainee||trainee.status==='active'?'selected':''}>Active</option>
+            <option value="paused" ${trainee&&trainee.status==='paused'?'selected':''}>Paused</option>
+            <option value="completed" ${trainee&&trainee.status==='completed'?'selected':''}>Completed</option>
+            <option value="certified" ${trainee&&trainee.status==='certified'?'selected':''}>Certified ✓</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">Goals & Notes</div>
+      <div class="form-group"><label class="form-label">Training Goals</label><textarea class="form-control" id="fn-goals" placeholder="What competencies should this trainee achieve?">${trainee?trainee.goals||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Clinical Notes</label><textarea class="form-control" id="fn-notes" placeholder="Learning style, prior knowledge gaps, accommodations...">${trainee?trainee.notes||'':''}</textarea></div>
+    </div>
+    <div class="modal-foot">
+      ${isEdit?`<button class="btn btn-danger btn-sm" onclick="deleteTrainee('${tid}')"><i class="fa-solid fa-trash"></i></button><div style="flex:1"></div>`:''}
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="trainee-save-btn" onclick="saveTrainee('${tid||''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Assign Trainee'}</button>
+    </div>
+  </div>`);
+}
+
+async function saveTrainee(id) {
+  const name = v('fn-name');
+  if(!name) return alert('Name is required');
+  const initials = name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
+  const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes')};
+  setBtn('trainee-save-btn',true,'Saving...');
+  try {
+    if(id) {
+      await db.collection('trainees').doc(id).update(obj);
+      await logActivity(`Updated trainee ${name}`,'fa-pen');
+    } else {
+      await db.collection('trainees').add({...obj, progressNotes:[], createdAt:ts()});
+      const trainer = obj.trainerId ? (await db.collection('trainers').doc(obj.trainerId).get()).data() : null;
+      await logActivity(`Assigned new trainee ${name} to ${trainer?trainer.name:'no preceptor'}`,'fa-user-graduate');
+    }
+    forceClose(); refreshCurrentPage();
+  } catch(e){ alert('Error: '+e.message); setBtn('trainee-save-btn',false,'Save'); }
+}
+
+async function deleteTrainee(id) {
+  if(!confirm('Remove this trainee and all their records?')) return;
+  try {
+    const batch = db.batch();
+    const [aSnap, cSnap] = await Promise.all([
+      db.collection('assessments').where('traineeId','==',id).get(),
+      db.collection('checkins').where('traineeId','==',id).get()
+    ]);
+    aSnap.docs.forEach(d=>batch.delete(d.ref));
+    cSnap.docs.forEach(d=>batch.delete(d.ref));
+    batch.delete(db.collection('trainees').doc(id));
+    await batch.commit();
+    forceClose(); refreshCurrentPage();
+  } catch(e){ alert('Error: '+e.message); }
+}
+
+// ═══════════════════════════════════════
+//  ASSESSMENT MODAL
+// ═══════════════════════════════════════
+// ── GRADE SELECTOR HELPER ──
+function gradeSelector(fieldId, savedVal) {
+  return `<div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem">
+    ${GRADES.map(g=>`<button type="button" onclick="setGrade(this,'${fieldId}','${g}')" class="grade-btn" data-grade="${g}" style="padding:.22rem .55rem;border-radius:5px;border:2px solid ${savedVal===g?GRADE_COLORS[g]:' var(--border)'};background:${savedVal===g?GRADE_COLORS[g]:'#fff'};color:${savedVal===g?'#fff':GRADE_COLORS[g]};font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s" title="${GRADE_LABELS[g]}">${g}</button>`).join('')}
+    <input type="hidden" id="${fieldId}" value="${savedVal||''}">
+  </div>`;
+}
+function setGrade(el, fieldId, grade) {
+  const wrap = el.parentElement;
+  wrap.querySelectorAll('.grade-btn').forEach(b=>{
+    const g=b.dataset.grade;
+    b.style.background='#fff'; b.style.color=GRADE_COLORS[g]; b.style.borderColor='var(--border)';
+  });
+  el.style.background=GRADE_COLORS[grade]; el.style.color='#fff'; el.style.borderColor=GRADE_COLORS[grade];
+  document.getElementById(fieldId).value=grade;
+}
+
+// ── SKILL ROW HELPER ──
+function skillRow(item, savedVal, prevVal) {
+  const hasPrev = !!prevVal;
+  const prevBadge = hasPrev ? `<span style="font-size:.67rem;padding:.12rem .4rem;border-radius:4px;background:${GRADE_COLORS[prevVal]||'#e2e8f0'};color:#fff;font-weight:700;margin-left:.4rem" title="Previous: ${GRADE_LABELS[prevVal]||prevVal}">${prevVal}</span>` : '';
+  return `<div style="padding:.65rem 0;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;flex-wrap:wrap">
+      <div style="font-size:.82rem;flex:1;padding-right:.5rem">${item.label}${prevBadge}</div>
+      ${gradeSelector('sk_'+item.id, savedVal)}
+    </div>
+  </div>`;
+}
+
+async function openAssessmentModal(traineeId, day) {
+  // Load this assessment and all previous ones for comparison
+  const aSnap = await db.collection('assessments').where('traineeId','==',traineeId).get();
+  const allAsmts = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const done = allAsmts.find(a=>a.day===day) || null;
+  const prev = day===60 ? allAsmts.find(a=>a.day===30) : day===90 ? allAsmts.find(a=>a.day===60) : null;
+  const traineeDoc = await db.collection('trainees').doc(traineeId).get();
+  const trainee = {id:traineeDoc.id,...traineeDoc.data()};
+  const titles = {30:'30-Day Assessment',60:'60-Day Assessment',90:'90-Day Assessment'};
+  const compNote = prev ? `<div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Scores from the previous assessment are shown as colored badges next to each item for comparison.</span></div>` : '';
+
+  showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title"><i class="fa-solid fa-clipboard-list" style="color:var(--accent)"></i> ${titles[day]} — ${trainee.name}</div>
+        <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem">
+          Grading: <strong>O</strong> Outstanding &nbsp;·&nbsp; <strong>S</strong> Satisfactory &nbsp;·&nbsp; <strong>P</strong> Progressing &nbsp;·&nbsp; <strong>N</strong> Needs Improvement &nbsp;·&nbsp; <strong>N/A</strong> Not Applicable
+        </div>
+      </div>
+      <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      ${done?`<div class="alert alert-success"><i class="fa-solid fa-circle-check" style="flex-shrink:0"></i><span>Completed ${fmtDate(done.completedDate)} · <a href="#" onclick="event.preventDefault();deleteAssessment('${done.id}','${traineeId}',${day})" style="color:var(--danger)">Delete & redo</a></span></div>`:''}
+      ${compNote}
+
+      <!-- PROGRAM KNOWLEDGE -->
+      <div class="form-section">Program Knowledge</div>
+      ${PROGRAM_KNOWLEDGE.map(sec=>`
+        <div style="margin-bottom:1rem">
+          <div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">${sec.section}</div>
+          ${sec.items.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
+        </div>`).join('')}
+
+      <!-- CLINICAL KNOWLEDGE -->
+      <div class="form-section">Clinical Knowledge</div>
+      ${CLINICAL_KNOWLEDGE.map(sec=>`
+        <div style="margin-bottom:1rem">
+          <div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">${sec.section}</div>
+          ${sec.items.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
+        </div>`).join('')}
+      <div class="form-group" style="margin-top:.75rem">
+        <label class="form-label">Clinical Knowledge — Preceptor Sign-off Name</label>
+        <input class="form-control" id="a-clinical-signoff" value="${done?done.clinicalSignoff||'':''}" placeholder="Senior Medical Staff name">
+      </div>
+
+      <!-- ULTRASONOGRAPHER SKILLS -->
+      <div class="form-section">Ultrasonographer Skills</div>
+      ${SONO_SKILLS.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
+
+      <!-- COMMENTS & SIGN-OFF -->
+      <div class="form-section">Additional Comments & Sign-Off</div>
+      <div class="form-group"><label class="form-label">Additional Comments</label>
+        <textarea class="form-control" id="a-comments" placeholder="Any additional observations, strengths, concerns...">${done?done.comments||'':''}</textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Senior Medical Staff (Ultrasonographer Sign-off)</label>
+        <input class="form-control" id="a-sono-signoff" value="${done?done.sonoSignoff||'':''}" placeholder="Senior Medical Staff name">
+      </div>
+      <div class="form-group"><label class="form-label">Date of Sign-Off</label>
+        <input class="form-control" id="a-signoff-date" type="date" value="${done?done.signoffDate||todayStr():todayStr()}">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-outline btn-sm" onclick="downloadAssessmentPDF('${traineeId}',${day})" style="color:#0f3460;border-color:#0f3460"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+      <button class="btn btn-primary" id="asmt-save-btn" onclick="saveAssessment('${traineeId}',${day},'${done?done.id:''}')"><i class="fa-solid fa-check"></i> Save Assessment</button>
+    </div>
+  </div>`);
+}
+
+function setRating(el,hid,val){
+  el.closest('.rating-wrap').querySelectorAll('.r-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById(hid).value=val;
+}
+
+async function saveAssessment(traineeId, day, existingId) {
+  const allItems = [
+    ...PROGRAM_KNOWLEDGE.flatMap(s=>s.items),
+    ...CLINICAL_KNOWLEDGE.flatMap(s=>s.items),
+    ...SONO_SKILLS
+  ];
+  const obj = {traineeId, day, completedDate:todayStr(),
+    comments: v('a-comments'),
+    clinicalSignoff: v('a-clinical-signoff'),
+    sonoSignoff: v('a-sono-signoff'),
+    signoffDate: v('a-signoff-date'),
+  };
+  // collect all grade values
+  allItems.forEach(item=>{ obj['sk_'+item.id] = v('sk_'+item.id)||''; });
+  // overall score = count of O+S grades / total graded
+  const graded = allItems.map(i=>obj['sk_'+i.id]).filter(g=>g&&g!=='N/A');
+  const positive = graded.filter(g=>g==='O'||g==='S').length;
+  obj.overall = graded.length ? Math.round((positive/graded.length)*10) : '';
+  setBtn('asmt-save-btn',true,'Saving...');
+  try {
+    if(existingId) await db.collection('assessments').doc(existingId).delete();
+    await db.collection('assessments').add({...obj, createdAt:ts()});
+    const trDoc = await db.collection('trainees').doc(traineeId).get();
+    await logActivity(`${day}-day assessment completed for ${trDoc.data().name}`,'fa-clipboard-check');
+    forceClose();
+    renderTraineeDetail(traineeId, traineeBackContext);
+  } catch(e){ alert('Error: '+e.message); setBtn('asmt-save-btn',false,'Save'); }
+}
+
+async function deleteAssessment(id, traineeId, day) {
+  await db.collection('assessments').doc(id).delete();
+  forceClose();
+  openAssessmentModal(traineeId, day);
+}
+
+// ═══════════════════════════════════════
+//  CHECK-IN MODAL
+// ═══════════════════════════════════════
+// ── SKILL RATING OPTIONS ──
+const CI_RATINGS = ['Needs Improvement','Developing','Competent','Proficient'];
+const CI_RATING_COLORS = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
+
+function ciRatingSelector(fieldId, savedVal) {
+  return `<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.35rem">
+    ${CI_RATINGS.map(r=>`<button type="button" onclick="setCIRating(this,'${fieldId}','${r.replace(/'/g,"\\'")}')" class="ci-rate-btn" data-rating="${r}" style="padding:.28rem .7rem;border-radius:6px;border:2px solid ${savedVal===r?CI_RATING_COLORS[r]:'var(--border)'};background:${savedVal===r?CI_RATING_COLORS[r]:'#fff'};color:${savedVal===r?'#fff':CI_RATING_COLORS[r]};font-size:.75rem;font-weight:600;cursor:pointer;transition:.12s">${r}</button>`).join('')}
+    <input type="hidden" id="${fieldId}" value="${savedVal||''}">
+  </div>`;
+}
+function setCIRating(el, fieldId, rating) {
+  el.parentElement.querySelectorAll('.ci-rate-btn').forEach(b=>{
+    const r=b.dataset.rating; b.style.background='#fff'; b.style.color=CI_RATING_COLORS[r]; b.style.borderColor='var(--border)';
+  });
+  el.style.background=CI_RATING_COLORS[rating]; el.style.color='#fff'; el.style.borderColor=CI_RATING_COLORS[rating];
+  document.getElementById(fieldId).value=rating;
+}
+
+function ciQuestion(num, label, desc, fieldId, savedVal, hasComment, commentId, commentVal) {
+  return `<div style="padding:.9rem 0;border-bottom:1px solid var(--border)">
+    <div style="font-size:.84rem;font-weight:600;margin-bottom:.18rem">${num}. ${label}</div>
+    <div style="font-size:.78rem;color:var(--text-light);margin-bottom:.4rem">${desc}</div>
+    ${ciRatingSelector(fieldId, savedVal)}
+    ${hasComment?`<div style="margin-top:.6rem"><textarea class="form-control" id="${commentId}" style="min-height:60px;font-size:.8rem" placeholder="Comments (optional)...">${commentVal||''}</textarea></div>`:''}
+  </div>`;
+}
+
+// Determine if protocol is MA-type
+function isMaProtocol(protocol) {
+  return protocol === 'MA Training Only' || protocol === 'FD/MA Training';
+}
+
+// ── SONOGRAPHER CHECK-IN FORM ──
+function sonoCheckinForm() {
+  return `
+    <div class="form-grid" style="margin-bottom:.5rem">
+      <div class="form-group"><label class="form-label">Cases Completed This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 8"></div>
+      <div class="form-group"><label class="form-label">Supervision Level</label>
+        <select class="form-control" id="ci-supervision"><option value="">Select...</option>${['Fully supervised','Mostly supervised','Mix of both','Mostly independent','Fully independent'].map(o=>`<option>${o}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-section">Weekly Evaluation</div>
+    ${ciQuestion(1,'Technical Scanning Skills','How would you rate the trainee\'s ability to perform venous ultrasound exams (including deep and superficial systems)?','ci-technical','',false,'','')}
+    ${ciQuestion(2,'Anatomy & Protocol Knowledge','How well does the trainee demonstrate understanding of venous anatomy and practice-specific scanning protocols (e.g., CVI studies, reflux testing)?','ci-anatomy','',false,'','')}
+    ${ciQuestion(3,'Probe Handling & Technique','How would you assess their probe control, positioning, and overall scanning technique?','ci-probe','',false,'','')}
+    ${ciQuestion(4,'Workflow & Efficiency','Is the trainee improving in exam speed while maintaining quality and accuracy?','ci-workflow','',false,'','')}
+    ${ciQuestion(5,'Patient Interaction','How well does the trainee communicate with patients and maintain professionalism during exams?','ci-patient','',false,'','')}
+    ${ciQuestion(6,'Clinical Understanding','Does the trainee demonstrate understanding of vein disease (e.g., CVI, varicose veins) and correlate findings appropriately?','ci-clinical','',false,'','')}
+    ${ciQuestion(7,'Documentation & Reporting','How accurate and thorough is the trainee\'s documentation and preliminary reporting?','ci-documentation','',true,'ci-documentation-comment','')}
+    ${ciQuestion(8,'Independence & Confidence','Is the trainee progressing toward working independently?','ci-independence','',true,'ci-independence-comment','')}
+    ${ciQuestion(9,'Doctor Presentation','How well does the trainee communicate with the physician?','ci-doctor','',true,'ci-doctor-comment','')}
+    <div class="form-section">Overall Progress & Feedback</div>
+    <div class="form-group"><label class="form-label">Key Strengths This Week 🏆</label><textarea class="form-control" id="ci-strengths" placeholder="Skills mastered, improvements noticed..."></textarea></div>
+    <div class="form-group"><label class="form-label">Areas Needing Improvement</label><textarea class="form-control" id="ci-improvements" placeholder="Skills to focus on, areas needing more practice..."></textarea></div>
+    <div class="form-group"><label class="form-label">Additional Comments or Concerns</label><textarea class="form-control" id="ci-additional" placeholder="Anything else to note..."></textarea></div>`;
+}
+
+// ── MA CHECK-IN FORM ──
+function maCheckinForm() {
+  return `
+    <div class="form-grid" style="margin-bottom:.5rem">
+      <div class="form-group"><label class="form-label">Procedures Assisted This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 6"></div>
+      <div class="form-group"><label class="form-label">Supervision Level</label>
+        <select class="form-control" id="ci-supervision"><option value="">Select...</option>${['Fully supervised','Mostly supervised','Mix of both','Mostly independent','Fully independent'].map(o=>`<option>${o}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="form-section">Weekly Evaluation</div>
+    ${ciQuestion(1,'Procedure Preparation','How well does the trainee prepare procedure rooms and set up trays for vein procedures (e.g., RFA, sclerotherapy)?','ci-ma-prep','',false,'','')}
+    ${ciQuestion(2,'Medication Preparation','Is the trainee accurately and safely preparing/mixing medications according to protocol?','ci-ma-med','',false,'','')}
+    ${ciQuestion(3,'Patient Consent Process','Does the trainee ensure all required consents are properly completed and signed prior to procedures?','ci-ma-consent','',false,'','')}
+    ${ciQuestion(4,'Patient Intake & Presentation','How effectively does the trainee perform new patient intake (history, symptoms, documentation) and present the case clearly and concisely to the physician?','ci-ma-intake','',false,'','')}
+    ${ciQuestion(5,'Patient Preparation & Draping','How well does the trainee prep and drape patients for procedures while maintaining sterility and patient comfort?','ci-ma-draping','',false,'','')}
+    ${ciQuestion(6,'Aseptic Technique','Does the trainee consistently follow proper sterile/aseptic techniques during procedures?','ci-ma-aseptic','',false,'','')}
+    ${ciQuestion(7,'Procedure Assistance','How effectively does the trainee assist the physician during procedures (anticipating needs, passing instruments, maintaining flow)?','ci-ma-assist','',true,'ci-ma-assist-comment','')}
+    ${ciQuestion(8,'Equipment Handling','Is the trainee proficient in handling and troubleshooting equipment (e.g., RFA machine, ultrasound basics if applicable)?','ci-ma-equipment','',true,'ci-ma-equipment-comment','')}
+    ${ciQuestion(9,'Post-Procedure Duties','How well does the trainee perform post-procedure tasks (bandaging, patient instructions, room turnover)?','ci-ma-post','',false,'','')}
+    ${ciQuestion(10,'Workflow & Efficiency','Is the trainee improving in speed and organization while maintaining accuracy?','ci-ma-workflow','',false,'','')}
+    ${ciQuestion(11,'Professionalism & Patient Interaction','How well does the trainee communicate with patients and maintain a professional demeanor?','ci-ma-professionalism','',true,'ci-ma-professionalism-comment','')}
+    <div class="form-section">Overall Feedback</div>
+    <div class="form-group"><label class="form-label">Key Strengths This Week 🏆</label><textarea class="form-control" id="ci-strengths" placeholder="Skills mastered, improvements noticed..."></textarea></div>
+    <div class="form-group"><label class="form-label">Areas Needing Improvement</label><textarea class="form-control" id="ci-improvements" placeholder="Skills to focus on, areas needing more practice..."></textarea></div>
+    <div class="form-group"><label class="form-label">Additional Comments or Concerns</label><textarea class="form-control" id="ci-additional" placeholder="Anything else to note..."></textarea></div>`;
+}
+
+async function openCheckinModal(traineeId, week) {
+  const trDoc = await db.collection('trainees').doc(traineeId).get();
+  const trainee = {id:trDoc.id,...trDoc.data()};
+  const isMA = isMaProtocol(trainee.protocol);
+  const formType = isMA ? 'MA / FD·MA' : 'Sonographer';
+  showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Week ${week} Weekly Check-in</div>
+        <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">${trainee.name} · <span style="font-weight:600;color:var(--accent)">${formType} Form</span></div>
+      </div>
+      <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      ${isMA ? maCheckinForm() : sonoCheckinForm()}
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="ci-save-btn" onclick="saveCheckin('${traineeId}',${week},'${isMA?'ma':'sono'}')"><i class="fa-solid fa-check"></i> Save Check-in</button>
+    </div>
+  </div>`);
+}
+
+async function saveCheckin(traineeId, week, formType) {
+  const isMA = formType === 'ma';
+  const obj = {
+    traineeId, week, date:todayStr(), formType,
+    cases: v('ci-cases'),
+    supervision: v('ci-supervision'),
+    strengths: v('ci-strengths'),
+    improvements: v('ci-improvements'),
+    additional: v('ci-additional'),
+  };
+  if(isMA) {
+    Object.assign(obj, {
+      maPrep: v('ci-ma-prep'), maMed: v('ci-ma-med'), maConsent: v('ci-ma-consent'),
+      maIntake: v('ci-ma-intake'), maDraping: v('ci-ma-draping'), maAseptic: v('ci-ma-aseptic'),
+      maAssist: v('ci-ma-assist'), maAssistComment: v('ci-ma-assist-comment'),
+      maEquipment: v('ci-ma-equipment'), maEquipmentComment: v('ci-ma-equipment-comment'),
+      maPost: v('ci-ma-post'), maWorkflow: v('ci-ma-workflow'),
+      maProfessionalism: v('ci-ma-professionalism'), maProfessionalismComment: v('ci-ma-professionalism-comment'),
+    });
+  } else {
+    Object.assign(obj, {
+      technical: v('ci-technical'), anatomy: v('ci-anatomy'), probe: v('ci-probe'),
+      workflow: v('ci-workflow'), patient: v('ci-patient'), clinical: v('ci-clinical'),
+      documentation: v('ci-documentation'), documentationComment: v('ci-documentation-comment'),
+      independence: v('ci-independence'), independenceComment: v('ci-independence-comment'),
+      doctor: v('ci-doctor'), doctorComment: v('ci-doctor-comment'),
+    });
+  }
+  setBtn('ci-save-btn',true,'Saving...');
+  try {
+    await db.collection('checkins').add({...obj, createdAt:ts()});
+    const trDoc = await db.collection('trainees').doc(traineeId).get();
+    await logActivity(`Week ${week} check-in for ${trDoc.data().name}`,'fa-calendar-check');
+    forceClose(); renderTraineeDetail(traineeId, traineeBackContext);
+  } catch(e){ alert('Error: '+e.message); setBtn('ci-save-btn',false,'Save'); }
+}
+
+async function viewCheckinModal(id) {
+  const doc = await db.collection('checkins').doc(id).get();
+  if(!doc.exists) return;
+  const ci = {id:doc.id,...doc.data()};
+  const isMA = ci.formType === 'ma';
+  const ratingBadge = (label, val, comment) => val ? `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.82rem;font-weight:500">${label}</span>
+      <span style="padding:.2rem .65rem;border-radius:6px;font-size:.75rem;font-weight:700;background:${CI_RATING_COLORS[val]||'#64748b'};color:#fff">${val}</span>
+    </div>
+    ${comment?`<div style="font-size:.77rem;color:var(--text-light);padding:.3rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-bottom:.3rem">${comment}</div>`:''}` : '';
+
+  showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <div>
+        <span class="modal-title">Week ${ci.week} Check-in — ${fmtDate(ci.date)}</span>
+        <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem"><span style="font-weight:600;color:var(--accent)">${isMA?'MA / FD·MA':'Sonographer'} Form</span></div>
+      </div>
+      <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+        ${ci.cases?`<span class="badge badge-info"><i class="fa-solid fa-stethoscope"></i> ${ci.cases} ${isMA?'procedures':'cases'}</span>`:''}
+        ${ci.supervision?`<span class="badge badge-gray"><i class="fa-solid fa-eye"></i> ${ci.supervision}</span>`:''}
+      </div>
+
+      <div style="margin-bottom:1rem">
+        ${isMA ? `
+          ${ratingBadge('Procedure Preparation', ci.maPrep, '')}
+          ${ratingBadge('Medication Preparation', ci.maMed, '')}
+          ${ratingBadge('Patient Consent Process', ci.maConsent, '')}
+          ${ratingBadge('Patient Intake & Presentation', ci.maIntake, '')}
+          ${ratingBadge('Patient Preparation & Draping', ci.maDraping, '')}
+          ${ratingBadge('Aseptic Technique', ci.maAseptic, '')}
+          ${ratingBadge('Procedure Assistance', ci.maAssist, ci.maAssistComment)}
+          ${ratingBadge('Equipment Handling', ci.maEquipment, ci.maEquipmentComment)}
+          ${ratingBadge('Post-Procedure Duties', ci.maPost, '')}
+          ${ratingBadge('Workflow & Efficiency', ci.maWorkflow, '')}
+          ${ratingBadge('Professionalism & Patient Interaction', ci.maProfessionalism, ci.maProfessionalismComment)}
+        ` : `
+          ${ratingBadge('Technical Scanning Skills', ci.technical, '')}
+          ${ratingBadge('Anatomy & Protocol Knowledge', ci.anatomy, '')}
+          ${ratingBadge('Probe Handling & Technique', ci.probe, '')}
+          ${ratingBadge('Workflow & Efficiency', ci.workflow, '')}
+          ${ratingBadge('Patient Interaction', ci.patient, '')}
+          ${ratingBadge('Clinical Understanding', ci.clinical, '')}
+          ${ratingBadge('Documentation & Reporting', ci.documentation, ci.documentationComment)}
+          ${ratingBadge('Independence & Confidence', ci.independence, ci.independenceComment)}
+          ${ratingBadge('Doctor Presentation', ci.doctor, ci.doctorComment)}
+        `}
+      </div>
+
+      ${ci.strengths?`<div class="form-group"><div class="form-label" style="color:var(--success)">🏆 Key Strengths</div><div style="background:#dcfce7;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.strengths}</div></div>`:''}
+      ${ci.improvements?`<div class="form-group"><div class="form-label" style="color:var(--danger)">⚡ Areas Needing Improvement</div><div style="background:#fee2e2;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.improvements}</div></div>`:''}
+      ${ci.additional?`<div class="form-group"><div class="form-label">💬 Additional Comments</div><div style="background:#f1f5f9;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.additional}</div></div>`:''}
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger btn-sm" onclick="deleteCheckin('${ci.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline btn-sm" onclick="downloadCheckinPDF('${ci.id}','${viewTraineeName||'Trainee'}')" style="color:#0f3460;border-color:#0f3460"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+      <button class="btn btn-outline" onclick="forceClose()">Close</button>
+    </div>
+  </div>`);
+}
+
+async function deleteCheckin(id) {
+  if(!confirm('Delete this check-in?')) return;
+  await db.collection('checkins').doc(id).delete();
+  forceClose(); renderTraineeDetail(viewTraineeId, traineeBackContext);
+}
+
+// ═══════════════════════════════════════
+//  PROGRESS NOTES
+// ═══════════════════════════════════════
+function openNoteModal(traineeId) {
+  showModal(`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title">Add Clinical Note</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-control" id="pn-date" type="date" value="${todayStr()}"></div>
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-control" id="pn-cat">${['Scanning Technique','Anatomy Knowledge','Image Quality','Protocol Adherence','Report Writing','Patient Interaction','Equipment Operation','Clinical Judgment','Milestone Achieved','Concern / Follow-up','General'].map(o=>`<option>${o}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Note *</label><textarea class="form-control" id="pn-text" style="min-height:100px" placeholder="Clinical observation, coaching note, or milestone..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="note-save-btn" onclick="saveNote('${traineeId}')"><i class="fa-solid fa-check"></i> Save Note</button>
+    </div>
+  </div>`);
+}
+
+async function saveNote(traineeId) {
+  const text = v('pn-text');
+  if(!text) return alert('Please enter a note');
+  setBtn('note-save-btn',true,'Saving...');
+  try {
+    const trDoc = await db.collection('trainees').doc(traineeId).get();
+    const notes = trDoc.data().progressNotes || [];
+    notes.push({id:'n'+Date.now(), date:v('pn-date'), category:v('pn-cat'), text});
+    await db.collection('trainees').doc(traineeId).update({progressNotes:notes});
+    forceClose(); renderTraineeDetail(traineeId, traineeBackContext);
+  } catch(e){ alert('Error: '+e.message); setBtn('note-save-btn',false,'Save'); }
+}
+
+// ═══════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════
+function v(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function todayStr(){ return new Date().toISOString().split('T')[0]; }
+function ts(){ return firebase.firestore.FieldValue.serverTimestamp(); }
+function fmtDate(s){ if(!s) return '—'; const d=new Date(s+'T12:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtTime(d){ if(!d) return ''; const diff=Math.floor((Date.now()-d.getTime())/1000); if(diff<60) return 'just now'; if(diff<3600) return Math.floor(diff/60)+'m ago'; if(diff<86400) return Math.floor(diff/3600)+'h ago'; return fmtDate(d.toISOString().split('T')[0]); }
+function showEl(id,msg){ const el=document.getElementById(id); if(el){el.textContent=msg;el.style.display='flex';} }
+function hideEl(id){ const el=document.getElementById(id); if(el) el.style.display='none'; }
+function setBtn(id,disabled,html){ const el=document.getElementById(id); if(el){el.disabled=disabled;if(html)el.innerHTML=html;} }
+
+async function logActivity(text, icon) {
+  try { await db.collection('activity').add({text, icon, user:currentUser?.name||'', ts:ts()}); } catch(e){}
+}
+
+function getAsmtStatus(trainee, assessments) {
+  const result={};
+  const start = trainee.startDate ? new Date(trainee.startDate) : null;
+  [30,60,90].forEach(day=>{
+    const done = assessments.find(a=>a.traineeId===trainee.id&&a.day===day);
+    if(done){result[day]='done';return;}
+    if(!start){result[day]='future';return;}
+    const due=new Date(start); due.setDate(due.getDate()+day);
+    const diff=(due-new Date())/(1000*60*60*24);
+    if(diff<0) result[day]='due'; else if(diff<=7) result[day]='soon'; else result[day]='future';
+  });
+  return result;
+}
+
+function getDueCount(trainees, assessments) {
+  let c=0;
+  trainees.forEach(tr=>{
+    if(tr.status!=='active'||!tr.startDate) return;
+    [30,60,90].forEach(day=>{
+      if(!assessments.find(a=>a.traineeId===tr.id&&a.day===day)){
+        const due=new Date(tr.startDate); due.setDate(due.getDate()+day);
+        if(new Date()>=due) c++;
+      }
+    });
+  });
+  return c;
+}
+
+function refreshCurrentPage() {
+  const path = window._currentPage || 'hub';
+  if(path==='hub') renderHub();
+  else if(path==='trainers') renderTrainersPage();
+  else if(path==='trainees') renderTraineesPage();
+  else if(path==='trainer-detail') renderTrainerDetail(viewTrainerId);
+  else if(path==='trainee-detail') renderTraineeDetail(viewTraineeId, traineeBackContext);
+  else renderHub();
+}
+
+// ═══════════════════════════════════════
+//  PDF DOWNLOAD
+// ═══════════════════════════════════════
+function buildAssessmentPDFContent(trainee, day, done, prev) {
+  const titles = {30:'30-Day Assessment',60:'60-Day Assessment',90:'90-Day Assessment'};
+  const gradeColor = {O:'#15803d',S:'#1d4ed8',P:'#d97706',N:'#dc2626','N/A':'#64748b'};
+  function gradeCell(g) {
+    if (!g) return '<span style="color:#94a3b8;font-size:.75rem">—</span>';
+    return `<span style="display:inline-block;padding:.1rem .45rem;border-radius:4px;background:${gradeColor[g]||'#64748b'};color:#fff;font-size:.75rem;font-weight:700">${g}</span>`;
+  }
+  function sectionRows(items) {
+    return items.map(item => {
+      const cur = done ? (done['sk_'+item.id]||'') : '';
+      const prv = prev ? (prev['sk_'+item.id]||'') : '';
+      return `<tr><td style="padding:.45rem .6rem;font-size:.78rem;border-bottom:1px solid #e2e8f0">${item.label}</td><td style="padding:.45rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0">${gradeCell(cur)}</td>${prev?`<td style="padding:.45rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0">${gradeCell(prv)}</td>`:''}</tr>`;
+    }).join('');
+  }
+  function renderSection(title, sections, isSono) {
+    const rows = isSono
+      ? sectionRows(sections)
+      : sections.flatMap(sec => [`<tr><td colspan="${prev?3:2}" style="padding:.4rem .6rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0369a1;background:#f0f9ff;border-bottom:1px solid #e2e8f0">${sec.section}</td></tr>`, sectionRows(sec.items)]).join('');
+    return `<div style="margin-bottom:1.25rem"><div style="background:#0f3460;color:#fff;padding:.45rem .8rem;border-radius:6px 6px 0 0;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">${title}</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-top:none"><thead><tr style="background:#f8fafd"><th style="padding:.4rem .6rem;text-align:left;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Skill</th><th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Score</th>${prev?'<th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Prev</th>':''}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  const allItems = [...PROGRAM_KNOWLEDGE.flatMap(s=>s.items),...CLINICAL_KNOWLEDGE.flatMap(s=>s.items),...SONO_SKILLS];
+  const graded = done ? allItems.map(i=>done['sk_'+i.id]).filter(g=>g&&g!=='N/A') : [];
+  const positive = graded.filter(g=>g==='O'||g==='S').length;
+  const score = graded.length ? Math.round((positive/graded.length)*100) : null;
+  return `<div style="font-family:Arial,sans-serif;color:#1e293b;max-width:740px;margin:0 auto;padding:1.5rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:2px solid #0f3460">
+      <div style="background:#0ea5e9;border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:800">V</div>
+      <div><div style="font-size:1.15rem;font-weight:800;color:#0f3460">VIP Training Progress Tracker</div><div style="font-size:.7rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Trainee Progress Tracker</div></div>
+      <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:800;color:#0f3460">${titles[day]}</div><div style="font-size:.78rem;color:#64748b">${done?'Completed: '+fmtDate(done.completedDate):'Not yet completed'}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Trainee</div><div style="font-size:.92rem;font-weight:700">${trainee.name}</div><div style="font-size:.75rem;color:#64748b">${trainee.protocol||''}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Start Date</div><div style="font-size:.92rem;font-weight:700">${fmtDate(trainee.startDate)}</div>${score!==null?`<div style="font-size:.75rem;color:#15803d;font-weight:600">Overall: ${score}% positive</div>`:''}</div>
+    </div>
+    <div style="margin-bottom:.6rem;font-size:.72rem;color:#64748b"><strong>Grading Key:</strong> &nbsp;<span style="background:#15803d;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">O</span> Outstanding &nbsp;<span style="background:#1d4ed8;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">S</span> Satisfactory &nbsp;<span style="background:#d97706;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">P</span> Progressing &nbsp;<span style="background:#dc2626;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">N</span> Needs Improvement &nbsp;<span style="background:#64748b;color:#fff;padding:.08rem .4rem;border-radius:3px;font-size:.68rem;font-weight:700">N/A</span> Not Applicable</div>
+    ${renderSection('Program Knowledge', PROGRAM_KNOWLEDGE, false)}
+    ${done&&done.clinicalSignoff?`<div style="font-size:.78rem;color:#64748b;margin-bottom:1rem"><strong>Clinical Knowledge Sign-off:</strong> ${done.clinicalSignoff}</div>`:''}
+    ${renderSection('Clinical Knowledge', CLINICAL_KNOWLEDGE, false)}
+    ${renderSection('Ultrasonographer Skills', SONO_SKILLS, true)}
+    ${done&&done.comments?`<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;margin-bottom:.3rem;color:#0f3460">Additional Comments</div><div style="background:#f8fafd;border:1px solid #e2e8f0;border-radius:6px;padding:.65rem;font-size:.8rem">${done.comments}</div></div>`:''}
+    <div style="border-top:2px solid #e2e8f0;padding-top:1rem;margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Ultrasonographer Sign-off</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${done&&done.sonoSignoff||''}</div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor Sign-off</div><div style="border-bottom:1px solid #1e293b;min-height:28px"></div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Date</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${done&&done.signoffDate?fmtDate(done.signoffDate):''}</div></div>
+    </div>
+    <div style="margin-top:1.25rem;font-size:.65rem;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:.6rem">Generated by VIP Training Progress Tracker · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+  </div>`;
+}
+
+async function downloadAssessmentPDF(traineeId, day) {
+  const [aSnap, trDoc] = await Promise.all([
+    db.collection('assessments').where('traineeId','==',traineeId).get(),
+    db.collection('trainees').doc(traineeId).get()
+  ]);
+  const allAsmts = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const done = allAsmts.find(a=>a.day===day)||null;
+  const prev = day===60?allAsmts.find(a=>a.day===30):day===90?allAsmts.find(a=>a.day===60):null;
+  const trainee = {id:trDoc.id,...trDoc.data()};
+  const el = document.createElement('div');
+  el.innerHTML = buildAssessmentPDFContent(trainee, day, done, prev);
+  document.body.appendChild(el);
+  await html2pdf().set({margin:.4,filename:`${trainee.name.replace(/\s+/g,'-')}_${day}-Day-Assessment.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}}).from(el).save();
+  document.body.removeChild(el);
+}
+
+async function downloadCheckinPDF(checkinId, traineeName) {
+  const doc = await db.collection('checkins').doc(checkinId).get();
+  if(!doc.exists) return;
+  const ci = {id:doc.id,...doc.data()};
+  const isMA = ci.formType==='ma';
+  const colors = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
+  function ratingRow(label, val, comment) {
+    if(!val) return '';
+    return `<tr><td style="padding:.4rem .6rem;font-size:.78rem;border-bottom:1px solid #e2e8f0">${label}</td><td style="padding:.4rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0"><span style="display:inline-block;padding:.1rem .5rem;border-radius:4px;background:${colors[val]||'#64748b'};color:#fff;font-size:.72rem;font-weight:700">${val}</span></td></tr>${comment?`<tr><td colspan="2" style="padding:.25rem .6rem .5rem 1.2rem;font-size:.74rem;color:#64748b;border-bottom:1px solid #e2e8f0;font-style:italic">${comment}</td></tr>`:''}`;
+  }
+  const sonoRows = [ratingRow('Technical Scanning Skills',ci.technical,''),ratingRow('Anatomy & Protocol Knowledge',ci.anatomy,''),ratingRow('Probe Handling & Technique',ci.probe,''),ratingRow('Workflow & Efficiency',ci.workflow,''),ratingRow('Patient Interaction',ci.patient,''),ratingRow('Clinical Understanding',ci.clinical,''),ratingRow('Documentation & Reporting',ci.documentation,ci.documentationComment),ratingRow('Independence & Confidence',ci.independence,ci.independenceComment),ratingRow('Doctor Presentation',ci.doctor,ci.doctorComment)].join('');
+  const maRows = [ratingRow('Procedure Preparation',ci.maPrep,''),ratingRow('Medication Preparation',ci.maMed,''),ratingRow('Patient Consent Process',ci.maConsent,''),ratingRow('Patient Intake & Presentation',ci.maIntake,''),ratingRow('Patient Preparation & Draping',ci.maDraping,''),ratingRow('Aseptic Technique',ci.maAseptic,''),ratingRow('Procedure Assistance',ci.maAssist,ci.maAssistComment),ratingRow('Equipment Handling',ci.maEquipment,ci.maEquipmentComment),ratingRow('Post-Procedure Duties',ci.maPost,''),ratingRow('Workflow & Efficiency',ci.maWorkflow,''),ratingRow('Professionalism & Patient Interaction',ci.maProfessionalism,ci.maProfessionalismComment)].join('');
+  const html = `<div style="font-family:Arial,sans-serif;color:#1e293b;max-width:740px;margin:0 auto;padding:1.5rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:2px solid #0f3460">
+      <div style="background:#0ea5e9;border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:800">V</div>
+      <div><div style="font-size:1.15rem;font-weight:800;color:#0f3460">VIP Training Progress Tracker</div><div style="font-size:.7rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Weekly Check-in Report</div></div>
+      <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:800;color:#0f3460">Week ${ci.week} Check-in</div><div style="font-size:.78rem;color:#64748b">${fmtDate(ci.date)}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Trainee</div><div style="font-size:.9rem;font-weight:700">${traineeName}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">${isMA?'Procedures':'Cases'}</div><div style="font-size:.9rem;font-weight:700">${ci.cases||'—'}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Supervision</div><div style="font-size:.9rem;font-weight:700">${ci.supervision||'—'}</div></div>
+    </div>
+    <div style="background:#0f3460;color:#fff;padding:.45rem .8rem;border-radius:6px 6px 0 0;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Weekly Evaluation — ${isMA?'MA / FD·MA':'Sonographer'} Form</div>
+    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-top:none;margin-bottom:1.25rem"><thead><tr style="background:#f8fafd"><th style="padding:.4rem .6rem;text-align:left;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Skill Area</th><th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0;width:140px">Rating</th></tr></thead><tbody>${isMA?maRows:sonoRows}</tbody></table>
+    ${ci.strengths?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#15803d;margin-bottom:.3rem">Key Strengths</div><div style="background:#dcfce7;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #86efac">${ci.strengths}</div></div>`:''}
+    ${ci.improvements?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#dc2626;margin-bottom:.3rem">Areas Needing Improvement</div><div style="background:#fee2e2;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #fca5a5">${ci.improvements}</div></div>`:''}
+    ${ci.additional?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#1e293b;margin-bottom:.3rem">Additional Comments</div><div style="background:#f1f5f9;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #e2e8f0">${ci.additional}</div></div>`:''}
+    <div style="border-top:2px solid #e2e8f0;padding-top:1rem;margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor Signature</div><div style="border-bottom:1px solid #1e293b;min-height:28px"></div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Date</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${fmtDate(ci.date)}</div></div>
+    </div>
+    <div style="margin-top:1.25rem;font-size:.65rem;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:.6rem">Generated by VIP Training Progress Tracker · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+  </div>`;
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  await html2pdf().set({margin:.4,filename:`${traineeName.replace(/\s+/g,'-')}_Week-${ci.week}-Checkin.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}}).from(el).save();
+  document.body.removeChild(el);
+}
+
+// Track current page for refreshes
+const _origRenderHub = renderHub;
+</script>
+</body>
+</html>
