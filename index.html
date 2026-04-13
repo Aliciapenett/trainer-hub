@@ -602,7 +602,7 @@ async function renderTrainerDetail(tid) {
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         ${!trainer.userId?`<button class="btn btn-success btn-sm" onclick="openCreateLoginModal('${tid}')"><i class="fa-solid fa-key"></i> Create Login</button>`:''}
         <button class="btn btn-outline btn-sm" onclick="openTrainerModal('${tid}')"><i class="fa-solid fa-pen"></i> Edit</button>
-        <button class="btn btn-outline btn-sm" id="remind-btn-${tid}" onclick="sendAssessmentReminder('${tid}',this)" style="color:#d97706;border-color:#d97706"><i class="fa-solid fa-envelope"></i> Send Reminder</button>
+        <button class="btn btn-outline btn-sm" onclick="sendAssessmentReminder('${tid}',this)" style="color:#d97706;border-color:#d97706"><i class="fa-solid fa-envelope"></i> Send Reminder</button>
         <button class="btn btn-primary btn-sm" onclick="openTraineeModal(null,'${tid}')"><i class="fa-solid fa-plus"></i> Assign Trainee</button>
       </div>
     </div>
@@ -1671,7 +1671,7 @@ async function downloadCheckinPDF(checkinId, traineeName) {
 }
 
 // ═══════════════════════════════════════
-//  EMAILJS — ASSESSMENT REMINDERS
+//  EMAILJS — REMINDERS
 // ═══════════════════════════════════════
 emailjs.init('JeI4EaHZq9fT_iwQi');
 
@@ -1679,63 +1679,62 @@ async function sendAssessmentReminder(trainerId, btnEl) {
   const origHTML = btnEl.innerHTML;
   btnEl.disabled = true;
   btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-
   try {
-    // Load trainer
     const trainerDoc = await db.collection('trainers').doc(trainerId).get();
     const trainer = {id: trainerDoc.id, ...trainerDoc.data()};
-
-    // Load their trainees + assessments
-    const [tSnap, aSnap] = await Promise.all([
-      db.collection('trainees').where('trainerId', '==', trainerId).get(),
-      db.collection('assessments').get()
-    ]);
-    const trainees = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
-    const assessments = aSnap.docs.map(d => ({id: d.id, ...d.data()}));
-
-    // Find overdue assessments
-    const dueList = [];
-    trainees.forEach(t => {
-      const days = getAssessmentsDue(t, assessments);
-      days.forEach(d => dueList.push(`• ${t.name} — ${d}-Day Assessment`));
-    });
-
-    if (!dueList.length) {
-      btnEl.disabled = false;
-      btnEl.innerHTML = origHTML;
-      alert(`${trainer.name} has no overdue assessments right now!`);
-      return;
-    }
-
     if (!trainer.email) {
-      btnEl.disabled = false;
-      btnEl.innerHTML = origHTML;
+      btnEl.disabled = false; btnEl.innerHTML = origHTML;
       alert(`No email address found for ${trainer.name}. Please add one to their profile.`);
       return;
     }
+    const [tSnap, aSnap, cSnap] = await Promise.all([
+      db.collection('trainees').where('trainerId','==',trainerId).get(),
+      db.collection('assessments').get(),
+      db.collection('checkins').get()
+    ]);
+    const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+    // Overdue milestone assessments
+    const assessmentLines = [];
+    trainees.forEach(t => {
+      getAssessmentsDue(t, assessments).forEach(d => assessmentLines.push(`• ${t.name} — ${d}-Day Milestone Assessment`));
+    });
+
+    // Overdue weekly check-ins
+    const checkinLines = [];
+    trainees.forEach(t => {
+      if (isCheckinDue(t, checkins)) {
+        const nextWeek = checkins.filter(c=>c.traineeId===t.id).length + 1;
+        checkinLines.push(`• ${t.name} — Week ${nextWeek} Check-in`);
+      }
+    });
+
+    const allDue = [...assessmentLines, ...checkinLines];
+    if (!allDue.length) {
+      btnEl.disabled = false; btnEl.innerHTML = origHTML;
+      alert(`${trainer.name} has nothing overdue right now — all caught up! ✓`);
+      return;
+    }
+
+    let traineeList = '';
+    if (assessmentLines.length) traineeList += 'MILESTONE ASSESSMENTS DUE:\n' + assessmentLines.join('\n');
+    if (checkinLines.length) { if (traineeList) traineeList += '\n\n'; traineeList += 'WEEKLY CHECK-INS DUE:\n' + checkinLines.join('\n'); }
 
     await emailjs.send('service_zbd6z5n', 'template_51iol4q', {
       to_name: trainer.name,
       to_email: trainer.email,
-      trainee_list: dueList.join('\n'),
+      trainee_list: traineeList,
     });
 
-    await logActivity(`Assessment reminder sent to ${trainer.name}`, 'fa-envelope');
+    await logActivity(`Reminder sent to ${trainer.name} (${allDue.length} item${allDue.length>1?'s':''} due)`, 'fa-envelope');
     btnEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> Sent!';
-    btnEl.style.background = '#15803d';
-    btnEl.style.color = '#fff';
-    btnEl.style.borderColor = '#15803d';
-    setTimeout(() => {
-      btnEl.disabled = false;
-      btnEl.innerHTML = origHTML;
-      btnEl.style.background = '';
-      btnEl.style.color = '';
-      btnEl.style.borderColor = '';
-    }, 3000);
+    btnEl.style.cssText += ';background:#15803d;color:#fff;border-color:#15803d';
+    setTimeout(() => { btnEl.disabled=false; btnEl.innerHTML=origHTML; btnEl.style.background=''; btnEl.style.color=''; btnEl.style.borderColor=''; }, 3000);
   } catch(e) {
     console.error(e);
-    btnEl.disabled = false;
-    btnEl.innerHTML = origHTML;
+    btnEl.disabled = false; btnEl.innerHTML = origHTML;
     alert('Failed to send email: ' + (e.text || e.message || 'Unknown error'));
   }
 }
