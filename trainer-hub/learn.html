@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIP Learning Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#0f3460;--accent:#0ea5e9;--accent-light:#38bdf8;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--bg:#f0f5fb;--card:#fff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 12px 28px rgba(0,0,0,.13);--r:14px;--r-sm:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#screen-loading{position:fixed;inset:0;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;z-index:9999}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary) 0%,#1a4a7a 100%);padding:1rem}
+.auth-card{background:#fff;border-radius:18px;padding:2.25rem 2rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg)}
+.auth-logo{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem}
+.auth-logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),#0284c7);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.15rem}
+.auth-title{font-size:1.2rem;font-weight:800;color:var(--primary)}
+.auth-sub{font-size:.72rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.07em}
+.auth-error{background:#fee2e2;color:#991b1b;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:1rem;display:none}
+.auth-success{background:#dcfce7;color:#15803d;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:1rem;display:none}
+.hdr{background:var(--primary);color:#fff;padding:0 1.5rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md)}
+.hdr-logo{display:flex;align-items:center;gap:.7rem;cursor:pointer}
+.hdr-logo-icon{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.hdr-right{display:flex;align-items:center;gap:.75rem}
+.hdr-user{font-size:.82rem;color:rgba(255,255,255,.8);font-weight:500}
+.main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:.84rem;font-weight:600;transition:.15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-light);transform:translateY(-1px)}
+.btn-secondary{background:var(--primary);color:#fff}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.88}
+.btn-success{background:var(--success);color:#fff}
+.btn-sm{padding:.3rem .7rem;font-size:.77rem}
+.btn-ghost{background:transparent;color:var(--text-light);padding:.35rem .65rem}.btn-ghost:hover{background:var(--bg)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-hdr{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:1.4rem}
+.badge{display:inline-flex;align-items:center;gap:.2rem;padding:.17rem .52rem;border-radius:100px;font-size:.71rem;font-weight:600}
+.badge-success{background:#dcfce7;color:#15803d}.badge-warning{background:#fef3c7;color:#92400e}.badge-danger{background:#fee2e2;color:#991b1b}.badge-info{background:#dbeafe;color:#1e40af}.badge-gray{background:#f1f5f9;color:#475569}.badge-purple{background:#ede9fe;color:#5b21b6}
+.form-group{margin-bottom:1.05rem}
+.form-label{display:block;font-size:.83rem;font-weight:600;margin-bottom:.32rem}
+.form-control{width:100%;padding:.56rem .78rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.83rem;color:var(--text);background:#fff;transition:.15s;outline:none}
+.form-control:focus{border-color:var(--accent)}
+textarea.form-control{resize:vertical;min-height:76px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-section{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:1.2rem 0 .8rem;padding-bottom:.4rem;border-bottom:2px solid #e0f2fe}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:620px;max-height:92vh;overflow-y:auto;animation:slideUp .2s ease}
+.modal-lg{max-width:780px}
+.modal-xl{max-width:920px}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hdr{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.modal-title{font-size:1rem;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:1.1rem;padding:.2rem .4rem;border-radius:4px}
+.modal-close:hover{color:var(--danger)}
+.modal-body{padding:1.4rem}
+.modal-foot{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem;background:#fff;position:sticky;bottom:0;z-index:2}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.05rem}
+.sec-title{font-size:1.05rem;font-weight:700}
+.empty{text-align:center;padding:2.75rem 1rem;color:var(--text-light)}
+.empty i{font-size:2rem;opacity:.3;margin-bottom:.7rem;display:block}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.4rem;overflow-x:auto}
+.tab-btn{padding:.6rem 1rem;border:none;background:none;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--accent);cursor:pointer;font-size:.83rem;font-weight:500;margin-bottom:1.2rem;border:none;background:none;font-family:inherit;padding:0}
+.back-btn:hover{text-decoration:underline}
+.alert{padding:.7rem .95rem;border-radius:var(--r-sm);font-size:.82rem;margin-bottom:.95rem;display:flex;align-items:flex-start;gap:.55rem}
+.alert-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--accent)}
+.alert-success{background:#dcfce7;color:#15803d;border-left:4px solid var(--success)}
+.alert-warning{background:#fef3c7;color:#92400e;border-left:4px solid var(--warning)}
+/* MODULE CARDS */
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.1rem;margin-bottom:1.5rem}
+.module-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;transition:.18s;cursor:pointer}
+.module-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
+.module-card.locked{opacity:.6;cursor:not-allowed}
+.module-card.locked:hover{transform:none;box-shadow:var(--shadow);border-color:var(--border)}
+.mc-banner{height:6px}
+.mc-body{padding:1.1rem}
+.mc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.75rem}
+.mc-title{font-size:.97rem;font-weight:700;margin-bottom:.28rem}
+.mc-desc{font-size:.78rem;color:var(--text-light);line-height:1.45;margin-bottom:.75rem}
+.mc-meta{display:flex;align-items:center;justify-content:space-between;font-size:.74rem;color:var(--text-light)}
+.mc-foot{padding:.7rem 1.1rem;background:#f8fafd;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+/* PROGRESS RING */
+.prog-ring{position:relative;width:44px;height:44px;flex-shrink:0}
+.prog-ring svg{transform:rotate(-90deg)}
+.prog-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--primary)}
+/* QUIZ STYLES */
+.quiz-wrap{max-width:720px;margin:0 auto}
+.quiz-progress-bar{height:6px;background:var(--border);border-radius:100px;margin-bottom:1.5rem;overflow:hidden}
+.quiz-progress-fill{height:100%;border-radius:100px;background:var(--accent);transition:.3s}
+.question-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1rem}
+.q-num{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:.5rem}
+.q-text{font-size:1rem;font-weight:600;line-height:1.5;margin-bottom:1.1rem}
+.q-image{width:100%;max-height:220px;object-fit:contain;border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:.9rem;background:#f8fafd}
+.option-btn{width:100%;text-align:left;padding:.75rem 1rem;border:2px solid var(--border);border-radius:var(--r-sm);background:#fff;cursor:pointer;font-family:inherit;font-size:.87rem;margin-bottom:.45rem;transition:.14s;display:flex;align-items:center;gap:.75rem}
+.option-btn:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--accent);background:#f0f9ff}
+.option-btn.selected{border-color:var(--accent);background:#e0f2fe;font-weight:600}
+.option-btn.correct{border-color:var(--success);background:#dcfce7;font-weight:600}
+.option-btn.wrong{border-color:var(--danger);background:#fee2e2}
+.option-btn.reveal-correct{border-color:var(--success);background:#dcfce7}
+.option-letter{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.tf-wrap{display:flex;gap:.75rem}
+.tf-btn{flex:1;padding:.85rem;border:2px solid var(--border);border-radius:var(--r-sm);background:#fff;cursor:pointer;font-family:inherit;font-size:.9rem;font-weight:600;transition:.14s;text-align:center}
+.tf-btn:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--accent);background:#f0f9ff}
+.fill-input{width:100%;padding:.65rem .85rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;outline:none;transition:.15s}
+.fill-input:focus{border-color:var(--accent)}
+.fill-input.correct{border-color:var(--success);background:#dcfce7}
+.fill-input.wrong{border-color:var(--danger);background:#fee2e2}
+.explanation{background:#f0f9ff;border-left:4px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.75rem 1rem;font-size:.82rem;margin-top:.75rem;display:none}
+/* RESULTS */
+.result-wrap{text-align:center;padding:2rem 1rem}
+.result-score{font-size:4rem;font-weight:800;line-height:1}
+.result-label{font-size:1rem;color:var(--text-light);margin-top:.35rem}
+.result-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1.5rem 0;max-width:380px;margin-left:auto;margin-right:auto}
+.rb-item{background:#f8fafd;border-radius:var(--r-sm);padding:.85rem;border:1px solid var(--border);text-align:center}
+.rb-val{font-size:1.4rem;font-weight:800;color:var(--primary)}
+.rb-lbl{font-size:.7rem;color:var(--text-light);margin-top:.15rem}
+/* LEADERBOARD / STATS TABLE */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;min-width:500px}
+.tbl th{text-align:left;padding:.6rem 1rem;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);background:#f8fafd;border-bottom:1px solid var(--border)}
+.tbl td{padding:.8rem 1rem;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:#f0f9ff}
+/* CATEGORY PILL */
+.cat-pill{display:inline-flex;align-items:center;gap:.22rem;padding:.2rem .6rem;border-radius:100px;font-size:.71rem;font-weight:600}
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.75rem}
+.stat-card{background:var(--card);border-radius:var(--r);padding:1rem 1.1rem;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:.85rem}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.si-blue{background:#dbeafe;color:#1d4ed8}.si-green{background:#dcfce7;color:#15803d}.si-orange{background:#ffedd5;color:#c2410c}.si-purple{background:#ede9fe;color:#6d28d9}.si-teal{background:#ccfbf1;color:#0f766e}
+.stat-value{font-size:1.5rem;font-weight:800;line-height:1}
+.stat-label{font-size:.72rem;color:var(--text-light);margin-top:.18rem}
+@media(max-width:600px){.modules-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.result-breakdown{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<div id="screen-loading">
+  <div class="spinner"></div>
+  <p style="color:rgba(255,255,255,.7);font-size:.88rem;margin-top:.5rem">Loading VIP Learning Portal...</p>
+</div>
+
+<div id="screen-auth" style="display:none">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><div class="auth-title">VIP Learning Portal</div><div class="auth-sub">VIP Medical Group Training</div></div>
+      </div>
+      <div style="font-size:1.02rem;font-weight:700;margin-bottom:.3rem">Sign In</div>
+      <div style="font-size:.83rem;color:var(--text-light);margin-bottom:1.4rem">Access your training modules and quizzes.</div>
+      <div id="login-error" class="auth-error"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="login-email" type="email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-control" id="login-password" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.25rem" onclick="doLogin()" id="login-btn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+      <div style="text-align:center;margin-top:1rem"><a href="#" onclick="event.preventDefault();forgotPw()" style="font-size:.8rem;color:var(--accent)">Forgot password?</a></div>
+      <div style="text-align:center;margin-top:.75rem;font-size:.78rem;color:var(--text-light)">Don't have an account? Contact your administrator.</div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-app" style="display:none">
+  <header class="hdr">
+    <div class="hdr-logo" onclick="goHome()">
+      <div class="hdr-logo-icon"><i class="fa-solid fa-graduation-cap" style="color:#fff;font-size:.9rem"></i></div>
+      <div style="margin-left:.4rem">
+        <div style="font-size:.92rem;font-weight:800;color:#fff;line-height:1.1">VIP Learning Portal</div>
+        <div style="font-size:.6rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em">VIP Medical Group</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div id="hdr-nav"></div>
+      <div class="hdr-user" id="hdr-username"></div>
+      <button class="btn btn-sm btn-outline" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)" onclick="doLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+    </div>
+  </header>
+  <main class="main" id="main-content"></main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyCmVslcWotuoFMQDLDAb_5T90njHg6rygg",
+  authDomain:"vip-trainer-hub.firebaseapp.com",
+  projectId:"vip-trainer-hub",
+  storageBucket:"vip-trainer-hub.firebasestorage.app",
+  messagingSenderId:"693318725233",
+  appId:"1:693318725233:web:aef47accc31f1c98fbf5d0"
+});
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ═══════════════════════════
+//  BUILT-IN MODULE CONTENT
+// ═══════════════════════════
+const BUILTIN_MODULES = [
+  {
+    id:'mod_anatomy_deep',
+    title:'Deep Venous Anatomy',
+    description:'Learn the deep venous system of the lower extremity including the femoral, popliteal, and tibial veins.',
+    category:'Anatomy',
+    color:'#0f3460',
+    icon:'fa-solid fa-heart-pulse',
+    estimatedMin:15,
+    content:`
+      <h3 style="margin-bottom:.75rem">Deep Venous System — Lower Extremity</h3>
+      <p style="margin-bottom:1rem;line-height:1.65">The deep venous system of the lower extremity carries the majority (~90%) of venous return from the legs back to the heart. These veins run alongside corresponding arteries and are named accordingly.</p>
+      <h4 style="margin:.9rem 0 .4rem">Key Deep Veins (Proximal to Distal)</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>Inferior Vena Cava (IVC)</strong> — receives bilateral common iliac veins</li>
+        <li><strong>Common Iliac Vein</strong> — joins external and internal iliac</li>
+        <li><strong>External Iliac Vein</strong> — continuation of the common femoral</li>
+        <li><strong>Common Femoral Vein (CFV)</strong> — at the inguinal ligament; receives the GSV</li>
+        <li><strong>Femoral Vein (FV)</strong> — previously called "superficial femoral vein" — runs in adductor canal</li>
+        <li><strong>Deep Femoral Vein (Profunda)</strong> — drains the thigh musculature</li>
+        <li><strong>Popliteal Vein</strong> — behind the knee; receives the SSV</li>
+        <li><strong>Tibial Veins</strong> — anterior tibial, posterior tibial, peroneal (paired)</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Clinical Relevance</h4>
+      <p style="line-height:1.65">DVT most commonly occurs in the femoral and popliteal veins. When scanning for DVT, you must compress each deep vein segment with the transducer — a normal vein fully collapses with gentle pressure. Absence of compressibility is the primary sign of DVT.</p>
+      <h4 style="margin:.9rem 0 .4rem">Scanning Tips</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Start at the CFV in transverse, work distally</li>
+        <li>Compress every 2–3 cm along each segment</li>
+        <li>Use color Doppler to confirm flow and assess for partial thrombus</li>
+        <li>Augmentation (squeezing the calf) increases venous flow — helpful to confirm patency</li>
+      </ul>`,
+    questions:[
+      {type:'mc',text:'Which vein carries approximately 90% of venous return from the lower extremity?',options:['Superficial venous system','Deep venous system','Perforator veins','Lymphatic system'],correct:1,explanation:'The deep venous system carries approximately 90% of venous return from the lower extremity back to the heart.'},
+      {type:'tf',text:'The "superficial femoral vein" is actually part of the deep venous system.',correct:true,explanation:'Yes — despite its misleading name, the superficial femoral vein (now called simply the "femoral vein") is part of the deep system and is a common site for DVT.'},
+      {type:'mc',text:'Where does the Great Saphenous Vein (GSV) drain into?',options:['Popliteal vein','Femoral vein','Common femoral vein','External iliac vein'],correct:2,explanation:'The GSV drains into the Common Femoral Vein (CFV) at the saphenofemoral junction (SFJ) near the inguinal ligament.'},
+      {type:'mc',text:'What is the PRIMARY ultrasound sign of DVT?',options:['Increased echogenicity in the vein','Absence of color flow','Non-compressibility of the vein','Reversed flow on Doppler'],correct:2,explanation:'Non-compressibility is the primary and most reliable sign of DVT. A normal vein will fully collapse with gentle transducer pressure.'},
+      {type:'mc',text:'The popliteal vein receives which superficial vein?',options:['Great Saphenous Vein','Anterior Accessory GSV','Small Saphenous Vein','Giacomini vein'],correct:2,explanation:'The Small Saphenous Vein (SSV) drains into the popliteal vein at the saphenopopliteal junction (SPJ) behind the knee.'},
+      {type:'fill',text:'The deep vein that runs through the adductor canal in the thigh is called the ________ vein.',answer:'femoral',explanation:'The femoral vein (previously called the superficial femoral vein) runs through the adductor canal in the thigh.'},
+      {type:'tf',text:'Augmentation (squeezing the calf) is used to confirm deep vein patency during duplex scanning.',correct:true,explanation:'Augmentation increases venous flow and helps confirm patency of deep veins when spontaneous flow is not well visualized.'},
+      {type:'mc',text:'Which veins in the calf are considered paired (travel in pairs alongside their artery)?',options:['GSV and SSV','Femoral and popliteal','Posterior tibial, anterior tibial, and peroneal veins','Common and external iliac veins'],correct:2,explanation:'The calf veins — posterior tibial, anterior tibial, and peroneal — are paired veins that run alongside their corresponding arteries.'},
+    ]
+  },
+  {
+    id:'mod_anatomy_superficial',
+    title:'Superficial Venous Anatomy',
+    description:'Master the superficial venous system including the GSV, SSV, accessory veins, and perforators.',
+    category:'Anatomy',
+    color:'#0d9488',
+    icon:'fa-solid fa-diagram-project',
+    estimatedMin:15,
+    content:`
+      <h3 style="margin-bottom:.75rem">Superficial Venous System — Lower Extremity</h3>
+      <p style="margin-bottom:1rem;line-height:1.65">The superficial venous system lies above the muscular fascia and is responsible for draining the skin and subcutaneous tissues. It connects to the deep system via perforator veins and the saphenofemoral and saphenopopliteal junctions.</p>
+      <h4 style="margin:.9rem 0 .4rem">Great Saphenous Vein (GSV)</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Longest vein in the body</li>
+        <li>Originates at the medial dorsal foot, runs medially up the leg and thigh</li>
+        <li>Terminates at the Saphenofemoral Junction (SFJ) → drains into Common Femoral Vein</li>
+        <li>Lies within the "saphenous eye" — hyperechoic fascia visible on ultrasound</li>
+        <li>Normal diameter: typically &lt;5 mm at thigh; &gt;6 mm often considered dilated</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Small Saphenous Vein (SSV)</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Runs along the posterior calf midline</li>
+        <li>Terminates at the Saphenopopliteal Junction (SPJ) → drains into popliteal vein</li>
+        <li>SPJ level is variable — always scan to confirm exact junction level</li>
+        <li>Can extend cranially as the Giacomini vein (connecting SSV to GSV/deep system)</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Accessory Veins</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>GSV Duplicate Vein</strong> — runs anterolaterally in the thigh</li>
+        <li>Can independently reflux and may require separate treatment</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Perforator Veins</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Connect the superficial and deep systems through the muscular fascia</li>
+        <li>Normally allow one-way flow from superficial → deep</li>
+        <li>Incompetent perforators allow reverse flow (outward) and can contribute to CVI</li>
+        <li>Key locations: Hunterian (mid-thigh), Dodd (distal thigh), Boyd (knee), Cockett (calf)</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Venous Reflux</h4>
+      <p style="line-height:1.65">Reflux is defined as retrograde (reversed) flow lasting more than 0.5 seconds in the superficial system (1.0 second in the deep system) following compression release or Valsalva maneuver. This is the hallmark of chronic venous insufficiency (CVI).</p>`,
+    questions:[
+      {type:'mc',text:'The Great Saphenous Vein (GSV) terminates at which junction?',options:['Saphenopopliteal Junction (SPJ)','Saphenofemoral Junction (SFJ)','Adductor canal','Deep femoral vein'],correct:1,explanation:'The GSV terminates at the Saphenofemoral Junction (SFJ), draining into the Common Femoral Vein near the inguinal ligament.'},
+      {type:'mc',text:'On ultrasound, the GSV is identified by lying within a structure called:',options:['The fascial envelope','The saphenous eye','The saphenous canal','The Hunter\'s triangle'],correct:1,explanation:'The GSV lies within the "saphenous eye" — a hyperechoic (bright) fascial compartment visible on B-mode ultrasound cross-section.'},
+      {type:'tf',text:'The Saphenopopliteal Junction (SPJ) is always located at the same level in every patient.',correct:false,explanation:'The level of the SPJ is highly variable between patients. Always scan to confirm the exact junction location before any procedure.'},
+      {type:'mc',text:'Venous reflux in the superficial system is defined as retrograde flow lasting more than:',options:['0.2 seconds','0.5 seconds','1.0 second','2.0 seconds'],correct:1,explanation:'Reflux in the superficial system is defined as retrograde flow > 0.5 seconds. The threshold is 1.0 second for the deep system.'},
+      {type:'mc',text:'Which perforator vein group is located in the medial calf and is associated with venous ulcers?',options:['Hunterian perforators','Dodd perforators','Boyd perforators','Cockett perforators'],correct:3,explanation:'The Cockett perforators are located in the medial calf and are commonly associated with chronic venous insufficiency and venous ulcers in that region.'},
+      {type:'fill',text:'The vein that connects the SSV to the GSV or deep system in the thigh is called the ________ vein.',answer:'giacomini',explanation:'The Giacomini vein is an extension of the SSV that runs cranially in the thigh, potentially connecting to the GSV or deep system.'},
+      {type:'tf',text:'Incompetent perforator veins allow flow from the superficial system into the deep system.',correct:false,explanation:'Incompetent perforators allow outward (reverse) flow from the deep system into the superficial system, which contributes to CVI and varicosities.'},
+      {type:'mc',text:'What is a normal GSV diameter at the thigh level?',options:['Less than 2 mm','Less than 5 mm','Less than 10 mm','Any size is normal'],correct:1,explanation:'A GSV diameter less than 5 mm at the thigh is generally considered normal. Greater than 6 mm is often considered dilated and may indicate venous disease.'},
+    ]
+  },
+  {
+    id:'mod_cvi_ceap',
+    title:'CVI & CEAP Classification',
+    description:'Understand Chronic Venous Insufficiency, its causes, symptoms, and the CEAP classification system used at VIP.',
+    category:'Clinical Knowledge',
+    color:'#7c3aed',
+    icon:'fa-solid fa-list-ol',
+    estimatedMin:12,
+    content:`
+      <h3 style="margin-bottom:.75rem">Chronic Venous Insufficiency (CVI) & CEAP Classification</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">Chronic Venous Insufficiency (CVI) occurs when the venous valves of the legs don't work properly, causing blood to pool (venous hypertension) in the lower extremities. It is a spectrum of disease ranging from minor cosmetic concerns to debilitating ulcers.</p>
+      <h4 style="margin:.9rem 0 .4rem">Causes of CVI</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Primary valve incompetence (most common)</li>
+        <li>Post-thrombotic syndrome (after DVT)</li>
+        <li>Obstruction of deep veins</li>
+        <li>Risk factors: family history, obesity, prolonged standing, pregnancy, female sex</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">The CEAP Classification System</h4>
+      <p style="line-height:1.65;margin-bottom:.6rem">CEAP stands for <strong>C</strong>linical, <strong>E</strong>tiology, <strong>A</strong>natomy, <strong>P</strong>athophysiology. The clinical classification (C0–C6) is the most used in daily practice:</p>
+      <table style="width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:1rem">
+        <thead><tr style="background:#f0f9ff"><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Class</th><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Description</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C0</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">No visible or palpable signs of venous disease</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C1</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Telangiectasias or reticular veins (spider veins)</td></tr>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C2</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Varicose veins ≥3 mm diameter</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C3</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Edema without skin changes</td></tr>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C4a</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Pigmentation or eczema</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C4b</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Lipodermatosclerosis or atrophie blanche</td></tr>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C5</td><td style="padding:.5rem .75rpm;border:1px solid var(--border)">Healed venous ulcer</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C6</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Active venous ulcer</td></tr>
+        </tbody>
+      </table>
+      <h4 style="margin:.9rem 0 .4rem">Insurance Considerations</h4>
+      <p style="line-height:1.65">Most insurance carriers require documentation of symptomatic CVI (C2–C6) with reflux >0.5 sec superficial / >1.0 sec deep, and a trial of conservative therapy (compression stockings 6–12 weeks) before approving thermal ablation. Always verify specific payer requirements.</p>`,
+    questions:[
+      {type:'mc',text:'What does CEAP stand for?',options:['Clinical, Etiology, Anatomy, Pathophysiology','Chronic, Edema, Arterial, Perforator','Classification, Evaluation, Assessment, Protocol','Clinical, Evaluation, Anatomy, Procedure'],correct:0,explanation:'CEAP stands for Clinical, Etiology, Anatomy, Pathophysiology — a comprehensive classification system for chronic venous disorders.'},
+      {type:'mc',text:'A patient presents with varicose veins ≥3 mm. What CEAP clinical class are they?',options:['C1','C2','C3','C4a'],correct:1,explanation:'C2 is defined as varicose veins measuring 3 mm or greater in diameter in the standing position.'},
+      {type:'mc',text:'A patient has an active venous ulcer. What is their CEAP class?',options:['C4b','C5','C6','C3'],correct:2,explanation:'C6 is an active (open) venous ulcer. C5 is a healed venous ulcer.'},
+      {type:'tf',text:'Most insurance companies require a trial of compression therapy before approving thermal ablation procedures.',correct:true,explanation:'Most payers require 6–12 weeks of conservative therapy (compression stockings) before approving ablation procedures. Always verify with the specific payer.'},
+      {type:'mc',text:'Hyperpigmentation (skin discoloration) around the ankle/lower leg is classified as:',options:['C3','C4a','C4b','C5'],correct:1,explanation:'C4a includes pigmentation (hyperpigmentation) and eczema. C4b includes lipodermatosclerosis and atrophie blanche.'},
+      {type:'fill',text:'Reflux in the superficial venous system is defined as retrograde flow lasting more than ________ seconds.',answer:'0.5',explanation:'Superficial venous reflux is defined as retrograde flow >0.5 seconds. Deep system reflux threshold is >1.0 second.'},
+      {type:'mc',text:'What is the most common cause of Chronic Venous Insufficiency?',options:['Deep vein thrombosis','Trauma to the leg','Primary valve incompetence','Arterial insufficiency'],correct:2,explanation:'Primary valve incompetence (valves that fail without a prior thrombotic event) is the most common cause of CVI.'},
+      {type:'tf',text:'Spider veins (telangiectasias) are classified as C2 in the CEAP system.',correct:false,explanation:'Spider veins (telangiectasias) and reticular veins are classified as C1. C2 is varicose veins ≥3 mm.'},
+    ]
+  },
+  {
+    id:'mod_gsv_rfa',
+    title:'GSV RFA Procedure Setup',
+    description:'Step-by-step guide to setting up and assisting with a Great Saphenous Vein Radiofrequency Ablation procedure.',
+    category:'Procedures',
+    color:'#be185d',
+    icon:'fa-solid fa-fire-flame-curved',
+    estimatedMin:20,
+    content:`
+      <h3 style="margin-bottom:.75rem">GSV Radiofrequency Ablation (RFA) — Procedure Setup</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">Radiofrequency Ablation (RFA) uses thermal energy delivered via a catheter to close incompetent veins. For the GSV, the catheter is inserted below the knee and advanced to within 2 cm of the Saphenofemoral Junction (SFJ). The most commonly used system at VIP is the ClosureFast (Medtronic) system.</p>
+      <h4 style="margin:.9rem 0 .4rem">Pre-Procedure Requirements</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Completed duplex mapping with reflux documentation</li>
+        <li>Prior Auth approved for the procedure</li>
+        <li>Signed informed consent</li>
+        <li>Patient in compression stockings for required period (if applicable)</li>
+        <li>Verify: patient not on anticoagulation that would contraindicate procedure</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Room & Tray Setup</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Ultrasound machine with vascular/lower extremity preset, sterile probe cover</li>
+        <li>RFA generator (ClosureFast) — power on, run self-test</li>
+        <li>RFA catheter (7 cm or 3 cm segment — per physician preference)</li>
+        <li>Introducer sheath kit (micropuncture set)</li>
+        <li>Tumescent anesthesia: 500mL Saline IV bag + Remove 25cc from bag and add to sterile bowl + 25cc 2% Lidocaine with Epi + 15cc Sodium Bicarbonate</li>
+        <li>Tumescent pump/bag and tubing</li>
+        <li>Sterile drape, sterile gloves, gown</li>
+        <li>Betadine or ChloraPrep for skin prep</li>
+        <li>18g or 21g access needle, guidewire, dilator</li>
+        <li>Compression bandage / stocking for post-procedure</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Procedure Steps (Overview)</h4>
+      <ol style="padding-left:1.2rem;line-height:2">
+        <li>Position patient supine, leg externally rotated; mark access site below knee under ultrasound</li>
+        <li>Sterile prep and drape of the leg</li>
+        <li>Ultrasound-guided access into GSV using micropuncture technique</li>
+        <li>Advance guidewire, exchange for introducer sheath</li>
+        <li>Insert RFA catheter; advance to 2 cm distal to SFJ under ultrasound guidance</li>
+        <li>Confirm catheter tip position with ultrasound — 2 cm from SFJ</li>
+        <li>Inject tumescent anesthesia along the length of the vein under ultrasound (perivenous infiltration)</li>
+        <li>Confirm tumescent: vein fully compressed and surrounded by fluid on ultrasound before activating energy</li>
+        <li>Patient in Trendelenburg position to empty vein</li>
+        <li>Activate RFA — treat in 7 cm (or 3 cm) segments, 20 seconds each, withdrawing catheter</li>
+        <li>Apply compression bandage immediately post-procedure</li>
+        <li>Post-procedure duplex to confirm closure</li>
+      </ol>
+      <h4 style="margin:.9rem 0 .4rem">Why Tumescent Anesthesia is Critical</h4>
+      <p style="line-height:1.65;margin-bottom:.5rem">Tumescent anesthesia is one of the most important steps of the entire procedure. It serves four essential purposes:</p>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>1. Pain Control</strong> — The lidocaine provides local anesthesia along the entire length of the vein, keeping the patient comfortable throughout the treatment</li>
+        <li><strong>2. Vein Compression</strong> — The fluid volume compresses the vein tightly around the catheter, ensuring maximum contact between the catheter and the vein wall for effective thermal energy delivery</li>
+        <li><strong>3. Heat Sink / Thermal Protection</strong> — The surrounding fluid absorbs heat and protects adjacent structures (nerves, skin, deep tissues) from thermal injury. Without adequate tumescent, burns and nerve damage can occur</li>
+        <li><strong>4. Vasoconstriction</strong> — The epinephrine in the lidocaine causes the surrounding tissue to constrict, reducing bleeding and bruising and prolonging the anesthetic effect</li>
+      </ul>
+      <p style="line-height:1.65;margin-top:.5rem;background:#fff8e1;border-left:4px solid #f4a261;padding:.65rem .85rem;border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:.85rem"><strong>⚠️ Key Point:</strong> Always confirm on ultrasound that the vein is fully surrounded by tumescent fluid before activating the RFA catheter. If you do not see adequate infiltration, do NOT proceed until more is injected.</p>
+
+      <h4 style="margin:.9rem 0 .4rem">Your Role as the Sonographer/MA</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Get consent</li>
+        <li>Draw up medications</li>
+        <li>Prep and drape patient</li>
+        <li>Work ultrasound machine for physician</li>
+        <li>Measure catheter tip to junction on ultrasound</li>
+        <li>Clean up patient</li>
+        <li>Wrap patient and put on compression stocking</li>
+      </ul>`,
+    questions:[
+      {type:'mc',text:'During GSV RFA, the catheter tip should be positioned how far from the Saphenofemoral Junction (SFJ)?',options:['At the SFJ','0.5 cm from SFJ','2 cm from SFJ','5 cm from SFJ'],correct:2,explanation:'The catheter tip is positioned 2 cm distal to the SFJ. This safety margin prevents heat damage to the common femoral vein and reduces the risk of DVT extension.'},
+      {type:'mc',text:'What is the purpose of tumescent anesthesia in RFA?',options:['To dilate the vein for better access','To provide local anesthesia, compress the vein, and create a heat sink to protect surrounding tissue','To flush the vein before treatment','To prevent bleeding after the procedure'],correct:1,explanation:'Tumescent anesthesia serves three purposes: (1) local anesthesia, (2) compresses the vein around the catheter for better contact, and (3) creates a heat sink to protect surrounding nerves and skin.'},
+      {type:'tf',text:'The ultrasound probe must be covered with a sterile cover during the RFA procedure.',correct:true,explanation:'Yes — since the RFA is a sterile procedure and the ultrasound is used to guide access and monitor the catheter, a sterile probe cover must be used.'},
+      {type:'mc',text:'What should you confirm on ultrasound before activating the RFA catheter?',options:['The catheter is at the SFJ','The vein is fully surrounded by tumescent fluid','The patient is in Trendelenburg','Color Doppler shows no flow'],correct:1,explanation:'Before activating the RFA catheter, confirm on ultrasound that tumescent fluid fully surrounds the vein. This ensures thermal protection of surrounding tissue and proper vein compression.'},
+      {type:'mc',text:'Which patient position is used just before activating the RFA catheter to help empty the vein?',options:['Reverse Trendelenburg (head up)','Trendelenburg (head down/feet up)','Left lateral decubitus','Prone position'],correct:1,explanation:'Trendelenburg position (head down, feet elevated) uses gravity to drain blood from the leg veins, ensuring better catheter-to-vein wall contact during treatment.'},
+      {type:'fill',text:'The VIP tumescent solution starts with a 500mL Saline IV bag. You remove 25cc, then add 25cc 2% Lidocaine with Epi and ________ cc of Sodium Bicarbonate.',answer:'15',explanation:'The VIP tumescent formula: 500mL Saline IV bag → remove 25cc into sterile bowl → add 25cc 2% Lidocaine with Epi + 15cc Sodium Bicarbonate.'},
+
+
+      {type:'mc',text:'Tumescent anesthesia serves how many essential purposes during RFA?',options:['One — pain control only','Two — pain control and compression','Three — pain control, compression, and heat sink','Four — pain control, compression, heat sink, and vasoconstriction'],correct:3,explanation:'Tumescent serves four critical roles: (1) pain control via lidocaine, (2) vein compression around the catheter, (3) heat sink to protect surrounding tissue, and (4) vasoconstriction from the epinephrine.'},
+
+      {type:'mc',text:'Which component of the tumescent solution is responsible for vasoconstriction and reducing bleeding?',options:['Sodium Bicarbonate','Normal Saline','Epinephrine (in the Lidocaine with Epi)','The saline volume itself'],correct:2,explanation:'Epinephrine causes local vasoconstriction, which reduces bleeding and bruising during and after the procedure and also prolongs the anesthetic effect of the lidocaine.'},
+    ]
+  },
+  {
+    id:'mod_ssv_rfa',
+    title:'SSV RFA Procedure Setup',
+    description:'Learn the setup and key considerations for Small Saphenous Vein Radiofrequency Ablation.',
+    category:'Procedures',
+    color:'#b45309',
+    icon:'fa-solid fa-fire',
+    estimatedMin:15,
+    content:`
+      <h3 style="margin-bottom:.75rem">SSV Radiofrequency Ablation (RFA) — Procedure Setup</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">SSV RFA follows the same principles as GSV RFA but has important anatomical differences that make it technically more challenging. The SSV runs along the posterior calf and terminates at the Saphenopopliteal Junction (SPJ), which is variable in position and in close proximity to the sural nerve and popliteal neurovascular bundle.</p>
+      <h4 style="margin:.9rem 0 .4rem">Key Differences from GSV RFA</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>Patient position:</strong> Prone (face down) — not supine like GSV</li>
+        <li><strong>Access point:</strong> Mid calf (posterior), accessed from below working upward</li>
+        <li><strong>Catheter tip position:</strong> 2–3 cm from the SPJ (variable — confirm with ultrasound)</li>
+        <li><strong>Nerve risk:</strong> Sural nerve runs alongside the SSV — adequate tumescent is critical</li>
+        <li><strong>SPJ level:</strong> Always verify exact SPJ location by scanning before starting</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Room & Tray Setup</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Same as GSV RFA setup (RFA generator, catheter, micropuncture kit, tumescent)</li>
+        <li>Positioning: prone with pillow under ankle to slightly flex the knee</li>
+        <li>Mark SSV from access point to SPJ under ultrasound before sterile prep</li>
+        <li>Sterile probe cover and drapes</li>
+        <li>Betadine or ChloraPrep</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Critical Safety Points</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Generous tumescent infiltration around the SSV is essential to protect the sural nerve</li>
+        <li>Confirm vein is surrounded by tumescent fluid before activating energy</li>
+        <li>Use extra caution near the SPJ — stay 2–3 cm away from junction</li>
+        <li>Post-procedure compression wrap immediately after treatment</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Your Role</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Get consent</li>
+        <li>Draw up medications</li>
+        <li>Prep and drape patient</li>
+        <li>Work ultrasound machine for physician</li>
+        <li>Measure catheter tip to junction on ultrasound</li>
+        <li>Clean up patient</li>
+        <li>Wrap patient and put on compression stocking</li>
+      </ul>`,
+    questions:[
+      {type:'mc',text:'What patient position is used for SSV RFA?',options:['Supine (face up)','Left lateral','Prone (face down)','Sitting upright'],correct:2,explanation:'SSV RFA is performed with the patient in the prone (face down) position, which allows access to the posterior calf where the SSV runs.'},
+      {type:'mc',text:'Which nerve is at greatest risk during SSV RFA and requires careful tumescent protection?',options:['Femoral nerve','Sciatic nerve','Sural nerve','Tibial nerve'],correct:2,explanation:'The sural nerve runs in close proximity to the SSV along the posterior calf and is at risk of thermal injury. Adequate tumescent anesthesia is critical to protect it.'},
+      {type:'tf',text:'The Saphenopopliteal Junction (SPJ) is always at the same anatomical level in every patient.',correct:false,explanation:'The SPJ level is highly variable. Always scan and confirm the exact location before beginning the SSV RFA procedure.'},
+      {type:'mc',text:'For SSV RFA, the catheter tip should be placed how far from the Saphenopopliteal Junction?',options:['At the SPJ','0.5–1 cm from SPJ','2–3 cm from SPJ','5 cm from SPJ'],correct:2,explanation:'The catheter tip is typically placed 2–3 cm from the SPJ for SSV RFA to maintain a safe distance from the popliteal vein junction.'},
+      {type:'tf',text:'SSV RFA uses the same tumescent anesthesia solution as GSV RFA.',correct:true,explanation:'The same tumescent formulation is used for both GSV and SSV RFA procedures. The key difference is the volume required and the nerve proximity during infiltration.'},
+      {type:'mc',text:'What is the MOST important reason for generous tumescent infiltration around the SSV during RFA?',options:['To dilate the vein','To prevent post-operative bruising','To protect the sural nerve from thermal injury','To increase blood flow to the leg'],correct:2,explanation:'Protecting the sural nerve from thermal injury is the most important reason for generous tumescent infiltration during SSV RFA.'},
+      {type:'fill',text:'SSV RFA is accessed from the ________ calf and the catheter is advanced upward toward the SPJ.',answer:'mid',explanation:'Access is obtained at the mid calf (posterior), and the catheter is advanced proximally (upward) toward the Saphenopopliteal Junction.'},
+    ]
+  },
+  {
+    id:'mod_varithena',
+    title:'Varithena (Foam Sclerotherapy)',
+    description:'Learn about Varithena polidocanol injectable foam — indications, setup, and procedure assistance.',
+    category:'Procedures',
+    color:'#065f46',
+    icon:'fa-solid fa-syringe',
+    estimatedMin:12,
+    content:`
+      <h3 style="margin-bottom:.75rem">Varithena — Polidocanol Injectable Foam</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">Varithena (polidocanol injectable foam 1%) is an FDA-approved microfoam sclerosant used to treat incompetent GSV and varicosities above and below the knee. Unlike thermal ablation, it requires no tumescent anesthesia and no catheter advancement to the junction — making it a less invasive option for certain patients.</p>
+      <h4 style="margin:.9rem 0 .4rem">Indications</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Incompetent GSV and accessory saphenous veins</li>
+        <li>Varicose tributaries and recurrent varicosities after prior treatment</li>
+        <li>Patients who are not candidates for thermal ablation (tortuosity, small diameter)</li>
+        <li>Often used as adjunct after RFA to treat residual varicosities</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Key Advantages Over RFA</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>No tumescent anesthesia required</li>
+        <li>Can treat tortuous veins not suitable for catheter-based therapy</li>
+        <li>Treats varicose tributaries directly</li>
+        <li>Shorter setup time</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Tray Setup</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Varithena canister and proprietary delivery system (ProPouch)</li>
+        <li>Ultrasound with sterile cover</li>
+        <li>Butterfly needles (21–23g) or IV cannulas for access into vein</li>
+
+        <li>Betadine/alcohol for skin prep</li>
+        <li>1% Lidocaine</li>
+        <li>Skin marker</li>
+        <li>Alcohol pads</li>
+        <li>Band aids</li>
+        <li>Physician's gloves</li>
+        <li>Compression bandages and stockings for immediate post-procedure</li>
+
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Procedure Overview</h4>
+      <ol style="padding-left:1.2rem;line-height:2">
+        <li>Patient supine; identify target vein with ultrasound</li>
+        <li>Access vein with butterfly needle under ultrasound guidance</li>
+        <li>Activate Varithena canister — generates consistent microfoam</li>
+        <li>Inject foam under ultrasound visualization — confirm foam fills vein (echogenic material)</li>
+        <li>Apply manual compression over injection site immediately</li>
+
+        <li>Apply compression stocking before patient ambulates</li>
+      </ol>
+      <h4 style="margin:.9rem 0 .4rem">Post-Procedure Instructions</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Wear compression stockings for 2 weeks</li>
+        <li>Ambulate immediately — do NOT stay sedentary</li>
+        <li>Avoid strenuous activity and prolonged sitting/standing for 1 week</li>
+        <li>Follow-up duplex in 3–7 days to assess treatment response</li>
+      </ul>`,
+    questions:[
+      {type:'mc',text:'What is Varithena?',options:['A thermal ablation catheter','An FDA-approved polidocanol injectable microfoam sclerosant','A type of compression bandage','A diagnostic ultrasound protocol'],correct:1,explanation:'Varithena is an FDA-approved polidocanol injectable foam (1%) used to treat incompetent saphenous veins and varicose tributaries.'},
+      {type:'tf',text:'Varithena requires tumescent anesthesia just like RFA.',correct:false,explanation:'One of the key advantages of Varithena is that it does NOT require tumescent anesthesia, making it a simpler and less invasive treatment option.'},
+      {type:'mc',text:'On ultrasound, successfully injected Varithena foam appears as:',options:['An anechoic (black) filling of the vein','An echogenic (bright/white) material filling the vein','No change in the vein appearance','Increased color Doppler signal'],correct:1,explanation:'Varithena foam is echogenic (bright/hyperechoic) on ultrasound, allowing real-time visualization of the foam filling the target vein during injection.'},
+      {type:'mc',text:'After Varithena treatment, patients should be instructed to:',options:['Rest in bed for 24 hours','Ambulate immediately and wear compression stockings','Avoid walking for 3 days','Remove compression stockings at bedtime'],correct:1,explanation:'Patients should ambulate immediately after Varithena and wear compression stockings continuously for 2 weeks. Ambulation prevents stasis and reduces DVT risk.'},
+      {type:'tf',text:'Varithena can be used to treat tortuous varicose veins that are not suitable for thermal ablation.',correct:true,explanation:'This is one of the advantages of Varithena — its foam can navigate tortuous veins that catheter-based thermal ablation (RFA/laser) cannot easily traverse.'},
+      {type:'mc',text:'A follow-up duplex scan after Varithena should be performed within:',options:['24 hours','3–7 days','2 weeks','1 month'],correct:1,explanation:'A follow-up duplex scan is typically performed 3–7 days after Varithena to assess treatment response and check for DVT.'},
+      {type:'fill',text:'The Varithena delivery system that generates the consistent microfoam is called the ________.',answer:'propouch',explanation:'The ProPouch is Varithena\'s proprietary canister/delivery system that generates a consistent, calibrated microfoam for injection.'},
+    ]
+  },
+  {
+    id:'mod_dvt',
+    title:'DVT Identification & Scanning',
+    description:'Learn to identify Deep Vein Thrombosis on duplex ultrasound — the gold standard diagnostic tool.',
+    category:'Clinical Knowledge',
+    color:'#1d4ed8',
+    icon:'fa-solid fa-magnifying-glass',
+    estimatedMin:15,
+    content:`
+      <h3 style="margin-bottom:.75rem">Deep Vein Thrombosis (DVT) — Identification & Scanning</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">DVT is a potentially life-threatening condition where a blood clot forms in the deep venous system. Duplex ultrasound is the gold standard for DVT diagnosis with sensitivity and specificity >95% for proximal DVT.</p>
+      <h4 style="margin:.9rem 0 .4rem">Risk Factors for DVT (Virchow's Triad)</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>Venous stasis:</strong> immobility, heart failure, long flights</li>
+        <li><strong>Hypercoagulability:</strong> clotting disorders, pregnancy, oral contraceptives, cancer</li>
+        <li><strong>Endothelial injury:</strong> surgery, trauma, IV catheters</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">DVT Symptoms</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Unilateral leg swelling, warmth, redness</li>
+        <li>Calf or thigh tenderness/pain</li>
+        <li>Pitting edema</li>
+        <li>Note: up to 50% of DVTs are asymptomatic!</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Ultrasound Findings in DVT</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>Non-compressibility</strong> — PRIMARY sign; vein does not collapse with gentle probe pressure</li>
+        <li><strong>Echogenic material</strong> in lumen — acute thrombus may be hypoechoic (anechoic), chronic thrombus more echogenic</li>
+        <li><strong>Absent or reduced color flow</strong> within the vein</li>
+        <li><strong>No augmentation</strong> — calf squeeze does not increase flow</li>
+        <li>Vein may be distended (enlarged diameter)</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Scanning Protocol</h4>
+      <ol style="padding-left:1.2rem;line-height:2">
+        <li>Begin at CFV (inguinal ligament), transverse view</li>
+        <li>Compress every 2–3 cm, advancing distally through FV, popliteal vein</li>
+        <li>Assess calf veins if clinically indicated</li>
+        <li>Use color Doppler to confirm flow, assess partially occluded segments</li>
+        <li>Document: location, extent, echogenicity, compressibility at each segment</li>
+      </ol>
+      <h4 style="margin:.9rem 0 .4rem">Acute vs Chronic DVT</h4>
+      <table style="width:100%;border-collapse:collapse;font-size:.83rem;margin-top:.5rem">
+        <thead><tr style="background:#f0f9ff"><th style="padding:.45rem .7rem;border:1px solid var(--border)">Feature</th><th style="padding:.45rem .7rem;border:1px solid var(--border)">Acute DVT</th><th style="padding:.45rem .7rem;border:1px solid var(--border)">Chronic DVT</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:.45rem .7rem;border:1px solid var(--border)">Echogenicity</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Hypoechoic/anechoic</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Hyperechoic, heterogeneous</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.45rem .7rem;border:1px solid var(--border)">Vein size</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Distended</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Normal or contracted</td></tr>
+          <tr><td style="padding:.45rem .7rem;border:1px solid var(--border)">Wall</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Smooth</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Thickened, irregular</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.45rem .7rem;border:1px solid var(--border)">Collaterals</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Absent or early</td><td style="padding:.45rem .7rem;border:1px solid var(--border)">Often present</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin:.9rem 0 .4rem">EHIT — Endovenous Heat-Induced Thrombosis</h4>
+      <p style="line-height:1.65;margin-bottom:.6rem">EHIT is a specific type of thrombus that can occur as a complication of thermal ablation procedures (RFA, laser). It forms at the treated vein's junction with the deep venous system — most commonly at the Saphenofemoral Junction (SFJ) after GSV RFA, or the Saphenopopliteal Junction (SPJ) after SSV RFA. Unlike DVT, EHIT originates from heat-induced injury to the vein wall rather than venous stasis or hypercoagulability.</p>
+      <p style="line-height:1.65;margin-bottom:.8rem">EHIT is classified into four classes based on the extent of thrombus extension into the deep venous system:</p>
+      <table style="width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:.75rem">
+        <thead><tr style="background:#f0f9ff"><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Class</th><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Description</th><th style="padding:.5rem .75rem;text-align:left;border:1px solid var(--border)">Management</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 1</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Thrombus at the junction but does not cross into the deep vein — remains in the treated saphenous vein at the SFJ/SPJ level</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Monitor with follow-up duplex; typically resolves spontaneously</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 2</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Thrombus extends into the deep vein (CFV or popliteal) but occludes less than 50% of the lumen</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Close monitoring; physician may initiate anticoagulation therapy</td></tr>
+          <tr><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 3</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Thrombus extends into the deep vein and occludes 50% or more of the lumen</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Anticoagulation typically required; urgent physician notification</td></tr>
+          <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">Class 4</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Complete occlusion of the deep vein — considered a true DVT</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Treat as DVT; anticoagulation required; urgent management</td></tr>
+        </tbody>
+      </table>
+      <h4 style="margin:.9rem 0 .4rem">Identifying EHIT on Ultrasound</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Perform post-procedure duplex at the SFJ/SPJ — assess for any thrombus extending into the deep vein</li>
+        <li>Evaluate the deep vein for compressibility and measure any thrombus extension in millimeters</li>
+        <li>Document: thrombus location, extent into deep vein, percent occlusion, and compressibility</li>
+        <li>EHIT most commonly occurs within the first 72 hours post-procedure</li>
+        <li>Follow-up duplex is typically scheduled 48–72 hours post-procedure to assess for EHIT</li>
+      </ul>
+      <div style="background:#fff8e1;border-left:4px solid #f4a261;border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.65rem .85rem;margin-top:.65rem;font-size:.85rem;line-height:1.6">
+        <strong>⚠️ Key Point:</strong> Any thrombus that extends beyond the junction into the deep vein (Class 2 or higher) must be reported to the physician immediately for evaluation and management decisions.
+      </div>`,
+    questions:[
+      {type:'mc',text:'What is the PRIMARY ultrasound criterion for diagnosing DVT?',options:['Hyperechoic material in the vein','Absent color flow on Doppler','Non-compressibility of the vein','Vein diameter >10 mm'],correct:2,explanation:'Non-compressibility is the primary diagnostic criterion for DVT. A normal vein collapses completely with gentle probe pressure; a thrombosed vein does not.'},
+      {type:'mc',text:'Virchow\'s Triad includes venous stasis, hypercoagulability, and:',options:['Arterial hypertension','Endothelial injury','Venous reflux','Lymphatic obstruction'],correct:1,explanation:'Virchow\'s Triad — the three factors that contribute to DVT formation — are: venous stasis, hypercoagulability, and endothelial injury.'},
+      {type:'tf',text:'Up to 50% of DVTs can be asymptomatic.',correct:true,explanation:'Correct — DVT is often clinically silent. This is why systematic compression ultrasound is critical rather than relying solely on clinical symptoms.'},
+      {type:'mc',text:'On ultrasound, acute DVT thrombus typically appears:',options:['Hyperechoic (bright white)','Hypoechoic or anechoic (dark)','With posterior acoustic shadowing','Calcified'],correct:1,explanation:'Acute DVT thrombus is typically hypoechoic (dark/nearly invisible) on B-mode ultrasound, which can make it difficult to see. Non-compressibility remains the key finding.'},
+      {type:'mc',text:'Where should you BEGIN a lower extremity DVT scan?',options:['Popliteal vein','Calf veins','Common Femoral Vein (CFV)','Inferior vena cava'],correct:2,explanation:'DVT scanning should begin at the Common Femoral Vein (CFV) at the inguinal ligament in transverse view, then work distally.'},
+      {type:'tf',text:'A vein with partial thrombus will still show some color Doppler flow.',correct:true,explanation:'Partial (non-occlusive) thrombus allows some blood flow to continue, so color Doppler may show residual flow around the clot. This is why compressibility testing is still essential.'},
+      {type:'fill',text:'Squeezing the calf during DVT scanning to assess venous flow is called ________.',answer:'augmentation',explanation:'Augmentation (squeezing the calf or foot) increases venous flow and is used to confirm patency of deep veins proximal to the site of compression.'},
+      {type:'mc',text:'Compared to acute DVT, chronic DVT thrombus is usually:',options:['Hypoechoic and soft','Hyperechoic and the vein wall is thickened','The same appearance','Anechoic with a thin wall'],correct:1,explanation:'Chronic DVT is characterized by hyperechoic (bright), heterogeneous thrombus with a thickened, irregular vein wall, and the vein may be contracted. Collateral vessels are often present.'},
+      {type:'mc',text:'What does EHIT stand for?',options:['External Heat-Induced Thrombosis','Endovenous Heat-Induced Thrombosis','Endothelial Hypertension-Induced Thrombus','Early Hematoma in Treated veins'],correct:1,explanation:'EHIT stands for Endovenous Heat-Induced Thrombosis — a thrombus that forms as a complication of thermal ablation (RFA/laser) at the junction of the treated vein with the deep venous system.'},
+      {type:'mc',text:'In which EHIT class does thrombus extend into the deep vein but occupy less than 50% of the lumen?',options:['Class 1','Class 2','Class 3','Class 4'],correct:1,explanation:'EHIT Class 2 is defined as thrombus that extends into the deep vein (CFV or popliteal) but occludes less than 50% of the lumen. Class 3 is 50% or more, and Class 4 is complete occlusion.'},
+      {type:'tf',text:'EHIT Class 4 is considered equivalent to a true DVT and requires anticoagulation.',correct:true,explanation:'EHIT Class 4 represents complete occlusion of the deep vein and is treated as a true DVT, requiring anticoagulation and urgent physician management.'},
+      {type:'mc',text:'After a GSV RFA procedure, where would you look for EHIT on the post-procedure duplex?',options:['Mid-thigh femoral vein','Popliteal vein','Saphenofemoral Junction (SFJ)','Calf veins'],correct:2,explanation:'EHIT after GSV RFA is assessed at the Saphenofemoral Junction (SFJ), where the treated GSV meets the Common Femoral Vein. After SSV RFA, assess the Saphenopopliteal Junction (SPJ).'},
+      {type:'fill',text:'EHIT most commonly occurs within the first ________ hours after a thermal ablation procedure.',answer:'72',explanation:'EHIT typically develops within the first 72 hours post-procedure. This is why follow-up duplex scanning is scheduled 48–72 hours after RFA to assess for this complication.'},
+      {type:'mc',text:'Which EHIT class requires immediate physician notification and typically requires anticoagulation?',options:['Class 1 only','Class 2 and above','Class 3 and above','Class 4 only'],correct:2,explanation:'EHIT Class 3 (≥50% occlusion of deep vein) and Class 4 (complete occlusion) require anticoagulation and urgent physician notification. Class 2 is monitored closely and may require anticoagulation at physician discretion.'},
+    ]
+  },
+  {
+    id:'mod_patient_consent',
+    title:'Patient Consent & Pre-Procedure Prep',
+    description:'Master the consent process, pre-procedure documentation, and patient preparation protocols at VIP.',
+    category:'Clinical Skills',
+    color:'#9f1239',
+    icon:'fa-solid fa-file-signature',
+    estimatedMin:10,
+    content:`
+      <h3 style="margin-bottom:.75rem">Patient Consent & Pre-Procedure Preparation</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">Proper patient consent and preparation is a critical step before any procedure at VIP Medical Group. The sonographer and MA play a key role in ensuring all documentation is complete, the patient is informed, and the room is ready before the physician enters.</p>
+      <h4 style="margin:.9rem 0 .4rem">Informed Consent Requirements</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Physician must explain the procedure, risks, benefits, and alternatives</li>
+        <li>Patient must have opportunity to ask questions</li>
+        <li>Consent form must be signed and dated before the procedure begins</li>
+        <li>Your role: ensure forms are signed, witness if required, document in Nextech</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Pre-Procedure Checklist</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>✅ Prior Authorization approved and active</li>
+        <li>✅ Consent form signed</li>
+        <li>✅ Allergies verified (especially to lidocaine, latex, betadine)</li>
+        <li>✅ Current medications reviewed (anticoagulants, blood thinners)</li>
+        <li>✅ Patient has worn compression stockings as required</li>
+        <li>✅ Duplex mapping on file with reflux documentation</li>
+        <li>✅ Site and side verification (correct leg, correct vein)</li>
+        <li>✅ Patient voided/bathroom before long procedures</li>
+      </ul>
+      <h4 style="margin:.9rem 0 .4rem">Patient Presentation to Physician</h4>
+      <p style="line-height:1.65;margin-bottom:.5rem">When presenting a patient, include:</p>
+      <ol style="padding-left:1.2rem;line-height:2">
+        <li>Patient name, age, and DOB</li>
+        <li>What procedure is being performed today and which leg/vein</li>
+        <li>Original chief complaint and diagnosis</li>
+        <li>Whether this is their first procedure or a follow-up</li>
+        <li>Next scheduled appointment</li>
+        <li>How the patient is feeling today</li>
+        <li>Review of assessment/plan from last visit</li>
+        <li>Any concerns, questions, or changes since last visit</li>
+      </ol>
+      <h4 style="margin:.9rem 0 .4rem">The Time Out Procedure</h4>
+      <p style="line-height:1.65;margin-bottom:.5rem">A Time Out must be performed immediately before beginning any procedure. It is a verbal confirmation between all members of the clinical team to ensure patient safety. Everyone stops what they are doing and actively participates.</p>
+      <div style="background:#f0f9ff;border-left:4px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.75rem 1rem;margin-bottom:.75rem;font-size:.85rem">
+        <strong>Time Out Checklist — Confirm the Following Out Loud:</strong>
+        <ol style="padding-left:1.2rem;line-height:2.1;margin-top:.4rem">
+          <li><strong>Patient Name</strong> — Verbally confirm the patient's full name</li>
+          <li><strong>Date of Birth</strong> — Confirm patient's date of birth</li>
+          <li><strong>Procedure Being Performed</strong> — State the exact procedure (e.g., RFA, Varithena, Phlebectomy)</li>
+          <li><strong>Vein Being Treated</strong> — Confirm which vein (e.g., GSV, SSV, tributary)</li>
+          <li><strong>Correct Side / Leg</strong> — Confirm left or right leg</li>
+          <li><strong>Allergies</strong> — Confirm any known allergies (especially lidocaine, betadine, latex)</li>
+          <li><strong>Consent</strong> — Confirm informed consent has been signed and is on file</li>
+          <li><strong>Prior Authorization</strong> — Confirm Prior Auth is approved for today's procedure</li>
+        </ol>
+      </div>
+      <p style="line-height:1.65;background:#fee2e2;border-left:4px solid var(--danger);padding:.65rem .85rem;border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:.85rem"><strong>⚠️ Important:</strong> The Time Out must be completed before the procedure begins — not during or after. If any item cannot be confirmed, the procedure should not proceed until it is resolved.</p>
+
+      <h4 style="margin:.9rem 0 .4rem">Post-Procedure Patient Instructions</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Apply and explain compression bandage/stocking</li>
+
+        <li>Avoid strenuous exercise for 1 week</li>
+        <li>Expect bruising, soreness, and firmness along treated vein — normal</li>
+        <li>When to call/return: fever, sudden swelling, severe pain, shortness of breath</li>
+
+      </ul>`,
+    questions:[
+
+      {type:'mc',text:'Before a vein procedure, which document MUST be verified as approved before proceeding?',options:['Lab work','Prior Authorization','Driver\'s license','Insurance card'],correct:1,explanation:'Prior Authorization (Prior Auth) must be approved and active before performing any elective vein procedure. Proceeding without it can result in non-payment and compliance issues.'},
+      {type:'mc',text:'When presenting a patient to the physician, what should you include?',options:['Only the patient\'s name and procedure','Name, age, procedure, complaint, whether it\'s first procedure, next appointment, and how the patient is feeling','Only vital signs and allergies','Just the consent form'],correct:1,explanation:'A complete patient presentation includes: name, age, procedure, original complaint, whether it\'s a first or follow-up procedure, next appointment, how the patient is feeling, and review of assessment/plan.'},
+      {type:'tf',text:'A patient should be instructed to stay seated and rest immediately after a vein procedure.',correct:false,explanation:'Patients should ambulate immediately after vein procedures. Remaining sedentary increases the risk of venous stasis and DVT. Walking activates the calf muscle pump.'},
+      {type:'mc',text:'Which allergy is most critical to verify before a vein ablation procedure?',options:['Penicillin','Aspirin','Lidocaine (local anesthetic)','Sulfa drugs'],correct:2,explanation:'Lidocaine allergy is critical to verify since tumescent anesthesia contains lidocaine. Betadine (iodine) and latex allergies should also be checked.'},
+
+      {type:'mc',text:'When must the Time Out be completed?',options:['During the procedure','After the procedure is finished','Immediately before the procedure begins','Only if the patient requests it'],correct:2,explanation:'The Time Out must be completed immediately before the procedure begins. If any item cannot be confirmed, the procedure should not proceed until it is resolved.'},
+      {type:'tf',text:'During the Time Out, the team must confirm which vein is being treated and which leg.',correct:true,explanation:'Confirming the specific vein (e.g., GSV, SSV) and the correct side (left or right leg) is a required part of the Time Out to prevent wrong-site procedures.'},
+      {type:'mc',text:'Which of the following is confirmed during the Time Out?',options:['Patient\'s insurance policy number','Patient name, DOB, procedure, vein, side, allergies, consent, and Prior Auth','Only the patient\'s name and allergies','The physician\'s credentials'],correct:1,explanation:'The Time Out confirms: patient name, date of birth, procedure being performed, vein being treated, correct side/leg, allergies, signed consent, and Prior Authorization approval.'},
+      {type:'tf',text:'Bruising and firmness along the treated vein after RFA is a normal expected finding.',correct:true,explanation:'Bruising, tenderness, and a firm/cord-like feeling along the treated vein are normal expected findings after RFA and typically resolve over several weeks.'},
+    ]
+  },
+];
+
+// ═══════════════════════════
+//  STATE
+// ═══════════════════════════
+let currentUser = null; // {uid, name, email, role}
+let currentModuleId = null;
+let quizState = {}; // {questions, current, answers, score}
+
+// ═══════════════════════════
+//  AUTH
+// ═══════════════════════════
+auth.onAuthStateChanged(async fbUser => {
+  if(fbUser) {
+    const doc = await db.collection('users').doc(fbUser.uid).get();
+    if(doc.exists) {
+      currentUser = {uid:fbUser.uid,...doc.data()};
+      showScreen('app');
+      initApp();
+    } else {
+      await auth.signOut();
+      showScreen('auth');
+    }
+  } else {
+    currentUser = null;
+    showScreen('auth');
+  }
+});
+
+function showScreen(name) {
+  document.getElementById('screen-loading').style.display = 'none';
+  ['auth','app'].forEach(s => {
+    document.getElementById('screen-'+s).style.display = s===name?(s==='app'?'block':'flex'):'none';
+  });
+}
+
+async function doLogin() {
+  const email = v('login-email'), pw = v('login-password');
+  hideEl('login-error');
+  if(!email||!pw) return showEl('login-error','Please enter email and password.');
+  setBtn('login-btn',true,'Signing in...');
+  try { await auth.signInWithEmailAndPassword(email,pw); }
+  catch(e){ setBtn('login-btn',false,'<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In'); showEl('login-error',authErr(e.code)); }
+}
+
+async function doLogout() { await auth.signOut(); }
+
+async function forgotPw() {
+  const email = prompt('Enter your email address:');
+  if(!email) return;
+  try { await auth.sendPasswordResetEmail(email); alert('Reset email sent! Check your inbox.'); }
+  catch(e){ alert('Error: '+(authErr(e.code)||e.message)); }
+}
+
+function authErr(code) {
+  const m={'auth/user-not-found':'No account found.','auth/wrong-password':'Incorrect password.','auth/invalid-email':'Invalid email.','auth/too-many-requests':'Too many attempts. Try again later.','auth/invalid-credential':'Invalid email or password.'};
+  return m[code]||'Something went wrong.';
+}
+
+// ═══════════════════════════
+//  APP INIT
+// ═══════════════════════════
+function initApp() {
+  document.getElementById('hdr-username').textContent = currentUser.name;
+  const nav = document.getElementById('hdr-nav');
+  if(currentUser.role === 'admin') {
+    nav.innerHTML = `
+      <button class="btn btn-sm btn-ghost" style="color:rgba(255,255,255,.7)" onclick="renderHome()"><i class="fa-solid fa-house"></i> Portal</button>
+      <button class="btn btn-sm btn-ghost" style="color:rgba(255,255,255,.7)" onclick="renderAdminDash()"><i class="fa-solid fa-chart-bar"></i> Admin</button>`;
+  } else {
+    nav.innerHTML = `<button class="btn btn-sm btn-ghost" style="color:rgba(255,255,255,.7)" onclick="renderHome()"><i class="fa-solid fa-house"></i> My Learning</button>`;
+  }
+  renderHome();
+}
+
+function goHome() { renderHome(); }
+
+// ═══════════════════════════
+//  HOME — TRAINEE VIEW
+// ═══════════════════════════
+async function renderHome() {
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div style="margin-bottom:1.75rem"><h1 style="font-size:1.4rem;font-weight:800">My Learning Portal</h1><p style="color:var(--text-light);font-size:.86rem;margin-top:.22rem">Welcome back, ${currentUser.name}! Continue your training below.</p></div>
+  <div id="home-stats" class="stats-grid"></div>
+  <div class="sec-hdr"><span class="sec-title">Training Modules</span></div>
+  <div class="modules-grid" id="modules-grid"><p style="color:var(--text-light)">Loading...</p></div>`;
+
+  // Load all modules (built-in + any custom from Firestore)
+  const [assignSnap, resultsSnap, customSnap] = await Promise.all([
+    db.collection('moduleAssignments').where('userId','==',currentUser.uid).get(),
+    db.collection('quizResults').where('userId','==',currentUser.uid).get(),
+    db.collection('modules').get()
+  ]);
+
+  const assignments = assignSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const results = resultsSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const customModules = customSnap.docs.map(d=>({id:d.id,...d.data(),isCustom:true}));
+
+  // Merge built-in + custom modules
+  let allModules = [...BUILTIN_MODULES, ...customModules];
+
+  // If admin, show all; if trainee, show assigned + all built-in
+  let visibleModules;
+  if(currentUser.role === 'admin') {
+    visibleModules = allModules;
+  } else {
+    const assignedIds = assignments.map(a=>a.moduleId);
+    // Show built-in always + only assigned custom modules
+    visibleModules = allModules.filter(m=>!m.isCustom || assignedIds.includes(m.id));
+  }
+
+  const completed = results.filter(r=>r.passed);
+  const totalScore = results.length ? Math.round(results.reduce((a,b)=>a+(b.percent||0),0)/results.length) : 0;
+
+  document.getElementById('home-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-book-open"></i></div><div><div class="stat-value">${visibleModules.length}</div><div class="stat-label">Modules Available</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${completed.length}</div><div class="stat-label">Completed</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-hourglass-half"></i></div><div><div class="stat-value">${visibleModules.length-completed.length}</div><div class="stat-label">Remaining</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-star"></i></div><div><div class="stat-value">${totalScore}%</div><div class="stat-label">Avg Score</div></div></div>`;
+
+  const grid = document.getElementById('modules-grid');
+  if(!visibleModules.length){ grid.innerHTML='<div class="empty"><i class="fa-solid fa-book-open"></i><p>No modules assigned yet.</p></div>'; return; }
+
+  grid.innerHTML = visibleModules.map(m=>{
+    const myResults = results.filter(r=>r.moduleId===m.id);
+    const best = myResults.length ? Math.max(...myResults.map(r=>r.percent||0)) : null;
+    const passed = myResults.some(r=>r.passed);
+    const attempts = myResults.length;
+    const pct = best !== null ? best : 0;
+    return `<div class="module-card ${false?'locked':''}" onclick="openModule('${m.id}')">
+      <div class="mc-banner" style="background:${m.color}"></div>
+      <div class="mc-body">
+        <div class="mc-icon" style="background:${m.color}22;color:${m.color}"><i class="${m.icon}"></i></div>
+        <div class="mc-title">${m.title}</div>
+        <div class="mc-desc">${m.description}</div>
+        <div class="mc-meta">
+          <span><i class="fa-solid fa-clock" style="font-size:.65rem"></i> ~${m.estimatedMin} min</span>
+          <span><i class="fa-solid fa-circle-question" style="font-size:.65rem"></i> ${m.questions.length} questions</span>
+        </div>
+      </div>
+      <div class="mc-foot">
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <span class="cat-pill" style="background:${m.color}18;color:${m.color}">${m.category}</span>
+          ${passed?`<span class="badge badge-success"><i class="fa-solid fa-check"></i> Passed</span>`:attempts>0?`<span class="badge badge-warning">In Progress</span>`:`<span class="badge badge-gray">Not Started</span>`}
+        </div>
+        <div style="display:flex;align-items:center;gap:.4rem">
+          ${best!==null?`<span style="font-size:.78rem;font-weight:700;color:${m.color}">${best}%</span>`:''}
+          <div class="prog-ring">
+            <svg width="44" height="44" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="18" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+              <circle cx="22" cy="22" r="18" fill="none" stroke="${m.color}" stroke-width="4" stroke-dasharray="${2*Math.PI*18}" stroke-dashoffset="${2*Math.PI*18*(1-pct/100)}" stroke-linecap="round"/>
+            </svg>
+            <div class="prog-ring-val">${pct}%</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════
+//  OPEN MODULE
+// ═══════════════════════════
+async function openModule(moduleId) {
+  currentModuleId = moduleId;
+  const module = BUILTIN_MODULES.find(m=>m.id===moduleId) || await (async()=>{
+    const d = await db.collection('modules').doc(moduleId).get();
+    return d.exists?{id:d.id,...d.data()}:null;
+  })();
+  if(!module) return;
+
+  const el = document.getElementById('main-content');
+  el.innerHTML = `
+    <button class="back-btn" onclick="renderHome()"><i class="fa-solid fa-arrow-left"></i> Back to Modules</button>
+    <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+      <div style="width:52px;height:52px;border-radius:12px;background:${module.color}22;color:${module.color};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0"><i class="${module.icon}"></i></div>
+      <div>
+        <h2 style="font-size:1.3rem;font-weight:800">${module.title}</h2>
+        <div style="font-size:.82rem;color:var(--text-light);margin-top:.2rem">${module.description}</div>
+        <div style="display:flex;gap:.5rem;margin-top:.45rem;flex-wrap:wrap">
+          <span class="cat-pill" style="background:${module.color}18;color:${module.color}">${module.category}</span>
+          <span class="badge badge-gray"><i class="fa-solid fa-clock" style="font-size:.63rem"></i> ~${module.estimatedMin} min</span>
+          <span class="badge badge-gray"><i class="fa-solid fa-circle-question" style="font-size:.63rem"></i> ${module.questions.length} questions</span>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchModuleTab(this,'tab-content')"><i class="fa-solid fa-book-open"></i> Study Material</button>
+      <button class="tab-btn" onclick="switchModuleTab(this,'tab-quiz')"><i class="fa-solid fa-circle-question"></i> Take Quiz</button>
+      <button class="tab-btn" onclick="switchModuleTab(this,'tab-history')"><i class="fa-solid fa-clock-rotate-left"></i> My Results</button>
+    </div>
+    <div id="tab-content">
+      <div class="card"><div class="card-body" style="line-height:1.6;font-size:.88rem">${module.content}</div></div>
+      <div style="text-align:center;margin-top:1.5rem">
+        <button class="btn btn-primary" style="padding:.75rem 2rem;font-size:.95rem" onclick="switchModuleTab(document.querySelector('.tab-btn:nth-child(2)'),'tab-quiz')">
+          <i class="fa-solid fa-circle-question"></i> I'm ready — Take the Quiz!
+        </button>
+      </div>
+    </div>
+    <div id="tab-quiz" style="display:none">
+      <div class="alert alert-info"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Read the study material first, then take the quiz. A passing score is 80% or higher. You can retake as many times as needed!</span></div>
+      <div style="text-align:center;padding:2rem">
+        <button class="btn btn-primary" style="padding:.85rem 2.5rem;font-size:1rem" onclick="startQuiz('${moduleId}')"><i class="fa-solid fa-play"></i> Start Quiz (${module.questions.length} questions)</button>
+      </div>
+    </div>
+    <div id="tab-history" style="display:none" id="tab-history-${moduleId}">
+      <div id="history-content-${moduleId}">Loading...</div>
+    </div>`;
+  loadModuleHistory(moduleId);
+}
+
+async function loadModuleHistory(moduleId) {
+  const snap = await db.collection('quizResults').where('userId','==',currentUser.uid).where('moduleId','==',moduleId).orderBy('completedAt','desc').get();
+  const el = document.getElementById(`history-content-${moduleId}`);
+  if(!el) return;
+  if(snap.empty){ el.innerHTML='<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>No attempts yet</p></div>'; return; }
+  const rows = snap.docs.map(d=>{
+    const r={id:d.id,...d.data()};
+    return `<tr>
+      <td>${r.completedAt?.toDate?fmtDate(r.completedAt.toDate().toISOString().split('T')[0]):'—'}</td>
+      <td><strong style="font-size:1.05rem;color:${r.percent>=80?'var(--success)':'var(--danger)'}">${r.percent}%</strong></td>
+      <td>${r.correct}/${r.total} correct</td>
+      <td><span class="badge ${r.passed?'badge-success':'badge-danger'}">${r.passed?'✓ Passed':'✗ Not Passed'}</span></td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Score</th><th>Correct</th><th>Result</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function switchModuleTab(btn, tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['tab-content','tab-quiz','tab-history'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=id===tabId?'block':'none';
+  });
+}
+
+// ═══════════════════════════
+//  QUIZ ENGINE
+// ═══════════════════════════
+function startQuiz(moduleId) {
+  const module = BUILTIN_MODULES.find(m=>m.id===moduleId);
+  if(!module) return;
+  // Shuffle questions
+  const shuffled = [...module.questions].sort(()=>Math.random()-.5);
+  quizState = {moduleId, questions:shuffled, current:0, answers:[], score:0};
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const {questions, current} = quizState;
+  const q = questions[current];
+  const total = questions.length;
+  const pct = Math.round((current/total)*100);
+  const letters = ['A','B','C','D','E'];
+
+  const el = document.getElementById('main-content');
+  el.innerHTML = `
+    <button class="back-btn" onclick="if(confirm('Exit quiz? Your progress will be lost.'))openModule('${quizState.moduleId}')"><i class="fa-solid fa-arrow-left"></i> Exit Quiz</button>
+    <div class="quiz-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+        <span style="font-size:.82rem;color:var(--text-light)">Question ${current+1} of ${total}</span>
+        <span style="font-size:.82rem;color:var(--text-light)">${pct}% complete</span>
+      </div>
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+      <div class="question-card">
+        <div class="q-num">Question ${current+1} · ${q.type==='mc'?'Multiple Choice':q.type==='tf'?'True / False':'Fill in the Blank'}</div>
+        <div class="q-text">${q.text}</div>
+        ${q.type==='mc'?`
+          <div id="options">
+            ${q.options.map((opt,i)=>`
+              <button class="option-btn" id="opt-${i}" onclick="selectMC(${i})">
+                <span class="option-letter">${letters[i]}</span> ${opt}
+              </button>`).join('')}
+          </div>`:''}
+        ${q.type==='tf'?`
+          <div class="tf-wrap">
+            <button class="tf-btn" id="tf-true" onclick="selectTF(true)"><i class="fa-solid fa-check" style="color:var(--success)"></i> True</button>
+            <button class="tf-btn" id="tf-false" onclick="selectTF(false)"><i class="fa-solid fa-xmark" style="color:var(--danger)"></i> False</button>
+          </div>`:''}
+        ${q.type==='fill'?`
+          <input class="fill-input" id="fill-answer" placeholder="Type your answer here..." onkeydown="if(event.key==='Enter')submitFill()">
+          <button class="btn btn-primary" style="margin-top:.65rem" onclick="submitFill()"><i class="fa-solid fa-check"></i> Submit Answer</button>`:''}
+        <div class="explanation" id="explanation"><i class="fa-solid fa-lightbulb" style="color:var(--warning)"></i> <strong>Explanation:</strong> ${q.explanation||''}</div>
+      </div>
+      <div id="next-btn-wrap" style="display:none;text-align:center;margin-top:1rem">
+        <button class="btn btn-primary" style="padding:.75rem 2rem" onclick="nextQuestion()">
+          ${current+1 < total ? 'Next Question <i class="fa-solid fa-arrow-right"></i>' : 'See Results <i class="fa-solid fa-flag-checkered"></i>'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function selectMC(idx) {
+  const q = quizState.questions[quizState.current];
+  const correct = q.correct === idx;
+  document.querySelectorAll('.option-btn').forEach((btn,i)=>{
+    btn.onclick = null;
+    if(i===idx) btn.classList.add(correct?'correct':'wrong');
+    if(!correct && i===q.correct) btn.classList.add('reveal-correct');
+  });
+  quizState.answers.push({correct});
+  if(correct) quizState.score++;
+  document.getElementById('explanation').style.display='block';
+  document.getElementById('next-btn-wrap').style.display='block';
+}
+
+function selectTF(val) {
+  const q = quizState.questions[quizState.current];
+  const correct = q.correct === val;
+  const trueBtn = document.getElementById('tf-true');
+  const falseBtn = document.getElementById('tf-false');
+  trueBtn.onclick = falseBtn.onclick = null;
+  if(val) { trueBtn.classList.add(correct?'correct':'wrong'); if(!correct) falseBtn.classList.add('reveal-correct'); }
+  else { falseBtn.classList.add(correct?'correct':'wrong'); if(!correct) trueBtn.classList.add('reveal-correct'); }
+  quizState.answers.push({correct});
+  if(correct) quizState.score++;
+  document.getElementById('explanation').style.display='block';
+  document.getElementById('next-btn-wrap').style.display='block';
+}
+
+function submitFill() {
+  const q = quizState.questions[quizState.current];
+  const input = document.getElementById('fill-answer');
+  const userAns = input.value.trim().toLowerCase();
+  const correct = userAns === q.answer.toLowerCase() || (q.altAnswers||[]).map(a=>a.toLowerCase()).includes(userAns);
+  input.classList.add(correct?'correct':'wrong');
+  input.disabled = true;
+  document.querySelectorAll('button').forEach(b=>{if(b.textContent.includes('Submit')) b.disabled=true;});
+  if(!correct) {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:.8rem;color:var(--danger);margin-top:.4rem;font-weight:500';
+    hint.innerHTML = `<i class="fa-solid fa-xmark"></i> Correct answer: <strong>${q.answer}</strong>`;
+    input.parentNode.insertBefore(hint, input.nextSibling);
+  }
+  quizState.answers.push({correct});
+  if(correct) quizState.score++;
+  document.getElementById('explanation').style.display='block';
+  document.getElementById('next-btn-wrap').style.display='block';
+}
+
+function nextQuestion() {
+  quizState.current++;
+  if(quizState.current >= quizState.questions.length) showResults();
+  else renderQuestion();
+}
+
+async function showResults() {
+  const {score, questions, moduleId} = quizState;
+  const total = questions.length;
+  const percent = Math.round((score/total)*100);
+  const passed = percent >= 80;
+  const module = BUILTIN_MODULES.find(m=>m.id===moduleId);
+
+  // Save to Firestore
+  await db.collection('quizResults').add({
+    userId: currentUser.uid,
+    userName: currentUser.name,
+    moduleId,
+    moduleName: module?.title||moduleId,
+    score, total, percent, passed,
+    completedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  const el = document.getElementById('main-content');
+  el.innerHTML = `
+    <div class="quiz-wrap">
+      <div class="result-wrap">
+        <div style="width:70px;height:70px;border-radius:50%;background:${passed?'#dcfce7':'#fee2e2'};display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto .85rem">
+          ${passed?'<i class="fa-solid fa-trophy" style="color:#15803d"></i>':'<i class="fa-solid fa-rotate" style="color:#dc2626"></i>'}
+        </div>
+        <div class="result-score" style="color:${passed?'var(--success)':'var(--danger)'}">${percent}%</div>
+        <div class="result-label">${passed?'🎉 Congratulations — You Passed!':'Keep studying — you\'ve got this!'}</div>
+        <div style="font-size:.85rem;color:var(--text-light);margin-top:.35rem">${module?.title}</div>
+        <div class="result-breakdown">
+          <div class="rb-item"><div class="rb-val">${score}</div><div class="rb-lbl">Correct</div></div>
+          <div class="rb-item"><div class="rb-val">${total-score}</div><div class="rb-lbl">Incorrect</div></div>
+          <div class="rb-item"><div class="rb-val">${total}</div><div class="rb-lbl">Total</div></div>
+        </div>
+        ${!passed?`<div class="alert alert-warning" style="text-align:left;max-width:400px;margin:0 auto .75rem"><i class="fa-solid fa-triangle-exclamation" style="flex-shrink:0"></i><span>Passing score is 80%. Review the study material and try again — you can retake as many times as needed!</span></div>`:''}
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-outline" onclick="openModule('${moduleId}')"><i class="fa-solid fa-book-open"></i> Review Material</button>
+          <button class="btn btn-primary" onclick="startQuiz('${moduleId}')"><i class="fa-solid fa-rotate"></i> Retake Quiz</button>
+          <button class="btn btn-secondary" onclick="renderHome()"><i class="fa-solid fa-house"></i> Back to Modules</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════
+//  ADMIN DASHBOARD
+// ═══════════════════════════
+async function renderAdminDash() {
+  if(currentUser.role !== 'admin') return;
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">Learning Portal Admin</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Track trainee progress across all modules</p></div></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchAdminTab(this,'admin-progress')"><i class="fa-solid fa-chart-bar"></i> Trainee Progress</button>
+    <button class="tab-btn" onclick="switchAdminTab(this,'admin-modules')"><i class="fa-solid fa-book-open"></i> Modules</button>
+    <button class="tab-btn" onclick="switchAdminTab(this,'admin-assign')"><i class="fa-solid fa-user-plus"></i> Assign Modules</button>
+  </div>
+  <div id="admin-progress"><p style="color:var(--text-light)">Loading...</p></div>
+  <div id="admin-modules" style="display:none"></div>
+  <div id="admin-assign" style="display:none"></div>`;
+  loadAdminProgress();
+}
+
+async function loadAdminProgress() {
+  const [resultsSnap, usersSnap] = await Promise.all([
+    db.collection('quizResults').get(),
+    db.collection('users').get()
+  ]);
+  const results = resultsSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const users = usersSnap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role==='trainee'||u.role==='trainer');
+
+  const el = document.getElementById('admin-progress');
+  if(!el) return;
+  if(!users.length){ el.innerHTML='<div class="empty"><i class="fa-solid fa-users"></i><p>No trainees have accounts yet</p></div>'; return; }
+
+  const rows = users.map(u=>{
+    const myR = results.filter(r=>r.userId===u.id);
+    const passed = myR.filter(r=>r.passed);
+    const uniquePassed = [...new Set(passed.map(r=>r.moduleId))].length;
+    const avg = myR.length ? Math.round(myR.reduce((a,b)=>a+(b.percent||0),0)/myR.length) : null;
+    const scoreColor = avg===null?'var(--text-light)':avg>=80?'var(--success)':avg>=60?'var(--warning)':'var(--danger)';
+
+    // Per-module best score cells
+    const moduleCells = BUILTIN_MODULES.map(m=>{
+      const attempts = myR.filter(r=>r.moduleId===m.id);
+      const best = attempts.length ? Math.max(...attempts.map(r=>r.percent||0)) : null;
+      const p = attempts.some(r=>r.passed);
+      const tried = attempts.length>0;
+      const bg = p?m.color:tried?'#d97706':'#94a3b8';
+      const textColor = (p||tried)?'#fff':'#fff';
+      return `<td style="text-align:center;padding:.6rem .5rem">
+        ${best!==null
+          ? `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:.15rem">
+              <span style="font-size:.82rem;font-weight:800;color:${best>=80?'var(--success)':'var(--danger)'}">${best}%</span>
+              <span class="badge ${p?'badge-success':tried?'badge-warning':'badge-gray'}" style="font-size:.62rem">${p?'Passed':tried?'Attempted':'—'}</span>
+             </div>`
+          : `<span style="color:var(--text-light);font-size:.78rem">—</span>`}
+      </td>`;
+    }).join('');
+
+    return `<tr>
+      <td style="min-width:160px"><div style="font-weight:600">${u.name}</div><div style="font-size:.71rem;color:var(--text-light)">${u.email}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:.3rem;font-size:.72rem;padding:.18rem .45rem" onclick="viewUserDetail('${u.id}')"><i class="fa-solid fa-clock-rotate-left"></i> Full History</button>
+      </td>
+      <td style="text-align:center"><strong style="font-size:1rem">${uniquePassed}</strong><span style="color:var(--text-light);font-size:.75rem"> / ${BUILTIN_MODULES.length}</span></td>
+      <td style="text-align:center"><strong style="color:${scoreColor};font-size:1rem">${avg!==null?avg+'%':'—'}</strong></td>
+      ${moduleCells}
+    </tr>`;
+  }).join('');
+
+  const moduleHeaders = BUILTIN_MODULES.map(m=>`<th style="text-align:center;min-width:95px;font-size:.65rem;padding:.6rem .4rem"><div style="width:18px;height:18px;border-radius:4px;background:${m.color};margin:0 auto .25rem"></div>${m.title}</th>`).join('');
+
+  el.innerHTML = `
+    <div class="card"><div class="tbl-wrap"><table class="tbl">
+      <thead><tr>
+        <th style="min-width:160px">Trainee</th>
+        <th style="text-align:center">Passed</th>
+        <th style="text-align:center">Avg Score</th>
+        ${moduleHeaders}
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+async function viewUserDetail(uid) {
+  const [userDoc, resultsSnap] = await Promise.all([
+    db.collection('users').doc(uid).get(),
+    db.collection('quizResults').where('userId','==',uid).orderBy('completedAt','desc').get()
+  ]);
+  const user = {id:userDoc.id,...userDoc.data()};
+  const results = resultsSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+  showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title"><i class="fa-solid fa-user-graduate" style="color:var(--accent)"></i> ${user.name} — Quiz History</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:1rem">
+        ${BUILTIN_MODULES.map(m=>{
+          const myR = results.filter(r=>r.moduleId===m.id);
+          const best = myR.length ? Math.max(...myR.map(r=>r.percent||0)) : null;
+          const passed = myR.some(r=>r.passed);
+          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:28px;height:28px;border-radius:7px;background:${m.color}22;color:${m.color};display:flex;align-items:center;justify-content:center;font-size:.75rem"><i class="${m.icon}"></i></div>
+              <span style="font-size:.84rem;font-weight:500">${m.title}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem">
+              ${best!==null?`<span style="font-size:.82rem;font-weight:700;color:${best>=80?'var(--success)':'var(--danger)'}">${best}%</span>`:''}
+              <span class="badge ${passed?'badge-success':myR.length?'badge-warning':'badge-gray'}">${passed?'Passed':myR.length?myR.length+' attempt(s)':'Not started'}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${results.length?`
+      <div class="form-section">Recent Attempts</div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Module</th><th>Score</th><th>Date</th><th>Result</th></tr></thead>
+        <tbody>${results.slice(0,15).map(r=>`<tr>
+          <td style="font-size:.8rem">${r.moduleName||r.moduleId}</td>
+          <td><strong style="color:${r.percent>=80?'var(--success)':'var(--danger)'}">${r.percent}%</strong></td>
+          <td style="font-size:.78rem;color:var(--text-light)">${r.completedAt?.toDate?fmtDate(r.completedAt.toDate().toISOString().split('T')[0]):'—'}</td>
+          <td><span class="badge ${r.passed?'badge-success':'badge-danger'}">${r.passed?'Passed':'Not Passed'}</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>`:''}
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="forceClose()">Close</button></div>
+  </div>`);
+}
+
+function switchAdminTab(btn, tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['admin-progress','admin-modules','admin-assign'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=id===tabId?'block':'none';
+  });
+  if(tabId==='admin-progress') loadAdminProgress();
+  if(tabId==='admin-modules') loadAdminModules();
+  if(tabId==='admin-assign') loadAdminAssign();
+}
+
+async function loadAdminModules() {
+  const el = document.getElementById('admin-modules');
+  if(!el) return;
+  el.innerHTML = `
+    <div class="sec-hdr"><span class="sec-title">All Modules (${BUILTIN_MODULES.length} built-in)</span></div>
+    <div class="modules-grid">
+      ${BUILTIN_MODULES.map(m=>`
+        <div class="module-card">
+          <div class="mc-banner" style="background:${m.color}"></div>
+          <div class="mc-body">
+            <div class="mc-icon" style="background:${m.color}22;color:${m.color}"><i class="${m.icon}"></i></div>
+            <div class="mc-title">${m.title}</div>
+            <div class="mc-desc">${m.description}</div>
+            <div class="mc-meta"><span><i class="fa-solid fa-circle-question" style="font-size:.65rem"></i> ${m.questions.length} questions</span><span><i class="fa-solid fa-clock" style="font-size:.65rem"></i> ~${m.estimatedMin} min</span></div>
+          </div>
+          <div class="mc-foot"><span class="cat-pill" style="background:${m.color}18;color:${m.color}">${m.category}</span><span class="badge badge-info">Built-in</span></div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function loadAdminAssign() {
+  const el = document.getElementById('admin-assign');
+  if(!el) return;
+  const usersSnap = await db.collection('users').get();
+  const users = usersSnap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role!=='admin');
+  el.innerHTML = `
+    <div class="alert alert-info"><i class="fa-solid fa-circle-info"></i><span>All built-in modules are automatically available to all trainees. Use this section to create trainee accounts so they can access the portal.</span></div>
+    <div class="sec-hdr"><span class="sec-title">Trainee Accounts (${users.length})</span><button class="btn btn-primary btn-sm" onclick="openCreateTraineeAccount()"><i class="fa-solid fa-plus"></i> Create Trainee Login</button></div>
+    <div class="card"><div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th></tr></thead>
+      <tbody>${users.length?users.map(u=>`<tr><td style="font-weight:600">${u.name}</td><td style="font-size:.8rem">${u.email}</td><td><span class="badge badge-info">${u.role}</span></td><td style="font-size:.78rem;color:var(--text-light)">${u.createdAt?.toDate?fmtDate(u.createdAt.toDate().toISOString().split('T')[0]):'—'}</td></tr>`).join(''):'<tr><td colspan="4"><div class="empty"><i class="fa-solid fa-users"></i><p>No trainee accounts yet</p></div></td></tr>'}</tbody>
+    </table></div></div>`;
+}
+
+// Secondary app for creating accounts
+let _secondaryApp2;
+try { _secondaryApp2 = firebase.app('learn-portal'); } catch(e) { _secondaryApp2 = firebase.initializeApp(firebase.app().options,'learn-portal'); }
+
+function openCreateTraineeAccount() {
+  showModal(`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title"><i class="fa-solid fa-user-plus" style="color:var(--accent)"></i> Create Trainee Login</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="alert alert-info"><i class="fa-solid fa-circle-info"></i><span>This creates a login for the Learning Portal only. Trainees will NOT have access to the Trainer Hub.</span></div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="ta-name" placeholder="Trainee's full name"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="ta-email" type="email" placeholder="trainee@email.com"></div>
+      <div class="form-group"><label class="form-label">Temporary Password</label><input class="form-control" id="ta-pass" type="password" placeholder="They can change this after first login"></div>
+      <div id="ta-error" style="background:#fee2e2;color:#991b1b;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;display:none"></div>
+      <div id="ta-success" style="background:#dcfce7;color:#15803d;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;display:none"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="ta-btn" onclick="createTraineeAccount()"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+    </div>
+  </div>`);
+}
+
+async function createTraineeAccount() {
+  const name=v('ta-name'), email=v('ta-email'), pass=v('ta-pass');
+  hideEl('ta-error'); hideEl('ta-success');
+  if(!name||!email||!pass) return showEl('ta-error','All fields are required.');
+  if(pass.length<6) return showEl('ta-error','Password must be at least 6 characters.');
+  setBtn('ta-btn',true,'Creating...');
+  try {
+    // Use Firebase REST API to create account without affecting current session
+    const apiKey = 'AIzaSyCmVslcWotuoFMQDLDAb_5T90njHg6rygg';
+    const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password:pass, returnSecureToken:true})
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const uid = data.localId;
+    await db.collection('users').doc(uid).set({name, email, role:'trainee', createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showEl('ta-success', `Account created! ${name} can now sign in at this page.`);
+    setBtn('ta-btn', false, 'Done ✓');
+    setTimeout(()=>{forceClose(); loadAdminAssign();}, 1500);
+  } catch(e){
+    setBtn('ta-btn', false, '<i class="fa-solid fa-user-plus"></i> Create Account');
+    const msg = e.message==='EMAIL_EXISTS'?'An account with that email already exists.':e.message==='WEAK_PASSWORD : Password should be at least 6 characters'?'Password must be at least 6 characters.':e.message||'Something went wrong.';
+    showEl('ta-error', msg);
+  }
+}
+
+// ═══════════════════════════
+//  MODALS / HELPERS
+// ═══════════════════════════
+function showModal(html){document.getElementById('modal-root').innerHTML=`<div class="overlay" onclick="closeModal(event)">${html}</div>`;}
+function closeModal(e){if(!e||e.target.classList.contains('overlay'))document.getElementById('modal-root').innerHTML='';}
+function forceClose(){document.getElementById('modal-root').innerHTML='';}
+function v(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function showEl(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.display='flex';}}
+function hideEl(id){const el=document.getElementById(id);if(el)el.style.display='none';}
+function setBtn(id,disabled,html){const el=document.getElementById(id);if(el){el.disabled=disabled;if(html)el.innerHTML=html;}}
+function fmtDate(s){if(!s)return '—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function ts(){return firebase.firestore.FieldValue.serverTimestamp();}
+</script>
+</body>
+</html>
