@@ -235,7 +235,62 @@ const BUILTIN_MODULES = [
         <li>Compress every 2–3 cm along each segment</li>
         <li>Use color Doppler to confirm flow and assess for partial thrombus</li>
         <li>Augmentation (squeezing the calf) increases venous flow — helpful to confirm patency</li>
-      </ul>`,
+      </ul>
+      <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #1e2a3a;background:#09090f">
+        <div style="padding:.5rem 1rem;background:#0d1117;border-bottom:1px solid #1e2a3a;font-size:.7rem;color:#7dd3fc;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
+          <i class="fa-solid fa-compress"></i>&nbsp; DVT Compression Test — Normal vs. DVT
+        </div>
+        <svg viewBox="0 0 520 235" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+          <rect width="520" height="235" fill="#09090f"/>
+          <line x1="260" y1="28" x2="260" y2="235" stroke="#1e2a3a" stroke-width="2"/>
+          <!-- headers -->
+          <text x="130" y="22" fill="#22c55e" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">NORMAL — Compressible</text>
+          <text x="390" y="22" fill="#ef4444" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">DVT — Non-compressible</text>
+          <!-- LEFT: normal -->
+          <rect x="0" y="28" width="260" height="207" fill="#0d0d15"/>
+          <!-- artery (left) -->
+          <circle cx="72" cy="135" r="30" fill="#0a0a10" stroke="#444" stroke-width="1.5"/>
+          <circle cx="72" cy="135" r="24" fill="#1a0505" stroke="#f87171" stroke-width="1.5"/>
+          <text x="72" y="178" fill="#f87171" font-size="9" font-family="sans-serif" text-anchor="middle">Artery (round)</text>
+          <!-- vein collapsed -->
+          <ellipse cx="188" cy="135" rx="25" ry="5" fill="#050508" stroke="#22c55e" stroke-width="2"/>
+          <text x="188" y="153" fill="#22c55e" font-size="9" font-family="sans-serif" text-anchor="middle">Vein — collapsed</text>
+          <!-- probe left -->
+          <rect x="162" y="68" width="52" height="16" rx="3" fill="#1d4ed8" opacity=".85"/>
+          <polygon points="162,84 214,84 188,105" fill="#1d4ed8" opacity=".85"/>
+          <text x="188" y="66" fill="#93c5fd" font-size="8.5" font-family="sans-serif" text-anchor="middle">Probe pressure</text>
+          <line x1="188" y1="106" x2="188" y2="126" stroke="#22c55e" stroke-width="2.5"/>
+          <polygon points="181,124 195,124 188,132" fill="#22c55e"/>
+          <text x="188" y="200" fill="#22c55e" font-size="10.5" font-family="sans-serif" text-anchor="middle">Walls touch ✓  =  No DVT</text>
+          <!-- RIGHT: DVT -->
+          <rect x="260" y="28" width="260" height="207" fill="#0d0d15"/>
+          <!-- artery right -->
+          <circle cx="332" cy="135" r="30" fill="#0a0a10" stroke="#444" stroke-width="1.5"/>
+          <circle cx="332" cy="135" r="24" fill="#1a0505" stroke="#f87171" stroke-width="1.5"/>
+          <text x="332" y="178" fill="#f87171" font-size="9" font-family="sans-serif" text-anchor="middle">Artery (round)</text>
+          <!-- vein with thrombus (stays round) -->
+          <circle cx="448" cy="135" r="30" fill="#0a0a10" stroke="#ef4444" stroke-width="2.5"/>
+          <circle cx="448" cy="135" r="24" fill="#160a0a"/>
+          <!-- thrombus texture -->
+          <circle cx="438" cy="126" r="4" fill="#2f1212"/><circle cx="458" cy="130" r="3.5" fill="#2f1212"/>
+          <circle cx="444" cy="146" r="4" fill="#2f1212"/><circle cx="460" cy="143" r="3" fill="#2f1212"/>
+          <circle cx="432" cy="140" r="3" fill="#2f1212"/><circle cx="452" cy="124" r="3" fill="#2f1212"/>
+          <text x="448" y="178" fill="#ef4444" font-size="9" font-family="sans-serif" text-anchor="middle">Vein — stays round</text>
+          <!-- probe right -->
+          <rect x="422" y="68" width="52" height="16" rx="3" fill="#1d4ed8" opacity=".85"/>
+          <polygon points="422,84 474,84 448,105" fill="#1d4ed8" opacity=".85"/>
+          <text x="448" y="66" fill="#93c5fd" font-size="8.5" font-family="sans-serif" text-anchor="middle">Probe pressure</text>
+          <line x1="448" y1="106" x2="448" y2="101" stroke="#ef4444" stroke-width="2.5"/>
+          <text x="448" y="99" fill="#ef4444" font-size="22" font-family="sans-serif" text-anchor="middle">✗</text>
+          <!-- thrombus label -->
+          <text x="488" y="132" fill="#fca5a5" font-size="9" font-family="sans-serif">Thrombus</text>
+          <line x1="474" y1="135" x2="487" y2="132" stroke="#fca5a5" stroke-width="1" stroke-dasharray="2,2"/>
+          <text x="448" y="200" fill="#ef4444" font-size="10.5" font-family="sans-serif" text-anchor="middle">Non-compressible ✗  =  DVT</text>
+        </svg>
+        <div style="padding:.5rem 1rem;font-size:.73rem;color:#94a3b8;background:#0d1117;border-top:1px solid #1e2a3a">
+          <strong style="color:#38bdf8">Primary DVT sign:</strong> Failure of the vein to fully collapse under gentle transducer pressure. The adjacent artery stays round (it is pulsatile and cannot be compressed). A patent vein fully collapses; a thrombosed vein does not budge.
+        </div>
+      </div>`,
     questions:[
       {type:'mc',text:'Which vein carries approximately 90% of venous return from the lower extremity?',options:['Superficial venous system','Deep venous system','Perforator veins','Lymphatic system'],correct:1,explanation:'The deep venous system carries approximately 90% of venous return from the lower extremity back to the heart.'},
       {type:'tf',text:'The "superficial femoral vein" is actually part of the deep venous system.',correct:true,explanation:'Yes — despite its misleading name, the superficial femoral vein (now called simply the "femoral vein") is part of the deep system and is a common site for DVT.'},
@@ -266,6 +321,85 @@ const BUILTIN_MODULES = [
         <li>Lies within the "saphenous eye" — hyperechoic fascia visible on ultrasound</li>
         <li>Normal diameter: typically &lt;5 mm at thigh; &gt;6 mm often considered dilated</li>
       </ul>
+      <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #1e2a3a;background:#09090f">
+        <div style="padding:.5rem 1rem;background:#0d1117;border-bottom:1px solid #1e2a3a;font-size:.7rem;color:#7dd3fc;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
+          <i class="fa-solid fa-eye"></i>&nbsp; Ultrasound Cross-Section — The &quot;Saphenous Eye&quot; (Egyptian Eye Sign)
+        </div>
+        <svg viewBox="0 0 560 285" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+          <rect width="560" height="285" fill="#09090f"/>
+          <!-- probe bar -->
+          <rect x="70" y="8" width="355" height="14" rx="4" fill="#1d3a5f" opacity=".85"/>
+          <text x="248" y="20" fill="#7dd3fc" font-size="9" font-family="sans-serif" text-anchor="middle">Linear Ultrasound Probe (top of image = near field)</text>
+          <!-- skin -->
+          <rect x="0" y="22" width="510" height="7" fill="#c8c8c8" opacity=".85"/>
+          <text x="8" y="32" fill="#888" font-size="9" font-family="sans-serif">Skin</text>
+          <!-- subcut fat -->
+          <rect x="0" y="29" width="510" height="65" fill="#121220"/>
+          <text x="8" y="48" fill="#777" font-size="9" font-family="sans-serif">Subcut</text>
+          <text x="8" y="59" fill="#777" font-size="9" font-family="sans-serif">Fat</text>
+          <!-- speckle noise in fat -->
+          <circle cx="80" cy="45" r="1.2" fill="#252535"/><circle cx="130" cy="55" r="1" fill="#2a2a3a"/>
+          <circle cx="185" cy="40" r="1.2" fill="#252535"/><circle cx="240" cy="62" r="1" fill="#2a2a3a"/>
+          <circle cx="295" cy="48" r="1.2" fill="#252535"/><circle cx="350" cy="57" r="1" fill="#2a2a3a"/>
+          <circle cx="405" cy="43" r="1.2" fill="#252535"/><circle cx="460" cy="61" r="1" fill="#2a2a3a"/>
+          <circle cx="100" cy="72" r="1" fill="#2a2a3a"/><circle cx="165" cy="68" r="1.2" fill="#252535"/>
+          <circle cx="225" cy="76" r="1" fill="#2a2a3a"/><circle cx="280" cy="69" r="1.2" fill="#252535"/>
+          <circle cx="340" cy="77" r="1" fill="#2a2a3a"/><circle cx="420" cy="71" r="1.2" fill="#252535"/>
+          <!-- fascial compartment background -->
+          <rect x="0" y="94" width="510" height="88" fill="#0f0f1a"/>
+          <!-- THE SAPHENOUS EYE shape -->
+          <path d="M 110 138 Q 248 92 390 138 Q 248 184 110 138 Z" fill="#0a0a14"/>
+          <!-- top fascial arc (superficial fascia) - glow then line -->
+          <path d="M 110 138 Q 248 92 390 138" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="9"/>
+          <path d="M 110 138 Q 248 92 390 138" fill="none" stroke="rgba(230,230,230,.9)" stroke-width="2.5"/>
+          <!-- bottom fascial arc (deep fascia) -->
+          <path d="M 110 138 Q 248 184 390 138" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="9"/>
+          <path d="M 110 138 Q 248 184 390 138" fill="none" stroke="rgba(230,230,230,.9)" stroke-width="2.5"/>
+          <!-- corner focal highlights -->
+          <circle cx="110" cy="138" r="4" fill="rgba(255,255,255,.7)"/>
+          <circle cx="390" cy="138" r="4" fill="rgba(255,255,255,.7)"/>
+          <!-- GSV lumen (anechoic "pupil") -->
+          <circle cx="248" cy="138" r="28" fill="#050508" stroke="rgba(70,70,100,.5)" stroke-width="1.5"/>
+          <!-- anterior wall reflection -->
+          <ellipse cx="248" cy="117" rx="23" ry="4" fill="#0e0e22" opacity=".65"/>
+          <!-- saphenous nerve (small structure medial to GSV) -->
+          <circle cx="284" cy="136" r="6" fill="#0f0f1e" stroke="rgba(150,150,200,.5)" stroke-width="1.5"/>
+          <!-- LABELS -->
+          <line x1="248" y1="110" x2="248" y2="76" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3,2"/>
+          <text x="248" y="71" fill="#38bdf8" font-size="13" font-weight="bold" font-family="sans-serif" text-anchor="middle">GSV</text>
+          <text x="248" y="83" fill="#7dd3fc" font-size="8.5" font-family="sans-serif" text-anchor="middle">anechoic lumen</text>
+          <line x1="390" y1="138" x2="430" y2="112" stroke="#e2e8f0" stroke-width="1.3" stroke-dasharray="3,2"/>
+          <text x="433" y="108" fill="#e2e8f0" font-size="10.5" font-family="sans-serif">&quot;Saphenous Eye&quot;</text>
+          <text x="433" y="120" fill="#94a3b8" font-size="9.5" font-family="sans-serif">Hyperechoic fascial</text>
+          <text x="433" y="131" fill="#94a3b8" font-size="9.5" font-family="sans-serif">compartment</text>
+          <line x1="289" y1="134" x2="435" y2="155" stroke="#c4b5fd" stroke-width="1.3" stroke-dasharray="3,2"/>
+          <text x="438" y="159" fill="#c4b5fd" font-size="9.5" font-family="sans-serif">Saphenous nerve</text>
+          <!-- muscle layer -->
+          <rect x="0" y="182" width="510" height="98" fill="#0c0c16"/>
+          <text x="8" y="240" fill="#666" font-size="9" font-family="sans-serif">Muscle</text>
+          <line x1="0" y1="205" x2="510" y2="205" stroke="#151520" stroke-width="1.5"/>
+          <line x1="0" y1="228" x2="510" y2="228" stroke="#151520" stroke-width="1.5"/>
+          <line x1="0" y1="251" x2="510" y2="251" stroke="#151520" stroke-width="1.5"/>
+          <!-- layer labels left -->
+          <text x="8" y="103" fill="#aaa" font-size="8.5" font-family="sans-serif">Superficial</text>
+          <text x="8" y="113" fill="#aaa" font-size="8.5" font-family="sans-serif">fascia</text>
+          <text x="8" y="174" fill="#aaa" font-size="8.5" font-family="sans-serif">Deep</text>
+          <text x="8" y="183" fill="#aaa" font-size="8.5" font-family="sans-serif">fascia</text>
+          <!-- depth scale -->
+          <line x1="515" y1="22" x2="515" y2="282" stroke="#222" stroke-width="1"/>
+          <line x1="511" y1="72" x2="519" y2="72" stroke="#444" stroke-width="1"/>
+          <text x="509" y="71" fill="#555" font-size="8" font-family="sans-serif" text-anchor="end">1 cm</text>
+          <line x1="511" y1="122" x2="519" y2="122" stroke="#444" stroke-width="1"/>
+          <text x="509" y="121" fill="#555" font-size="8" font-family="sans-serif" text-anchor="end">2 cm</text>
+          <line x1="511" y1="172" x2="519" y2="172" stroke="#444" stroke-width="1"/>
+          <text x="509" y="171" fill="#555" font-size="8" font-family="sans-serif" text-anchor="end">3 cm</text>
+          <line x1="511" y1="222" x2="519" y2="222" stroke="#444" stroke-width="1"/>
+          <text x="509" y="221" fill="#555" font-size="8" font-family="sans-serif" text-anchor="end">4 cm</text>
+        </svg>
+        <div style="padding:.5rem 1rem;font-size:.73rem;color:#94a3b8;background:#0d1117;border-top:1px solid #1e2a3a">
+          The GSV lies within the <strong style="color:#7dd3fc">saphenous fascial compartment</strong> — the two hyperechoic (bright white) fascial arcs converge at each end, creating the almond-shaped &quot;Egyptian Eye.&quot; The GSV is the dark anechoic circle in the center (the &quot;pupil&quot;). <em>Always confirm you are in this compartment</em> before mapping the GSV — it distinguishes the GSV from other superficial tributaries.
+        </div>
+      </div>
       <h4 style="margin:.9rem 0 .4rem">Small Saphenous Vein (SSV)</h4>
       <ul style="padding-left:1.2rem;line-height:2">
         <li>Runs along the posterior calf midline</li>
@@ -331,6 +465,68 @@ const BUILTIN_MODULES = [
           <tr style="background:#f8fafd"><td style="padding:.5rem .75rem;border:1px solid var(--border);font-weight:700">C6</td><td style="padding:.5rem .75rem;border:1px solid var(--border)">Active venous ulcer</td></tr>
         </tbody>
       </table>
+      <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;background:#f8fafd">
+        <div style="padding:.5rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
+          <i class="fa-solid fa-chart-line"></i>&nbsp; CEAP Clinical Classification — Visual Summary
+        </div>
+        <svg viewBox="0 0 560 175" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#f8fafd">
+          <!-- C0 -->
+          <rect x="10" y="12" width="72" height="110" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+          <text x="46" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C0</text>
+          <text x="46" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">No visible</text>
+          <text x="46" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">signs</text>
+          <ellipse cx="46" cy="97" rx="18" ry="9" fill="#fde8d0" stroke="#e2bfa0" stroke-width="1"/>
+          <!-- C1 -->
+          <rect x="92" y="12" width="72" height="110" rx="8" fill="#fefce8" stroke="#fde68a" stroke-width="1.5"/>
+          <text x="128" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C1</text>
+          <text x="128" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Spider/</text>
+          <text x="128" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Reticular</text>
+          <ellipse cx="128" cy="97" rx="18" ry="9" fill="#fde8d0" stroke="#e2bfa0" stroke-width="1"/>
+          <line x1="115" y1="93" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
+          <line x1="119" y1="88" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
+          <line x1="128" y1="87" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
+          <line x1="137" y1="89" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
+          <line x1="142" y1="94" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
+          <!-- C2 -->
+          <rect x="174" y="12" width="72" height="110" rx="8" fill="#fef9c3" stroke="#fcd34d" stroke-width="1.5"/>
+          <text x="210" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C2</text>
+          <text x="210" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Varicose</text>
+          <text x="210" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Veins ≥3mm</text>
+          <ellipse cx="210" cy="97" rx="18" ry="9" fill="#fde8d0" stroke="#e2bfa0" stroke-width="1"/>
+          <path d="M 196 95 Q 203 90 210 95 Q 217 100 224 95" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+          <!-- C3 -->
+          <rect x="256" y="12" width="72" height="110" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+          <text x="292" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C3</text>
+          <text x="292" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Edema,</text>
+          <text x="292" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">no skin chg</text>
+          <ellipse cx="292" cy="97" rx="22" ry="12" fill="#fbcf9e" stroke="#f97316" stroke-width="1.5"/>
+          <!-- C4a -->
+          <rect x="338" y="12" width="72" height="110" rx="8" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
+          <text x="374" y="38" fill="#0f3460" font-size="20" font-weight="900" font-family="sans-serif" text-anchor="middle">C4a</text>
+          <text x="374" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Pigmentation</text>
+          <text x="374" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">/ Eczema</text>
+          <ellipse cx="374" cy="97" rx="18" ry="9" fill="#b97a50" stroke="#8b5a38" stroke-width="1"/>
+          <!-- C5/C6 -->
+          <rect x="420" y="12" width="130" height="110" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+          <text x="485" y="38" fill="#0f3460" font-size="18" font-weight="900" font-family="sans-serif" text-anchor="middle">C5 / C6</text>
+          <text x="485" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Healed / Active</text>
+          <text x="485" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Venous Ulcer</text>
+          <ellipse cx="485" cy="97" rx="20" ry="10" fill="#b97a50" stroke="#8b5a38" stroke-width="1"/>
+          <circle cx="485" cy="97" r="7" fill="#dc2626" opacity=".85"/>
+          <circle cx="485" cy="97" r="4" fill="#fca5a5" opacity=".5"/>
+          <!-- severity arrow -->
+          <defs>
+            <marker id="arrowSev" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#94a3b8"/>
+            </marker>
+          </defs>
+          <line x1="10" y1="137" x2="548" y2="137" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowSev)"/>
+          <text x="10" y="155" fill="#22c55e" font-size="9.5" font-weight="bold" font-family="sans-serif">Mild</text>
+          <text x="275" y="155" fill="#64748b" font-size="9.5" font-family="sans-serif" text-anchor="middle">Increasing Disease Severity</text>
+          <text x="548" y="155" fill="#dc2626" font-size="9.5" font-weight="bold" font-family="sans-serif" text-anchor="end">Severe</text>
+          <text x="421" y="170" fill="#64748b" font-size="8.5" font-family="sans-serif">C4b: Lipodermatosclerosis / Atrophie blanche</text>
+        </svg>
+      </div>
       <h4 style="margin:.9rem 0 .4rem">Insurance Considerations</h4>
       <p style="line-height:1.65">Most insurance carriers require documentation of symptomatic CVI (C2–C6) with reflux >0.5 sec superficial / >1.0 sec deep, and a trial of conservative therapy (compression stockings 6–12 weeks) before approving thermal ablation. Always verify specific payer requirements.</p>`,
     questions:[
@@ -410,7 +606,64 @@ const BUILTIN_MODULES = [
         <li>Measure catheter tip to junction on ultrasound</li>
         <li>Clean up patient</li>
         <li>Wrap patient and put on compression stocking</li>
-      </ul>`,
+      </ul>
+      <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;background:#f8fafd">
+        <div style="padding:.5rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#be185d;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
+          <i class="fa-solid fa-location-dot"></i>&nbsp; GSV RFA — Catheter Tip Positioning (2 cm from SFJ)
+        </div>
+        <svg viewBox="0 0 540 265" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#f8fafd">
+          <!-- inguinal ligament -->
+          <line x1="145" y1="46" x2="370" y2="46" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <text x="105" y="49" fill="#94a3b8" font-size="9" font-family="sans-serif">Inguinal Lig.</text>
+          <!-- CFV -->
+          <rect x="205" y="15" width="52" height="155" rx="6" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+          <text x="231" y="12" fill="#1d4ed8" font-size="10.5" font-weight="bold" font-family="sans-serif" text-anchor="middle">CFV</text>
+          <!-- femoral artery alongside -->
+          <rect x="264" y="15" width="36" height="155" rx="6" fill="#fee2e2" stroke="#f87171" stroke-width="1.5" opacity=".7"/>
+          <text x="282" y="11" fill="#b91c1c" font-size="9" font-family="sans-serif" text-anchor="middle">FA</text>
+          <!-- GSV branch -->
+          <path d="M 257 88 Q 340 115 385 195" fill="none" stroke="#60a5fa" stroke-width="22" stroke-linecap="round" opacity=".55"/>
+          <path d="M 257 88 Q 340 115 385 195" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+          <text x="400" y="200" fill="#1d4ed8" font-size="11" font-weight="bold" font-family="sans-serif">GSV</text>
+          <!-- SFJ -->
+          <circle cx="257" cy="88" r="9" fill="#fbbf24" stroke="#d97706" stroke-width="2.5"/>
+          <text x="268" y="85" fill="#92400e" font-size="9.5" font-weight="bold" font-family="sans-serif">SFJ</text>
+          <!-- 2cm zone (shaded red) -->
+          <path d="M 257 88 Q 282 97 300 100" fill="none" stroke="#fecdd3" stroke-width="18" stroke-linecap="round" opacity=".7"/>
+          <!-- RFA catheter body (orange) -->
+          <path d="M 383 193 Q 335 110 300 100" fill="none" stroke="#f97316" stroke-width="8" stroke-linecap="round" opacity=".88"/>
+          <!-- Catheter tip -->
+          <circle cx="300" cy="100" r="7" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+          <!-- 2cm brace -->
+          <defs>
+            <marker id="arr2cm" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#dc2626"/>
+            </marker>
+            <marker id="arr2cm2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#dc2626"/>
+            </marker>
+          </defs>
+          <line x1="257" y1="68" x2="300" y2="81" stroke="#dc2626" stroke-width="1.5" marker-start="url(#arr2cm2)" marker-end="url(#arr2cm)"/>
+          <text x="275" y="66" fill="#dc2626" font-size="10" font-weight="bold" font-family="sans-serif" text-anchor="middle">2 cm</text>
+          <!-- catheter label -->
+          <text x="410" y="155" fill="#ea580c" font-size="10.5" font-weight="bold" font-family="sans-serif">RFA Catheter</text>
+          <line x1="395" y1="162" x2="375" y2="178" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <!-- tip label -->
+          <text x="315" y="95" fill="#dc2626" font-size="9.5" font-weight="bold" font-family="sans-serif">Tip</text>
+          <!-- access arrow at bottom -->
+          <path d="M 370 240 Q 383 218 383 195" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5,3"/>
+          <text x="330" y="252" fill="#7c3aed" font-size="9.5" font-family="sans-serif">Access site (below knee)</text>
+          <!-- safety note box -->
+          <rect x="20" y="160" width="168" height="60" rx="7" fill="#fff8e1" stroke="#fcd34d" stroke-width="1.5"/>
+          <text x="104" y="177" fill="#92400e" font-size="9.5" font-weight="bold" font-family="sans-serif" text-anchor="middle">⚠ Safety Zone</text>
+          <text x="104" y="191" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Tip must be 2 cm from</text>
+          <text x="104" y="203" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">SFJ to protect the CFV</text>
+          <text x="104" y="215" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">from thermal injury</text>
+        </svg>
+        <div style="padding:.5rem 1rem;font-size:.73rem;color:#64748b;background:#fff8f0;border-top:1px solid #fde8cc">
+          <strong style="color:#be185d">Confirm with ultrasound:</strong> After advancing the catheter, always measure 2 cm from the SFJ to the catheter tip under real-time ultrasound guidance before injecting tumescent or activating the generator.
+        </div>
+      </div>`,
     questions:[
       {type:'mc',text:'During GSV RFA, the catheter tip should be positioned how far from the Saphenofemoral Junction (SFJ)?',options:['At the SFJ','0.5 cm from SFJ','2 cm from SFJ','5 cm from SFJ'],correct:2,explanation:'The catheter tip is positioned 2 cm distal to the SFJ. This safety margin prevents heat damage to the common femoral vein and reduces the risk of DVT extension.'},
       {type:'mc',text:'What is the purpose of tumescent anesthesia in RFA?',options:['To dilate the vein for better access','To provide local anesthesia, compress the vein, and create a heat sink to protect surrounding tissue','To flush the vein before treatment','To prevent bleeding after the procedure'],correct:1,explanation:'Tumescent anesthesia serves three purposes: (1) local anesthesia, (2) compresses the vein around the catheter for better contact, and (3) creates a heat sink to protect surrounding nerves and skin.'},
