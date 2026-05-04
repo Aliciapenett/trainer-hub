@@ -514,60 +514,29 @@ const BUILTIN_MODULES = [
         <li>Use color Doppler to confirm flow and assess for partial thrombus</li>
         <li>Augmentation (squeezing the calf) increases venous flow — helpful to confirm patency</li>
       </ul>
-      <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #1e2a3a;background:#09090f">
-        <div style="padding:.5rem 1rem;background:#0d1117;border-bottom:1px solid #1e2a3a;font-size:.7rem;color:#7dd3fc;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
-          <i class="fa-solid fa-compress"></i>&nbsp; DVT Compression Test — Normal vs. DVT
-        </div>
-        <svg viewBox="0 0 520 235" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
-          <rect width="520" height="235" fill="#09090f"/>
-          <line x1="260" y1="28" x2="260" y2="235" stroke="#1e2a3a" stroke-width="2"/>
-          <!-- headers -->
-          <text x="130" y="22" fill="#22c55e" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">NORMAL — Compressible</text>
-          <text x="390" y="22" fill="#ef4444" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">DVT — Non-compressible</text>
-          <!-- LEFT: normal -->
-          <rect x="0" y="28" width="260" height="207" fill="#0d0d15"/>
-          <!-- artery (left) -->
-          <circle cx="72" cy="135" r="30" fill="#0a0a10" stroke="#444" stroke-width="1.5"/>
-          <circle cx="72" cy="135" r="24" fill="#1a0505" stroke="#f87171" stroke-width="1.5"/>
-          <text x="72" y="178" fill="#f87171" font-size="9" font-family="sans-serif" text-anchor="middle">Artery (round)</text>
-          <!-- vein collapsed -->
-          <ellipse cx="188" cy="135" rx="25" ry="5" fill="#050508" stroke="#22c55e" stroke-width="2"/>
-          <text x="188" y="153" fill="#22c55e" font-size="9" font-family="sans-serif" text-anchor="middle">Vein — collapsed</text>
-          <!-- probe left -->
-          <rect x="162" y="68" width="52" height="16" rx="3" fill="#1d4ed8" opacity=".85"/>
-          <polygon points="162,84 214,84 188,105" fill="#1d4ed8" opacity=".85"/>
-          <text x="188" y="66" fill="#93c5fd" font-size="8.5" font-family="sans-serif" text-anchor="middle">Probe pressure</text>
-          <line x1="188" y1="106" x2="188" y2="126" stroke="#22c55e" stroke-width="2.5"/>
-          <polygon points="181,124 195,124 188,132" fill="#22c55e"/>
-          <text x="188" y="200" fill="#22c55e" font-size="10.5" font-family="sans-serif" text-anchor="middle">Walls touch ✓  =  No DVT</text>
-          <!-- RIGHT: DVT -->
-          <rect x="260" y="28" width="260" height="207" fill="#0d0d15"/>
-          <!-- artery right -->
-          <circle cx="332" cy="135" r="30" fill="#0a0a10" stroke="#444" stroke-width="1.5"/>
-          <circle cx="332" cy="135" r="24" fill="#1a0505" stroke="#f87171" stroke-width="1.5"/>
-          <text x="332" y="178" fill="#f87171" font-size="9" font-family="sans-serif" text-anchor="middle">Artery (round)</text>
-          <!-- vein with thrombus (stays round) -->
-          <circle cx="448" cy="135" r="30" fill="#0a0a10" stroke="#ef4444" stroke-width="2.5"/>
-          <circle cx="448" cy="135" r="24" fill="#160a0a"/>
-          <!-- thrombus texture -->
-          <circle cx="438" cy="126" r="4" fill="#2f1212"/><circle cx="458" cy="130" r="3.5" fill="#2f1212"/>
-          <circle cx="444" cy="146" r="4" fill="#2f1212"/><circle cx="460" cy="143" r="3" fill="#2f1212"/>
-          <circle cx="432" cy="140" r="3" fill="#2f1212"/><circle cx="452" cy="124" r="3" fill="#2f1212"/>
-          <text x="448" y="178" fill="#ef4444" font-size="9" font-family="sans-serif" text-anchor="middle">Vein — stays round</text>
-          <!-- probe right -->
-          <rect x="422" y="68" width="52" height="16" rx="3" fill="#1d4ed8" opacity=".85"/>
-          <polygon points="422,84 474,84 448,105" fill="#1d4ed8" opacity=".85"/>
-          <text x="448" y="66" fill="#93c5fd" font-size="8.5" font-family="sans-serif" text-anchor="middle">Probe pressure</text>
-          <line x1="448" y1="106" x2="448" y2="101" stroke="#ef4444" stroke-width="2.5"/>
-          <text x="448" y="99" fill="#ef4444" font-size="22" font-family="sans-serif" text-anchor="middle">✗</text>
-          <!-- thrombus label -->
-          <text x="488" y="132" fill="#fca5a5" font-size="9" font-family="sans-serif">Thrombus</text>
-          <line x1="474" y1="135" x2="487" y2="132" stroke="#fca5a5" stroke-width="1" stroke-dasharray="2,2"/>
-          <text x="448" y="200" fill="#ef4444" font-size="10.5" font-family="sans-serif" text-anchor="middle">Non-compressible ✗  =  DVT</text>
-        </svg>
-        <div style="padding:.5rem 1rem;font-size:.73rem;color:#94a3b8;background:#0d1117;border-top:1px solid #1e2a3a">
-          <strong style="color:#38bdf8">Primary DVT sign:</strong> Failure of the vein to fully collapse under gentle transducer pressure. The adjacent artery stays round (it is pulsatile and cannot be compressed). A patent vein fully collapses; a thrombosed vein does not budge.
-        </div>
+      <div style="margin:1.25rem 0">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0ea5e9;margin-bottom:.5rem"><i class="fa-solid fa-circle-info"></i> Reference Material</div>
+        <a href="https://drive.google.com/file/d/1sLMpIFwFUBBPqW6mHGaLd1utYfejIQXI/view" target="_blank"
+           onclick="document.getElementById('dvt-video-check').removeAttribute('disabled');document.getElementById('dvt-video-label').style.color='#0f3460'"
+           style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,#0ea5e9 0%,#0284c7 100%);border-radius:12px;text-decoration:none;box-shadow:0 4px 14px rgba(14,165,233,.35);transition:.15s">
+          <div style="width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fa-solid fa-play" style="color:#fff;font-size:1.2rem;margin-left:3px"></i>
+          </div>
+          <div style="flex:1">
+            <div style="color:rgba(255,255,255,.8);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Watch</div>
+            <div style="color:#fff;font-size:.95rem;font-weight:700">DVT Compression Test — Video</div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square" style="color:rgba(255,255,255,.7);font-size:.95rem;flex-shrink:0"></i>
+        </a>
+        <label id="dvt-video-label" style="display:flex;align-items:center;gap:.65rem;margin-top:.75rem;padding:.75rem 1rem;background:#f8fafd;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:600;color:#94a3b8;transition:.2s"
+               onmouseover="if(!this.querySelector('input').disabled)this.style.borderColor='#0ea5e9'"
+               onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='#e2e8f0'"
+               onclick="var cb=this.querySelector('input');setTimeout(function(){if(cb.checked){document.getElementById('dvt-video-label').style.borderColor='#16a34a';document.getElementById('dvt-video-label').style.background='#dcfce7';document.getElementById('dvt-video-label').style.color='#15803d';document.getElementById('dvt-check-icon').style.display='inline'}else{document.getElementById('dvt-video-label').style.borderColor='#e2e8f0';document.getElementById('dvt-video-label').style.background='#f8fafd';document.getElementById('dvt-video-label').style.color='#94a3b8';document.getElementById('dvt-check-icon').style.display='none'}},10)">
+          <input id="dvt-video-check" type="checkbox" disabled style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;flex-shrink:0"/>
+          <span>I have watched the DVT compression test video</span>
+          <i id="dvt-check-icon" class="fa-solid fa-circle-check" style="color:#16a34a;margin-left:auto;display:none;font-size:1.1rem"></i>
+        </label>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:.35rem;padding-left:.25rem"><i class="fa-solid fa-lock" style="font-size:.65rem;margin-right:.3rem"></i>Checkbox unlocks after clicking the video link above</div>
       </div>`,
     questions:[
       {type:'mc',text:'Which veins carry approximately 90% of venous return from the lower extremity?',options:['Superficial venous system','Deep venous system','Perforator veins','Lymphatic system'],correct:1,explanation:'The deep venous system veins carry approximately 90% of venous return from the lower extremity back to the heart.'},
