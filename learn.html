@@ -1015,6 +1015,31 @@ const BUILTIN_MODULES = [
         <li>Any contraindication to compression (e.g., PAD, ABI &lt;0.5) must be documented to waive this requirement</li>
       </ul>
 
+      <div style="margin:1.25rem 0">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.5rem"><i class="fa-solid fa-circle-info"></i> Reference Material</div>
+        <a href="https://docs.google.com/spreadsheets/d/1HvNVuHDzmtbgK-sWXBi2DPK-PhfJPuTP63b1_QBkI18/edit" target="_blank"
+           onclick="document.getElementById('conserv-workflow-check').removeAttribute('disabled');document.getElementById('conserv-workflow-label').style.color='#0f3460'"
+           style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,#0369a1 0%,#0284c7 100%);border-radius:12px;text-decoration:none;box-shadow:0 4px 14px rgba(3,105,161,.35);transition:.15s">
+          <div style="width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fa-solid fa-table" style="color:#fff;font-size:1.1rem"></i>
+          </div>
+          <div style="flex:1">
+            <div style="color:rgba(255,255,255,.8);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Reference</div>
+            <div style="color:#fff;font-size:.95rem;font-weight:700">Conservative Workflow by State</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.75rem;margin-top:.15rem">Look up conservative therapy requirements for your state</div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square" style="color:rgba(255,255,255,.7);font-size:.95rem;flex-shrink:0"></i>
+        </a>
+        <label id="conserv-workflow-label" style="display:flex;align-items:center;gap:.65rem;margin-top:.75rem;padding:.75rem 1rem;background:#f8fafd;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:600;color:#94a3b8;transition:.2s"
+               onmouseover="if(!this.querySelector('input').disabled)this.style.borderColor='#0369a1'"
+               onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='#e2e8f0'"
+               onclick="var cb=this.querySelector('input');setTimeout(function(){if(cb.checked){document.getElementById('conserv-workflow-label').style.borderColor='#16a34a';document.getElementById('conserv-workflow-label').style.background='#dcfce7';document.getElementById('conserv-workflow-label').style.color='#15803d';document.getElementById('conserv-workflow-icon').style.display='inline'}else{document.getElementById('conserv-workflow-label').style.borderColor='#e2e8f0';document.getElementById('conserv-workflow-label').style.background='#f8fafd';document.getElementById('conserv-workflow-label').style.color='#94a3b8';document.getElementById('conserv-workflow-icon').style.display='none'}},10)">
+          <input id="conserv-workflow-check" type="checkbox" disabled style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;flex-shrink:0"/>
+          <span>I have reviewed the Conservative Workflow by State</span>
+          <i id="conserv-workflow-icon" class="fa-solid fa-circle-check" style="color:#16a34a;margin-left:auto;display:none;font-size:1.1rem"></i>
+        </label>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:.35rem;padding-left:.25rem"><i class="fa-solid fa-lock" style="font-size:.65rem;margin-right:.3rem"></i>Checkbox unlocks after clicking the link above</div>
+      </div>
       <h4 style="margin:.9rem 0 .4rem">Documentation Tips for Successful Prior Auth</h4>
       <ul style="padding-left:1.2rem;line-height:2">
         <li>Include the <strong>duplex ultrasound report</strong> with reflux times, vein diameters, and segment-by-segment findings</li>
