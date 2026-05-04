@@ -201,8 +201,6 @@ firebase.initializeApp({
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const MODULE_CHECKBOXES_JS = {"mod_dvt": ["dvt-video-check"], "mod_gsv_rfa": ["gsv-rfa-video-check"], "mod_varithena": ["varithena-video-check"], "mod_insurance_guidelines": ["conserv-workflow-check", "doppler-cheat-check"]};
-
 // ═══════════════════════════
 //  BUILT-IN MODULE CONTENT
 // ═══════════════════════════
@@ -1287,37 +1285,48 @@ async function openModule(moduleId) {
     </div>
     <div id="tab-quiz" style="display:none">
       <div class="alert alert-info"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Read the study material first, then take the quiz. A passing score is 80% or higher. You can retake as many times as needed!</span></div>
-      <div style="text-align:center;padding:2rem">
-        <div id="quiz-gate-${moduleId}"></div>
-        <script>
-        (function(){
-          var gateChecks = ${JSON.stringify(MODULE_CHECKBOXES_JS)}['${moduleId}'] || [];
-          var gateDiv = document.getElementById('quiz-gate-${moduleId}');
-          if(!gateDiv) return;
-          function renderGate() {
-            var allChecked = gateChecks.length === 0 || gateChecks.every(function(id){ var el=document.getElementById(id); return el && el.checked; });
-            if(allChecked) {
-              gateDiv.innerHTML = '<button class="btn btn-primary" style="padding:.85rem 2.5rem;font-size:1rem" onclick="startQuiz(\'${moduleId}\')">' +
-                '<i class="fa-solid fa-play"></i> Start Quiz (${module.questions.length} questions)</button>';
-            } else {
-              gateDiv.innerHTML = '<div style="text-align:center"><div style="display:inline-flex;flex-direction:column;align-items:center;gap:.75rem;padding:1.25rem 1.75rem;background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;max-width:420px">' +
-                '<i class="fa-solid fa-lock" style="color:#d97706;font-size:1.5rem"></i>' +
-                '<div style="font-size:.9rem;font-weight:700;color:#92400e">Complete required material first</div>' +
-                '<div style="font-size:.8rem;color:#92400e">Please review and check off all reference materials above before taking the quiz.</div>' +
-                '</div></div>';
-              // Re-check every 500ms until unlocked
-              setTimeout(renderGate, 500);
-            }
-          }
-          renderGate();
-        })();
-        </script>
+      <div style="text-align:center;padding:2rem" id="quiz-start-area-${moduleId}">
+        <button class="btn btn-primary" style="padding:.85rem 2.5rem;font-size:1rem" onclick="startQuiz('${moduleId}')"><i class="fa-solid fa-play"></i> Start Quiz (${module.questions.length} questions)</button>
       </div>
     </div>
     <div id="tab-history" style="display:none" id="tab-history-${moduleId}">
       <div id="history-content-${moduleId}">Loading...</div>
     </div>`;
   loadModuleHistory(moduleId);
+  // Apply quiz gate if module has required checkboxes
+  setTimeout(function(){ applyQuizGate(moduleId); }, 100);
+}
+
+const QUIZ_GATES = {
+  'mod_dvt': ['dvt-video-check'],
+  'mod_gsv_rfa': ['gsv-rfa-video-check'],
+  'mod_varithena': ['varithena-video-check'],
+  'mod_insurance_guidelines': ['conserv-workflow-check','doppler-cheat-check']
+};
+
+function applyQuizGate(moduleId) {
+  var checks = QUIZ_GATES[moduleId];
+  if (!checks || checks.length === 0) return;
+  var area = document.getElementById('quiz-start-area-' + moduleId);
+  if (!area) return;
+
+  function updateGate() {
+    var allDone = checks.every(function(id) {
+      var el = document.getElementById(id);
+      return el && el.checked;
+    });
+    if (allDone) {
+      area.innerHTML = '<button class="btn btn-primary" style="padding:.85rem 2.5rem;font-size:1rem" onclick="startQuiz(\'' + moduleId + '\')"><i class="fa-solid fa-play"></i> Start Quiz (' + (BUILTIN_MODULES.find(function(m){return m.id===moduleId;})||{questions:[]}).questions.length + ' questions)</button>';
+    } else {
+      area.innerHTML = '<div style="display:inline-flex;flex-direction:column;align-items:center;gap:.75rem;padding:1.5rem 2rem;background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;max-width:400px;margin:0 auto">' +
+        '<i class="fa-solid fa-lock" style="color:#d97706;font-size:1.6rem"></i>' +
+        '<div style="font-size:.95rem;font-weight:700;color:#92400e">Quiz Locked</div>' +
+        '<div style="font-size:.82rem;color:#92400e;text-align:center">Please review and check off all required reference materials in the study content above before taking the quiz.</div>' +
+        '</div>';
+      setTimeout(updateGate, 600);
+    }
+  }
+  updateGate();
 }
 
 async function loadModuleHistory(moduleId) {
