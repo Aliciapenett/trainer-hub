@@ -1294,7 +1294,7 @@ async function openModule(moduleId) {
     </div>`;
   loadModuleHistory(moduleId);
   // Apply quiz gate if module has required checkboxes
-  setTimeout(function(){ applyQuizGate(moduleId); }, 100);
+  setTimeout(function(){ applyQuizGate(moduleId); }, 400);
 }
 
 const QUIZ_GATES = {
@@ -1308,7 +1308,7 @@ function applyQuizGate(moduleId) {
   var checks = QUIZ_GATES[moduleId];
   if (!checks || checks.length === 0) return;
   var area = document.getElementById('quiz-start-area-' + moduleId);
-  if (!area) return;
+  if (!area) { setTimeout(function(){ applyQuizGate(moduleId); }, 300); return; }
 
   function updateGate() {
     var allDone = checks.every(function(id) {
