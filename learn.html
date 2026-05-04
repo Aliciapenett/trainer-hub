@@ -245,6 +245,275 @@ const BUILTIN_MODULES = [
         <li>Use color Doppler to confirm flow and assess for partial thrombus</li>
         <li>Augmentation (squeezing the calf) increases venous flow — helpful to confirm patency</li>
       </ul>
+      <div style="margin:1.25rem 0">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0ea5e9;margin-bottom:.5rem"><i class="fa-solid fa-circle-info"></i> Reference Material</div>
+        <a href="https://drive.google.com/file/d/1sLMpIFwFUBBPqW6mHGaLd1utYfejIQXI/view" target="_blank"
+           onclick="document.getElementById('dvt-video-check').removeAttribute('disabled');document.getElementById('dvt-video-label').style.color='#0f3460'"
+           style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,#0ea5e9 0%,#0284c7 100%);border-radius:12px;text-decoration:none;box-shadow:0 4px 14px rgba(14,165,233,.35);transition:.15s">
+          <div style="width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fa-solid fa-play" style="color:#fff;font-size:1.2rem;margin-left:3px"></i>
+          </div>
+          <div style="flex:1">
+            <div style="color:rgba(255,255,255,.8);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Watch</div>
+            <div style="color:#fff;font-size:.95rem;font-weight:700">DVT Compression Test — Video</div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square" style="color:rgba(255,255,255,.7);font-size:.95rem;flex-shrink:0"></i>
+        </a>
+        <label id="dvt-video-label" style="display:flex;align-items:center;gap:.65rem;margin-top:.75rem;padding:.75rem 1rem;background:#f8fafd;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:600;color:#94a3b8;transition:.2s"
+               onmouseover="if(!this.querySelector('input').disabled)this.style.borderColor='#0ea5e9'"
+               onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='#e2e8f0'"
+               onclick="var cb=this.querySelector('input');setTimeout(function(){if(cb.checked){document.getElementById('dvt-video-label').style.borderColor='#16a34a';document.getElementById('dvt-video-label').style.background='#dcfce7';document.getElementById('dvt-video-label').style.color='#15803d';document.getElementById('dvt-check-icon').style.display='inline'}else{document.getElementById('dvt-video-label').style.borderColor='#e2e8f0';document.getElementById('dvt-video-label').style.background='#f8fafd';document.getElementById('dvt-video-label').style.color='#94a3b8';document.getElementById('dvt-check-icon').style.display='none'}},10)">
+          <input id="dvt-video-check" type="checkbox" disabled style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;flex-shrink:0"/>
+          <span>I have watched the DVT compression test video</span>
+          <i id="dvt-check-icon" class="fa-solid fa-circle-check" style="color:#16a34a;margin-left:auto;display:none;font-size:1.1rem"></i>
+        </label>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:.35rem;padding-left:.25rem"><i class="fa-solid fa-lock" style="font-size:.65rem;margin-right:.3rem"></i>Checkbox unlocks after clicking the video link above</div>
+      </div>`,
+    questions:[
+      {type:'mc',text:'Which veins carry8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIP Learning Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#0f3460;--accent:#0ea5e9;--accent-light:#38bdf8;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--bg:#f0f5fb;--card:#fff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 12px 28px rgba(0,0,0,.13);--r:14px;--r-sm:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#screen-loading{position:fixed;inset:0;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;z-index:9999}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary) 0%,#1a4a7a 100%);padding:1rem}
+.auth-card{background:#fff;border-radius:18px;padding:2.25rem 2rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg)}
+.auth-logo{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem}
+.auth-logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),#0284c7);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.15rem}
+.auth-title{font-size:1.2rem;font-weight:800;color:var(--primary)}
+.auth-sub{font-size:.72rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.07em}
+.auth-error{background:#fee2e2;color:#991b1b;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:1rem;display:none}
+.auth-success{background:#dcfce7;color:#15803d;border-radius:var(--r-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:1rem;display:none}
+.hdr{background:var(--primary);color:#fff;padding:0 1.5rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md)}
+.hdr-logo{display:flex;align-items:center;gap:.7rem;cursor:pointer}
+.hdr-logo-icon{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.hdr-right{display:flex;align-items:center;gap:.75rem}
+.hdr-user{font-size:.82rem;color:rgba(255,255,255,.8);font-weight:500}
+.main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:.84rem;font-weight:600;transition:.15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-light);transform:translateY(-1px)}
+.btn-secondary{background:var(--primary);color:#fff}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.88}
+.btn-success{background:var(--success);color:#fff}
+.btn-sm{padding:.3rem .7rem;font-size:.77rem}
+.btn-ghost{background:transparent;color:var(--text-light);padding:.35rem .65rem}.btn-ghost:hover{background:var(--bg)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-hdr{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:1.4rem}
+.badge{display:inline-flex;align-items:center;gap:.2rem;padding:.17rem .52rem;border-radius:100px;font-size:.71rem;font-weight:600}
+.badge-success{background:#dcfce7;color:#15803d}.badge-warning{background:#fef3c7;color:#92400e}.badge-danger{background:#fee2e2;color:#991b1b}.badge-info{background:#dbeafe;color:#1e40af}.badge-gray{background:#f1f5f9;color:#475569}.badge-purple{background:#ede9fe;color:#5b21b6}
+.form-group{margin-bottom:1.05rem}
+.form-label{display:block;font-size:.83rem;font-weight:600;margin-bottom:.32rem}
+.form-control{width:100%;padding:.56rem .78rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.83rem;color:var(--text);background:#fff;transition:.15s;outline:none}
+.form-control:focus{border-color:var(--accent)}
+textarea.form-control{resize:vertical;min-height:76px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-section{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:1.2rem 0 .8rem;padding-bottom:.4rem;border-bottom:2px solid #e0f2fe}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:620px;max-height:92vh;overflow-y:auto;animation:slideUp .2s ease}
+.modal-lg{max-width:780px}
+.modal-xl{max-width:920px}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hdr{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.modal-title{font-size:1rem;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:1.1rem;padding:.2rem .4rem;border-radius:4px}
+.modal-close:hover{color:var(--danger)}
+.modal-body{padding:1.4rem}
+.modal-foot{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem;background:#fff;position:sticky;bottom:0;z-index:2}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.05rem}
+.sec-title{font-size:1.05rem;font-weight:700}
+.empty{text-align:center;padding:2.75rem 1rem;color:var(--text-light)}
+.empty i{font-size:2rem;opacity:.3;margin-bottom:.7rem;display:block}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.4rem;overflow-x:auto}
+.tab-btn{padding:.6rem 1rem;border:none;background:none;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--accent);cursor:pointer;font-size:.83rem;font-weight:500;margin-bottom:1.2rem;border:none;background:none;font-family:inherit;padding:0}
+.back-btn:hover{text-decoration:underline}
+.alert{padding:.7rem .95rem;border-radius:var(--r-sm);font-size:.82rem;margin-bottom:.95rem;display:flex;align-items:flex-start;gap:.55rem}
+.alert-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--accent)}
+.alert-success{background:#dcfce7;color:#15803d;border-left:4px solid var(--success)}
+.alert-warning{background:#fef3c7;color:#92400e;border-left:4px solid var(--warning)}
+/* MODULE CARDS */
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.1rem;margin-bottom:1.5rem}
+.module-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;transition:.18s;cursor:pointer}
+.module-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
+.module-card.locked{opacity:.6;cursor:not-allowed}
+.module-card.locked:hover{transform:none;box-shadow:var(--shadow);border-color:var(--border)}
+.mc-banner{height:6px}
+.mc-body{padding:1.1rem}
+.mc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.75rem}
+.mc-title{font-size:.97rem;font-weight:700;margin-bottom:.28rem}
+.mc-desc{font-size:.78rem;color:var(--text-light);line-height:1.45;margin-bottom:.75rem}
+.mc-meta{display:flex;align-items:center;justify-content:space-between;font-size:.74rem;color:var(--text-light)}
+.mc-foot{padding:.7rem 1.1rem;background:#f8fafd;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+/* PROGRESS RING */
+.prog-ring{position:relative;width:44px;height:44px;flex-shrink:0}
+.prog-ring svg{transform:rotate(-90deg)}
+.prog-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--primary)}
+/* QUIZ STYLES */
+.quiz-wrap{max-width:720px;margin:0 auto}
+.quiz-progress-bar{height:6px;background:var(--border);border-radius:100px;margin-bottom:1.5rem;overflow:hidden}
+.quiz-progress-fill{height:100%;border-radius:100px;background:var(--accent);transition:.3s}
+.question-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1rem}
+.q-num{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:.5rem}
+.q-text{font-size:1rem;font-weight:600;line-height:1.5;margin-bottom:1.1rem}
+.q-image{width:100%;max-height:220px;object-fit:contain;border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:.9rem;background:#f8fafd}
+.option-btn{width:100%;text-align:left;padding:.75rem 1rem;border:2px solid var(--border);border-radius:var(--r-sm);background:#fff;cursor:pointer;font-family:inherit;font-size:.87rem;margin-bottom:.45rem;transition:.14s;display:flex;align-items:center;gap:.75rem}
+.option-btn:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--accent);background:#f0f9ff}
+.option-btn.selected{border-color:var(--accent);background:#e0f2fe;font-weight:600}
+.option-btn.correct{border-color:var(--success);background:#dcfce7;font-weight:600}
+.option-btn.wrong{border-color:var(--danger);background:#fee2e2}
+.option-btn.reveal-correct{border-color:var(--success);background:#dcfce7}
+.option-letter{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.tf-wrap{display:flex;gap:.75rem}
+.tf-btn{flex:1;padding:.85rem;border:2px solid var(--border);border-radius:var(--r-sm);background:#fff;cursor:pointer;font-family:inherit;font-size:.9rem;font-weight:600;transition:.14s;text-align:center}
+.tf-btn:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--accent);background:#f0f9ff}
+.fill-input{width:100%;padding:.65rem .85rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;outline:none;transition:.15s}
+.fill-input:focus{border-color:var(--accent)}
+.fill-input.correct{border-color:var(--success);background:#dcfce7}
+.fill-input.wrong{border-color:var(--danger);background:#fee2e2}
+.explanation{background:#f0f9ff;border-left:4px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.75rem 1rem;font-size:.82rem;margin-top:.75rem;display:none}
+/* RESULTS */
+.result-wrap{text-align:center;padding:2rem 1rem}
+.result-score{font-size:4rem;font-weight:800;line-height:1}
+.result-label{font-size:1rem;color:var(--text-light);margin-top:.35rem}
+.result-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1.5rem 0;max-width:380px;margin-left:auto;margin-right:auto}
+.rb-item{background:#f8fafd;border-radius:var(--r-sm);padding:.85rem;border:1px solid var(--border);text-align:center}
+.rb-val{font-size:1.4rem;font-weight:800;color:var(--primary)}
+.rb-lbl{font-size:.7rem;color:var(--text-light);margin-top:.15rem}
+/* LEADERBOARD / STATS TABLE */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;min-width:500px}
+.tbl th{text-align:left;padding:.6rem 1rem;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);background:#f8fafd;border-bottom:1px solid var(--border)}
+.tbl td{padding:.8rem 1rem;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:#f0f9ff}
+/* CATEGORY PILL */
+.cat-pill{display:inline-flex;align-items:center;gap:.22rem;padding:.2rem .6rem;border-radius:100px;font-size:.71rem;font-weight:600}
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.75rem}
+.stat-card{background:var(--card);border-radius:var(--r);padding:1rem 1.1rem;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:.85rem}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.si-blue{background:#dbeafe;color:#1d4ed8}.si-green{background:#dcfce7;color:#15803d}.si-orange{background:#ffedd5;color:#c2410c}.si-purple{background:#ede9fe;color:#6d28d9}.si-teal{background:#ccfbf1;color:#0f766e}
+.stat-value{font-size:1.5rem;font-weight:800;line-height:1}
+.stat-label{font-size:.72rem;color:var(--text-light);margin-top:.18rem}
+@media(max-width:600px){.modules-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.result-breakdown{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<div id="screen-loading">
+  <div class="spinner"></div>
+  <p style="color:rgba(255,255,255,.7);font-size:.88rem;margin-top:.5rem">Loading VIP Learning Portal...</p>
+</div>
+
+<div id="screen-auth" style="display:none">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><div class="auth-title">VIP Learning Portal</div><div class="auth-sub">VIP Medical Group Training</div></div>
+      </div>
+      <div style="font-size:1.02rem;font-weight:700;margin-bottom:.3rem">Sign In</div>
+      <div style="font-size:.83rem;color:var(--text-light);margin-bottom:1.4rem">Access your training modules and quizzes.</div>
+      <div id="login-error" class="auth-error"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="login-email" type="email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-control" id="login-password" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.25rem" onclick="doLogin()" id="login-btn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+      <div style="text-align:center;margin-top:1rem"><a href="#" onclick="event.preventDefault();forgotPw()" style="font-size:.8rem;color:var(--accent)">Forgot password?</a></div>
+      <div style="text-align:center;margin-top:.75rem;font-size:.78rem;color:var(--text-light)">Don't have an account? Contact your administrator.</div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-app" style="display:none">
+  <header class="hdr">
+    <div class="hdr-logo" onclick="goHome()">
+      <div class="hdr-logo-icon"><i class="fa-solid fa-graduation-cap" style="color:#fff;font-size:.9rem"></i></div>
+      <div style="margin-left:.4rem">
+        <div style="font-size:.92rem;font-weight:800;color:#fff;line-height:1.1">VIP Learning Portal</div>
+        <div style="font-size:.6rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em">VIP Medical Group</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div id="hdr-nav"></div>
+      <div class="hdr-user" id="hdr-username"></div>
+      <button class="btn btn-sm btn-outline" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)" onclick="doLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+    </div>
+  </header>
+  <main class="main" id="main-content"></main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyCmVslcWotuoFMQDLDAb_5T90njHg6rygg",
+  authDomain:"vip-trainer-hub.firebaseapp.com",
+  projectId:"vip-trainer-hub",
+  storageBucket:"vip-trainer-hub.firebasestorage.app",
+  messagingSenderId:"693318725233",
+  appId:"1:693318725233:web:aef47accc31f1c98fbf5d0"
+});
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ═══════════════════════════
+//  BUILT-IN MODULE CONTENT
+// ═══════════════════════════
+const BUILTIN_MODULES = [
+  {
+    id:'mod_anatomy_deep',
+    title:'Deep Venous Anatomy',
+    description:'Learn the deep venous system of the lower extremity including the femoral, popliteal, and tibial veins.',
+    category:'Anatomy',
+    color:'#0f3460',
+    icon:'fa-solid fa-heart-pulse',
+    estimatedMin:15,
+    content:`
+      <h3 style="margin-bottom:.75rem">Deep Venous System — Lower Extremity</h3>
+      <p style="margin-bottom:1rem;line-height:1.65">The deep venous system of the lower extremity carries the majority (~90%) of venous return from the legs back to the heart. These veins run alongside corresponding arteries and are named accordingly.</p>
+      <h4 style="margin:.9rem 0 .4rem">Key Deep Veins (Proximal to Distal)</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>Inferior Vena Cava (IVC)</strong> — receives bilateral common iliac veins</li>
+        <li><strong>Common Iliac Vein</strong> — joins external and internal iliac</li>
+        <li><strong>External Iliac Vein</strong> — continuation of the common femoral</li>
+        <li><strong>Common Femoral Vein (CFV)</strong> — at the inguinal ligament; receives the GSV</li>
+        <li><strong>Femoral Vein (FV)</strong> — previously called "superficial femoral vein" — runs in adductor canal</li>
+        <li><strong>Deep Femoral Vein (Profunda)</strong> — drains the thigh musculature</li>
+        <li><strong>Popliteal Vein</strong> — behind the knee; receives the SSV</li>
+        <li><strong>Tibial Veins</strong> — anterior tibial, posterior tibial, peroneal (paired)</li>
+      </ul>
+      <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;background:#f8fafd">
+        <div style="padding:.5rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
+          <i class="fa-solid fa-person"></i>&nbsp; Lower Extremity Venous Anatomy — Deep &amp; Superficial Systems
+        </div>
+        <img src="images/deep-venous-anatomy.jpg" alt="Lower extremity venous anatomy diagram showing deep and superficial systems" style="width:100%;display:block;background:#fff"/>
+        <div style="padding:.5rem 1rem;font-size:.73rem;color:#475569;background:#f8fafd;border-top:1px solid #e2e8f0">
+          <strong style="color:#0f3460">Left (posterior view):</strong> Shows the femoral vein (deep system), popliteal vein (deep), saphenopopliteal junction, and small saphenous vein (superficial). <strong style="color:#0f3460">Right (anterior/medial view):</strong> Shows the saphenofemoral junction, great saphenous vein (superficial), femoral vein (deep), and perforator (communicating) veins connecting the two systems. The deep system veins are shown in blue; superficial in purple.
+        </div>
+      </div>
+      <h4 style="margin:.9rem 0 .4rem">Clinical Relevance</h4>
+      <p style="line-height:1.65">DVT most commonly occurs in the femoral and popliteal veins. When scanning for DVT, you must compress each deep vein segment with the transducer — a normal vein fully collapses with gentle pressure. Absence of compressibility is the primary sign of DVT.</p>
+      <h4 style="margin:.9rem 0 .4rem">Scanning Tips</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Start at the CFV in transverse, work distally</li>
+        <li>Compress every 2–3 cm along each segment</li>
+        <li>Use color Doppler to confirm flow and assess for partial thrombus</li>
+        <li>Augmentation (squeezing the calf) increases venous flow — helpful to confirm patency</li>
+      </ul>
       <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #1e2a3a;background:#09090f">
         <div style="padding:.5rem 1rem;background:#0d1117;border-bottom:1px solid #1e2a3a;font-size:.7rem;color:#7dd3fc;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
           <i class="fa-solid fa-compress"></i>&nbsp; DVT Compression Test — Normal vs. DVT
