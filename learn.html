@@ -772,6 +772,30 @@ const BUILTIN_MODULES = [
         <div style="padding:.5rem 1rem;font-size:.73rem;color:#475569;background:#fff8f0;border-top:1px solid #fde8cc">
           <strong style="color:#be185d">What you're seeing:</strong> Longitudinal ultrasound view showing the laser fiber tip positioned near the Saphenofemoral Junction (SFJ). The catheter tip must be placed <strong>2 cm distal to the SFJ</strong> — confirmed with real-time ultrasound before activating the generator. The SFJ is marked with the arrow; the tip laserfiber label shows the catheter end. Always measure this distance on-screen before proceeding.
         </div>
+      </div>
+      <div style="margin:1.25rem 0">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#be185d;margin-bottom:.5rem"><i class="fa-solid fa-circle-info"></i> Reference Material</div>
+        <a href="https://drive.google.com/drive/u/1/folders/1p99d84tMhLcbJ1-DjM2WDidi9sk8en3S" target="_blank"
+           onclick="document.getElementById('gsv-rfa-video-check').removeAttribute('disabled');document.getElementById('gsv-rfa-video-label').style.color='#0f3460'"
+           style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,#be185d 0%,#9d174d 100%);border-radius:12px;text-decoration:none;box-shadow:0 4px 14px rgba(190,24,93,.35);transition:.15s">
+          <div style="width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fa-solid fa-play" style="color:#fff;font-size:1.2rem;margin-left:3px"></i>
+          </div>
+          <div style="flex:1">
+            <div style="color:rgba(255,255,255,.8);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Watch</div>
+            <div style="color:#fff;font-size:.95rem;font-weight:700">GSV RFA Procedure Videos</div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square" style="color:rgba(255,255,255,.7);font-size:.95rem;flex-shrink:0"></i>
+        </a>
+        <label id="gsv-rfa-video-label" style="display:flex;align-items:center;gap:.65rem;margin-top:.75rem;padding:.75rem 1rem;background:#f8fafd;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:600;color:#94a3b8;transition:.2s"
+               onmouseover="if(!this.querySelector('input').disabled)this.style.borderColor='#be185d'"
+               onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='#e2e8f0'"
+               onclick="var cb=this.querySelector('input');setTimeout(function(){if(cb.checked){document.getElementById('gsv-rfa-video-label').style.borderColor='#16a34a';document.getElementById('gsv-rfa-video-label').style.background='#dcfce7';document.getElementById('gsv-rfa-video-label').style.color='#15803d';document.getElementById('gsv-rfa-check-icon').style.display='inline'}else{document.getElementById('gsv-rfa-video-label').style.borderColor='#e2e8f0';document.getElementById('gsv-rfa-video-label').style.background='#f8fafd';document.getElementById('gsv-rfa-video-label').style.color='#94a3b8';document.getElementById('gsv-rfa-check-icon').style.display='none'}},10)">
+          <input id="gsv-rfa-video-check" type="checkbox" disabled style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;flex-shrink:0"/>
+          <span>I have watched the GSV RFA procedure videos</span>
+          <i id="gsv-rfa-check-icon" class="fa-solid fa-circle-check" style="color:#16a34a;margin-left:auto;display:none;font-size:1.1rem"></i>
+        </label>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:.35rem;padding-left:.25rem"><i class="fa-solid fa-lock" style="font-size:.65rem;margin-right:.3rem"></i>Checkbox unlocks after clicking the video link above</div>
       </div>`,
     questions:[
       {type:'mc',text:'During GSV RFA, the catheter tip should be positioned how far from the Saphenofemoral Junction (SFJ)?',options:['At the SFJ','0.5 cm from SFJ','2 cm from SFJ','5 cm from SFJ'],correct:2,explanation:'The catheter tip is positioned 2 cm distal to the SFJ. This safety margin prevents heat damage to the common femoral vein and reduces the risk of DVT extension.'},
