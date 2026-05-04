@@ -1089,7 +1089,8 @@ const BUILTIN_MODULES = [
 // ═══════════════════════════
 //  STATE
 // ═══════════════════════════
-let currentUser = null; // {uid, name, email, role}
+let currentUser = null;
+let currentModuleId = null; // {uid, name, email, role}
 let currentModuleId = null;
 let quizState = {}; // {questions, current, answers, score}
 
@@ -1353,6 +1354,9 @@ function switchModuleTab(btn, tabId) {
     const el=document.getElementById(id);
     if(el) el.style.display=id===tabId?'block':'none';
   });
+  if(tabId==='tab-quiz' && currentModuleId) {
+    setTimeout(function(){ applyQuizGate(currentModuleId); }, 150);
+  }
 }
 
 // ═══════════════════════════
