@@ -1096,6 +1096,102 @@ const BUILTIN_MODULES = [
       {type:'tf',text:'Bruising and firmness along the treated vein after RFA is a normal expected finding.',correct:true,explanation:'Bruising, tenderness, and a firm/cord-like feeling along the treated vein are normal expected findings after RFA and typically resolve over several weeks.'},
     ]
   },
+,
+  {
+    id:'mod_clinic_safety',
+    title:'Clinic Safety & Structure',
+    description:'Safe sharps disposal, needlestick policy, emergency kit contents, and key points of contact including Regional Clinical Lead and Regional Operations Director.',
+    category:'Clinical Knowledge',
+    color:'#dc2626',
+    icon:'fa-solid fa-shield-halved',
+    estimatedMin:15,
+    content:`
+      <h3 style="margin-bottom:.75rem">Clinic Safety & Structure</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">A safe clinic environment protects both patients and staff. Every team member is responsible for understanding sharps safety, knowing what to do in the event of a needlestick, and being familiar with the emergency kit and who to call when something goes wrong.</p>
+
+      <h4 style="margin:.9rem 0 .4rem">Safe Sharps Disposal</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Never recap needles after use — single-handed scoop technique only if recapping is absolutely necessary</li>
+        <li>Dispose of all sharps (needles, scalpels, lancets, RFA trocars) immediately after use into an approved <strong>puncture-resistant sharps container</strong></li>
+        <li>Sharps containers must be located at the point of use — do not carry exposed sharps across the room</li>
+        <li>Never overfill a sharps container beyond the indicated fill line (typically ¾ full)</li>
+        <li>Seal and replace containers before they are overfull; label with date and location</li>
+        <li>Never reach into a sharps container for any reason</li>
+        <li>Sharps containers are medical waste — follow your facility's biohazard disposal protocol for pickup and replacement</li>
+      </ul>
+
+      <h4 style="margin:.9rem 0 .4rem">Needlestick / Sharps Injury Policy</h4>
+      <div style="background:#fee2e2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.85rem;margin-bottom:.75rem">
+        <strong style="color:#991b1b">⚠ If a needlestick or sharps injury occurs — act immediately. Do not wait.</strong>
+      </div>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li><strong>Step 1 — First Aid:</strong> Wash the wound thoroughly with soap and water for at least 1–2 minutes. For mucous membrane exposure (eyes, mouth), flush with large amounts of water</li>
+        <li><strong>Step 2 — Do not panic:</strong> Stop the procedure safely, ensure the patient is stable, then attend to yourself</li>
+        <li><strong>Step 3 — Report immediately:</strong> Notify your supervisor / Regional Clinical Lead right away — same day, no exceptions</li>
+        <li><strong>Step 4 — Document:</strong> Complete an incident report as soon as possible — note time, type of sharp, procedure being performed, and whether the source patient is known</li>
+        <li><strong>Step 5 — Seek medical evaluation:</strong> Go to occupational health or an urgent care / ER for post-exposure evaluation. HIV PEP (post-exposure prophylaxis) must be started within 72 hours if indicated</li>
+        <li>Source patient blood-borne pathogen status (HIV, Hep B, Hep C) will be assessed as part of the exposure workup</li>
+        <li>All needlestick injuries are confidential and must be reported — there is no penalty for reporting</li>
+      </ul>
+
+      <h4 style="margin:.9rem 0 .4rem">Emergency Kit</h4>
+      <div style="background:#fef3c7;border-left:4px solid #d97706;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.85rem;margin-bottom:.75rem">
+        <strong style="color:#92400e">📦 Emergency kit contents and location will be updated here shortly.</strong> Your Regional Clinical Lead will confirm the specific items stocked at your clinic location.
+      </div>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Every clinic must have an emergency kit accessible in the procedure area at all times</li>
+        <li>All staff must know the <strong>exact location</strong> of the emergency kit before performing any procedure</li>
+        <li>Kits must be checked regularly — verify expiration dates and restock after any use</li>
+        <li>Never remove items from the emergency kit for routine use</li>
+      </ul>
+
+      <h4 style="margin:.9rem 0 .4rem">Points of Contact</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.75rem 0">
+        <div style="background:#ede9fe;border-radius:10px;padding:1rem 1.1rem;border:1px solid #c4b5fd">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem">
+            <div style="width:34px;height:34px;background:#7c3aed;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="fa-solid fa-user-nurse" style="color:#fff;font-size:.85rem"></i>
+            </div>
+            <div style="font-size:.88rem;font-weight:700;color:#5b21b6">Regional Clinical Lead</div>
+          </div>
+          <ul style="padding-left:1.1rem;font-size:.82rem;line-height:1.9;color:#4c1d95">
+            <li>Your <strong>first call</strong> for any clinical concern, patient safety issue, or procedural question</li>
+            <li>Oversees clinical quality, compliance, and staff competency across the region</li>
+            <li>Manages clinical onboarding and ongoing training</li>
+            <li>Point of contact for needlestick incidents, adverse events, and patient complaints</li>
+            <li>Escalates to physician leadership when needed</li>
+          </ul>
+        </div>
+        <div style="background:#dbeafe;border-radius:10px;padding:1rem 1.1rem;border:1px solid #93c5fd">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem">
+            <div style="width:34px;height:34px;background:#1d4ed8;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="fa-solid fa-briefcase" style="color:#fff;font-size:.85rem"></i>
+            </div>
+            <div style="font-size:.88rem;font-weight:700;color:#1e40af">Regional Operations Director</div>
+          </div>
+          <ul style="padding-left:1.1rem;font-size:.82rem;line-height:1.9;color:#1e3a8a">
+            <li>Oversees the day-to-day operational performance of all clinics in the region</li>
+            <li>Point of contact for scheduling, staffing, supply, and facility issues</li>
+            <li>Manages operational escalations that are outside clinical scope</li>
+            <li>Works alongside the Regional Clinical Lead to ensure clinics run smoothly and safely</li>
+            <li>Contact for HR-related concerns, compliance issues, and urgent operational matters</li>
+          </ul>
+        </div>
+      </div>
+      <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin-top:.5rem">
+        <strong style="color:#15803d">💡 Rule of thumb:</strong> Clinical question or patient safety concern → <strong>Regional Clinical Lead</strong>. Operational, staffing, or facility issue → <strong>Regional Operations Director</strong>. When in doubt, call your Clinical Lead first.
+      </div>`,
+    questions:[
+      {type:'mc',text:'When should a needlestick injury be reported to your supervisor?',options:['Within 24 hours','Within 72 hours','The same day — immediately','At your next scheduled shift'],correct:2,explanation:'Needlestick injuries must be reported to your supervisor / Regional Clinical Lead the same day they occur — immediately. Delayed reporting can compromise post-exposure treatment options.'},
+      {type:'tf',text:'It is acceptable to recap a used needle using both hands for safety.',correct:false,explanation:'Never recap needles with two hands. If recapping is absolutely necessary, use the single-handed scoop technique only. Two-handed recapping is a leading cause of needlestick injuries.'},
+      {type:'mc',text:'HIV post-exposure prophylaxis (PEP) must be started within how many hours of exposure to be effective?',options:['24 hours','48 hours','72 hours','1 week'],correct:2,explanation:'HIV PEP must be initiated within 72 hours of exposure. The sooner it is started, the more effective it is. This is why same-day medical evaluation after a needlestick is critical.'},
+      {type:'mc',text:'A sharps container should be replaced when it reaches what fill level?',options:['Half full (50%)','Three-quarters full (75%)','Completely full (100%)','When you have time to replace it'],correct:1,explanation:'Sharps containers should be sealed and replaced when they reach the ¾ full mark. Overfilling increases the risk of needlestick injury during disposal.'},
+      {type:'tf',text:'All staff must know the exact location of the emergency kit before performing any procedure.',correct:true,explanation:'Knowing the exact location of the emergency kit is a basic safety requirement for every staff member. In an emergency, there is no time to search for it.'},
+      {type:'mc',text:'Who is your FIRST call for a clinical concern or patient safety issue?',options:['Regional Operations Director','The front desk','Regional Clinical Lead','Your physician directly'],correct:2,explanation:'The Regional Clinical Lead is your first point of contact for any clinical concern, patient safety issue, adverse event, or procedural question. They will escalate to physician leadership when needed.'},
+      {type:'mc',text:'A staffing shortage at your clinic is best handled by contacting the:',options:['Regional Clinical Lead','Regional Operations Director','The nearest clinic','Corporate HR directly'],correct:1,explanation:'Staffing, scheduling, supply, and facility issues fall under the Regional Operations Director. Clinical issues go to the Clinical Lead. When in doubt, call the Clinical Lead first.'},
+      {type:'tf',text:'There is a penalty for reporting a needlestick injury.',correct:false,explanation:'All needlestick injuries are confidential and there is absolutely no penalty for reporting. Prompt reporting protects your health and ensures proper follow-up care.'},
+    ]
+  },
 ];
 
 // ═══════════════════════════
