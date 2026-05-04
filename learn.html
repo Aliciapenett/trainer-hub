@@ -1006,6 +1006,19 @@ const BUILTIN_MODULES = [
         </table>
       </div>
 
+      <h4 style="margin:.9rem 0 .4rem">Letter of Medical Necessity (LOMN)</h4>
+      <p style="line-height:1.65;margin-bottom:.65rem">A <strong>Letter of Medical Necessity (LOMN)</strong> is a formal document written by the treating physician that explains to the insurance company why a specific procedure or treatment is medically necessary for a particular patient. Many payers require a LOMN as part of the prior authorization process for venous procedures.</p>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>The LOMN must be written and signed by the <strong>treating physician</strong> — not the MA or sonographer</li>
+        <li>It should include: patient diagnosis, CEAP classification, symptoms, duplex findings (with reflux times), conservative therapy trial results, and why the requested procedure is the appropriate treatment</li>
+        <li>Some payers have a <strong>specific LOMN template</strong> they require — always check the payer portal before submitting</li>
+        <li>A well-written LOMN can be the difference between an approval and a denial — especially for borderline cases</li>
+        <li>The LOMN is submitted alongside the prior authorization request and supporting clinical documentation</li>
+        <li>If a claim is denied, an updated or more detailed LOMN is often the key piece of a successful appeal</li>
+      </ul>
+      <div style="background:#ede9fe;border-left:4px solid #7c3aed;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin:.75rem 0">
+        <strong style="color:#5b21b6">💡 Your role:</strong> As the sonographer/MA, you support the LOMN process by ensuring your duplex report is complete and accurate — reflux times, vein diameters, and segment-by-segment findings are the clinical backbone of every LOMN.
+      </div>
       <h4 style="margin:.9rem 0 .4rem">Conservative Therapy (Compression Stocking) Requirements</h4>
       <p style="line-height:1.65;margin-bottom:.65rem">Many insurance companies require patients to complete a trial of <strong>conservative therapy</strong> — wearing medical-grade compression stockings — before approving a procedure. This requirement:</p>
       <ul style="padding-left:1.2rem;line-height:2">
@@ -1080,6 +1093,8 @@ const BUILTIN_MODULES = [
       {type:'mc',text:'What is the most common reason prior authorizations for vein treatment are denied?',options:['The procedure is not medically necessary','Missing or incomplete documentation','The patient\'s CEAP class is too low','The physician is not in-network'],correct:1,explanation:'Most denials are due to missing or incomplete documentation — not lack of medical necessity. Always ensure the duplex report, symptom documentation, and conservative therapy compliance are all included.'},
       {type:'mc',text:'Medicaid coverage requirements for vein treatment are:',options:['The same in every state','Set federally by CMS for all states','Set at the state level — each state has its own criteria','Always more lenient than commercial insurance'],correct:2,explanation:'Medicaid is administered at the state level. Each state sets its own coverage criteria, conservative therapy requirements, and approved procedures. Always verify your specific state\'s policy.'},,
       {type:'mc',text:'Which of the following patients is MOST likely to have the conservative therapy requirement waived?',options:['C2 patient with mild varicose veins','C3 patient with ankle edema','C5 patient with a healed venous ulcer','C1 patient with spider veins'],correct:2,explanation:'Patients with advanced disease (C4b, C5, C6) — including healed or active venous ulcers — often have the compression stocking trial waived because conservative therapy is unlikely to adequately address their disease severity.'},
+      {type:'mc',text:'What is a Letter of Medical Necessity (LOMN)?',options:['A form the patient signs before their procedure','A formal physician-written document explaining why a procedure is medically necessary for a specific patient','A billing code used to submit claims to insurance','A consent form required by the state'],correct:1,explanation:'A LOMN is a formal document written and signed by the treating physician that justifies medical necessity to the insurance company. It includes diagnosis, CEAP class, symptoms, duplex findings, conservative therapy results, and the rationale for the requested procedure.'},
+      {type:'tf',text:'The MA or sonographer can write and sign the Letter of Medical Necessity on behalf of the physician.',correct:false,explanation:'The LOMN must be written and signed by the treating physician. The MA and sonographer support the process by ensuring the duplex report is complete and accurate, which forms the clinical backbone of the LOMN.'},
       {type:'fill',text:'Reflux in the superficial venous system must be greater than ________ milliseconds to meet most insurance documentation requirements.',answer:'500',explanation:'Superficial venous reflux must be >500 milliseconds to be considered clinically significant. This must be documented in the duplex ultrasound report to support prior authorization.'},
     ]
   }
