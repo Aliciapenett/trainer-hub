@@ -1022,7 +1022,32 @@ const BUILTIN_MODULES = [
         <li>Record the <strong>start and end date</strong> of compression stocking trial and document compliance at each visit</li>
         <li>Note any <strong>conservative therapy failure</strong> — symptoms persisted or worsened despite stocking use</li>
         <li>Include CEAP classification and <strong>photos</strong> for C4–C6 patients when available</li>
-      </ul>`,
+      </ul>
+      <div style="margin:1.25rem 0">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.5rem"><i class="fa-solid fa-circle-info"></i> Reference Material</div>
+        <a href="https://docs.google.com/spreadsheets/d/1yKZi0KGq5Wa7ZHOfFuBqH9u1eIOh_O3LRQQ3eZag7Yo/edit" target="_blank"
+           onclick="document.getElementById('doppler-cheat-check').removeAttribute('disabled');document.getElementById('doppler-cheat-label').style.color='#0f3460'"
+           style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:linear-gradient(135deg,#0369a1 0%,#0284c7 100%);border-radius:12px;text-decoration:none;box-shadow:0 4px 14px rgba(3,105,161,.35);transition:.15s">
+          <div style="width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fa-solid fa-table" style="color:#fff;font-size:1.1rem"></i>
+          </div>
+          <div style="flex:1">
+            <div style="color:rgba(255,255,255,.8);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Reference</div>
+            <div style="color:#fff;font-size:.95rem;font-weight:700">Doppler Insurance Cheat Sheet</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.75rem;margin-top:.15rem">Look up your state's Doppler requirements</div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square" style="color:rgba(255,255,255,.7);font-size:.95rem;flex-shrink:0"></i>
+        </a>
+        <label id="doppler-cheat-label" style="display:flex;align-items:center;gap:.65rem;margin-top:.75rem;padding:.75rem 1rem;background:#f8fafd;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:600;color:#94a3b8;transition:.2s"
+               onmouseover="if(!this.querySelector('input').disabled)this.style.borderColor='#0369a1'"
+               onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='#e2e8f0'"
+               onclick="var cb=this.querySelector('input');setTimeout(function(){if(cb.checked){document.getElementById('doppler-cheat-label').style.borderColor='#16a34a';document.getElementById('doppler-cheat-label').style.background='#dcfce7';document.getElementById('doppler-cheat-label').style.color='#15803d';document.getElementById('doppler-cheat-icon').style.display='inline'}else{document.getElementById('doppler-cheat-label').style.borderColor='#e2e8f0';document.getElementById('doppler-cheat-label').style.background='#f8fafd';document.getElementById('doppler-cheat-label').style.color='#94a3b8';document.getElementById('doppler-cheat-icon').style.display='none'}},10)">
+          <input id="doppler-cheat-check" type="checkbox" disabled style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;flex-shrink:0"/>
+          <span>I have reviewed the Doppler Insurance Cheat Sheet</span>
+          <i id="doppler-cheat-icon" class="fa-solid fa-circle-check" style="color:#16a34a;margin-left:auto;display:none;font-size:1.1rem"></i>
+        </label>
+        <div style="font-size:.72rem;color:#94a3b8;margin-top:.35rem;padding-left:.25rem"><i class="fa-solid fa-lock" style="font-size:.65rem;margin-right:.3rem"></i>Checkbox unlocks after clicking the link above</div>
+      </div>`,
     questions:[
       {type:'mc',text:'Why do insurance guidelines for vein treatment vary between companies?',options:['They all follow the same federal guidelines','Each carrier develops its own medical policies based on their clinical review','Guidelines are set by the treating physician','All plans follow Medicare CMS guidelines'],correct:1,explanation:'Each insurance carrier develops its own medical policies based on their clinical review board\'s interpretation of evidence. This is why the same patient may be approved by one payer and denied by another.'},
       {type:'mc',text:'What is the minimum CEAP class most insurers require for thermal ablation approval?',options:['C0 or C1','C2 or higher','C4 or higher','C6 only'],correct:1,explanation:'Most payers require at least CEAP C2 (varicose veins) for thermal ablation approval. Some require C3 or higher. C4b–C6 patients often have expedited or waived conservative therapy requirements.'},
