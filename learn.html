@@ -961,6 +961,115 @@ const BUILTIN_MODULES = [
       {type:'tf',text:'There is a penalty for reporting a needlestick injury.',correct:false,explanation:'All needlestick injuries are confidential and there is absolutely no penalty for reporting. Prompt reporting protects your health and ensures proper follow-up care.'},
     ]
   },
+,
+  {
+    id:'mod_insurance_guidelines',
+    title:'Insurance Guidelines',
+    description:'How insurance companies determine approval for vein treatment, conservative therapy requirements, and how guidelines vary by payer and state.',
+    category:'Clinical Knowledge',
+    color:'#0369a1',
+    icon:'fa-solid fa-file-contract',
+    estimatedMin:18,
+    content:`
+      <h3 style="margin-bottom:.75rem">Insurance Guidelines for Vein Treatment</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">Insurance coverage for venous procedures is not one-size-fits-all. Every insurance carrier has its own set of criteria that must be met before a procedure will be approved. Understanding these requirements — and documenting them correctly — is essential to getting your patients the treatment they need.</p>
+
+      <div style="background:#dbeafe;border-left:4px solid #0ea5e9;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin-bottom:1rem">
+        <strong style="color:#1e40af">💡 Key principle:</strong> What one insurance company approves, another may deny for the exact same patient. Always verify requirements for <em>each specific payer</em> before submitting for prior authorization.
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Why Guidelines Differ Between Insurance Companies</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Each insurance carrier develops its own <strong>medical policies</strong> based on their clinical review board's interpretation of evidence</li>
+        <li>Policies are updated periodically — what was approved last year may require additional documentation this year</li>
+        <li>Government plans (Medicare, Medicaid) follow CMS guidelines, while commercial plans set their own criteria</li>
+        <li>Some carriers use third-party review organizations (e.g., Carecore, eviCore) to manage prior authorization decisions</li>
+        <li>The same carrier may have different policies depending on the <strong>plan type</strong> (HMO vs. PPO vs. Medicare Advantage)</li>
+      </ul>
+
+      <h4 style="margin:.9rem 0 .4rem">Common Requirements Across Most Payers</h4>
+      <div style="overflow-x:auto;margin:.5rem 0 1rem">
+        <table style="width:100%;border-collapse:collapse;font-size:.83rem;min-width:480px">
+          <thead>
+            <tr style="background:#eff6ff">
+              <th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af">Requirement</th>
+              <th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Duplex Ultrasound</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Documentation of reflux (superficial &gt;0.5s, deep &gt;1.0s) with a formal written report</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">CEAP Classification</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Most require C2 or higher; some require C3+ for thermal ablation approval</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Symptoms</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Patient must report symptoms: pain, heaviness, aching, swelling, cramping, skin changes</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Conservative Therapy</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Compression stockings worn for a required period (varies by payer and state — see below)</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Prior Authorization</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Most commercial plans require PA before any thermal ablation or sclerotherapy</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">BMI / Lifestyle</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Some payers require documentation of weight management attempts if BMI is elevated</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Conservative Therapy (Compression Stocking) Requirements</h4>
+      <p style="line-height:1.65;margin-bottom:.65rem">Many insurance companies require patients to complete a trial of <strong>conservative therapy</strong> — wearing medical-grade compression stockings — before approving a procedure. This requirement:</p>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Typically requires <strong>20–30 mmHg or 30–40 mmHg</strong> graduated compression stockings</li>
+        <li>Must be <strong>physician-prescribed</strong> and documented in the chart</li>
+        <li>Patient must be compliant — stockings must be worn as directed (usually daily)</li>
+        <li>Any contraindication to compression (e.g., PAD, ABI &lt;0.5) must be documented to waive this requirement</li>
+      </ul>
+      <div style="background:#fef3c7;border:1.5px solid #fcd34d;border-radius:10px;padding:1rem 1.1rem;margin:.75rem 0">
+        <div style="font-size:.84rem;font-weight:700;color:#92400e;margin-bottom:.6rem"><i class="fa-solid fa-clock"></i>&nbsp; Conservative Therapy Duration — Varies by Payer &amp; State</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.82rem;min-width:400px">
+            <thead>
+              <tr style="background:#fef9c3">
+                <th style="padding:.45rem .75rem;text-align:left;border:1px solid #fcd34d;color:#92400e">Timeframe</th>
+                <th style="padding:.45rem .75rem;text-align:left;border:1px solid #fcd34d;color:#92400e">Common Payers / Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:.45rem .75rem;border:1px solid #fde68a;font-weight:700">4 weeks</td><td style="padding:.45rem .75rem;border:1px solid #fde68a">Some Medicare Advantage and Medicaid plans; varies by state</td></tr>
+              <tr style="background:#fffbeb"><td style="padding:.45rem .75rem;border:1px solid #fde68a;font-weight:700">6 weeks</td><td style="padding:.45rem .75rem;border:1px solid #fde68a">Common requirement — many commercial plans (Aetna, BCBS variants)</td></tr>
+              <tr><td style="padding:.45rem .75rem;border:1px solid #fde68a;font-weight:700">8 weeks</td><td style="padding:.45rem .75rem;border:1px solid #fde68a">Some UnitedHealthcare and Cigna plans depending on state and plan type</td></tr>
+              <tr style="background:#fffbeb"><td style="padding:.45rem .75rem;border:1px solid #fde68a;font-weight:700">12 weeks</td><td style="padding:.45rem .75rem;border:1px solid #fde68a">Stricter commercial plans; some states with conservative Medicaid policies</td></tr>
+              <tr><td style="padding:.45rem .75rem;border:1px solid #fde68a;font-weight:700">Waived</td><td style="padding:.45rem .75rem;border:1px solid #fde68a">C4b, C5, C6 patients; documented PAD; some Medicare traditional plans</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:.77rem;color:#92400e;margin-top:.6rem"><strong>⚠ Always verify the exact requirement</strong> for each patient's specific insurance plan and state before documenting conservative therapy compliance.</p>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">How State Affects Coverage</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Medicaid is administered at the state level — each state sets its own coverage criteria and conservative therapy requirements</li>
+        <li>Some states have <strong>more restrictive</strong> Medicaid venous disease policies than others</li>
+        <li>State insurance mandates can also require commercial plans operating in that state to cover certain venous treatments</li>
+        <li>Medicare follows federal CMS guidelines nationally, but <strong>Medicare Advantage</strong> plans can add additional local requirements</li>
+        <li>Always check both the <strong>payer policy</strong> and any <strong>state-specific addendum</strong> before submitting a prior auth</li>
+      </ul>
+
+      <h4 style="margin:.9rem 0 .4rem">Documentation Tips for Successful Prior Auth</h4>
+      <ul style="padding-left:1.2rem;line-height:2">
+        <li>Include the <strong>duplex ultrasound report</strong> with reflux times, vein diameters, and segment-by-segment findings</li>
+        <li>Document all patient-reported <strong>symptoms</strong> clearly in the clinical note — be specific (e.g., "bilateral leg heaviness worse after standing &gt;1 hour")</li>
+        <li>Record the <strong>start and end date</strong> of compression stocking trial and document compliance at each visit</li>
+        <li>Note any <strong>conservative therapy failure</strong> — symptoms persisted or worsened despite stocking use</li>
+        <li>Include CEAP classification and <strong>photos</strong> for C4–C6 patients when available</li>
+        <li>If denied, review the denial reason carefully — most denials are due to <strong>missing documentation</strong>, not medical necessity</li>
+      </ul>
+
+      <div style="background:#dcfce7;border-left:4px solid #16a34a;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin-top:.75rem">
+        <strong style="color:#15803d">💡 When in doubt — call the payer.</strong> Most insurance companies have a provider services line where you can verify requirements before submitting. This saves time and avoids unnecessary denials.
+      </div>`,
+    questions:[
+      {type:'mc',text:'Why do insurance guidelines for vein treatment vary between companies?',options:['They all follow the same federal guidelines','Each carrier develops its own medical policies based on their clinical review','Guidelines are set by the treating physician','All plans follow Medicare CMS guidelines'],correct:1,explanation:'Each insurance carrier develops its own medical policies based on their clinical review board\'s interpretation of evidence. This is why the same patient may be approved by one payer and denied by another.'},
+      {type:'mc',text:'What is the minimum CEAP class most insurers require for thermal ablation approval?',options:['C0 or C1','C2 or higher','C4 or higher','C6 only'],correct:1,explanation:'Most payers require at least CEAP C2 (varicose veins) for thermal ablation approval. Some require C3 or higher. C4b–C6 patients often have expedited or waived conservative therapy requirements.'},
+      {type:'tf',text:'A patient\'s compression stocking trial can be documented as complete even if they were not compliant with daily wear.',correct:false,explanation:'The patient must be compliant with wearing the stockings as directed. Non-compliant trials do not satisfy the conservative therapy requirement and will result in denial.'},
+      {type:'mc',text:'What is the most common reason prior authorizations for vein treatment are denied?',options:['The procedure is not medically necessary','Missing or incomplete documentation','The patient\'s CEAP class is too low','The physician is not in-network'],correct:1,explanation:'Most denials are due to missing or incomplete documentation — not lack of medical necessity. Always ensure the duplex report, symptom documentation, and conservative therapy compliance are all included.'},
+      {type:'mc',text:'Medicaid coverage requirements for vein treatment are:',options:['The same in every state','Set federally by CMS for all states','Set at the state level — each state has its own criteria','Always more lenient than commercial insurance'],correct:2,explanation:'Medicaid is administered at the state level. Each state sets its own coverage criteria, conservative therapy requirements, and approved procedures. Always verify your specific state\'s policy.'},
+      {type:'tf',text:'Medicare Advantage plans can add requirements beyond standard Medicare CMS guidelines.',correct:true,explanation:'Medicare Advantage plans are administered by private insurance companies and can add their own local coverage requirements on top of federal CMS guidelines. Always verify the specific MA plan\'s policy.'},
+      {type:'mc',text:'Which of the following patients is MOST likely to have the conservative therapy requirement waived?',options:['C2 patient with mild varicose veins','C3 patient with ankle edema','C5 patient with a healed venous ulcer','C1 patient with spider veins'],correct:2,explanation:'Patients with advanced disease (C4b, C5, C6) — including healed or active venous ulcers — often have the compression stocking trial waived because conservative therapy is unlikely to adequately address their disease severity.'},
+      {type:'fill',text:'Reflux in the superficial venous system must be greater than ________ seconds to meet most insurance documentation requirements.',answer:'0.5',explanation:'Superficial venous reflux must be >0.5 seconds to be considered clinically significant. This must be documented in the duplex ultrasound report to support prior authorization.'},
+    ]
+  }
 ];
 
 // ═══════════════════════════
