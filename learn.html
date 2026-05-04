@@ -397,65 +397,12 @@ const BUILTIN_MODULES = [
       </table>
       <div style="margin:1.1rem 0;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;background:#f8fafd">
         <div style="padding:.5rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">
-          <i class="fa-solid fa-chart-line"></i>&nbsp; CEAP Clinical Classification — Visual Summary
+          <i class="fa-solid fa-chart-line"></i>&nbsp; CEAP Clinical Classification — Visual Guide
         </div>
-        <svg viewBox="0 0 560 175" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#f8fafd">
-          <!-- C0 -->
-          <rect x="10" y="12" width="72" height="110" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
-          <text x="46" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C0</text>
-          <text x="46" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">No visible</text>
-          <text x="46" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">signs</text>
-          <ellipse cx="46" cy="97" rx="18" ry="9" fill="#fde8d0" stroke="#e2bfa0" stroke-width="1"/>
-          <!-- C1 -->
-          <rect x="92" y="12" width="72" height="110" rx="8" fill="#fefce8" stroke="#fde68a" stroke-width="1.5"/>
-          <text x="128" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C1</text>
-          <text x="128" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Spider/</text>
-          <text x="128" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Reticular</text>
-          <ellipse cx="128" cy="97" rx="18" ry="9" fill="#fde8d0" stroke="#e2bfa0" stroke-width="1"/>
-          <line x1="115" y1="93" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
-          <line x1="119" y1="88" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
-          <line x1="128" y1="87" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
-          <line x1="137" y1="89" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
-          <line x1="142" y1="94" x2="128" y2="97" stroke="#f472b6" stroke-width="1.2"/>
-          <!-- C2 -->
-          <rect x="174" y="12" width="72" height="110" rx="8" fill="#fef9c3" stroke="#fcd34d" stroke-width="1.5"/>
-          <text x="210" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C2</text>
-          <text x="210" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Varicose</text>
-          <text x="210" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Veins ≥3mm</text>
-          <ellipse cx="210" cy="97" rx="18" ry="9" fill="#fde8d0" stroke="#e2bfa0" stroke-width="1"/>
-          <path d="M 196 95 Q 203 90 210 95 Q 217 100 224 95" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
-          <!-- C3 -->
-          <rect x="256" y="12" width="72" height="110" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
-          <text x="292" y="38" fill="#0f3460" font-size="22" font-weight="900" font-family="sans-serif" text-anchor="middle">C3</text>
-          <text x="292" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Edema,</text>
-          <text x="292" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">no skin chg</text>
-          <ellipse cx="292" cy="97" rx="22" ry="12" fill="#fbcf9e" stroke="#f97316" stroke-width="1.5"/>
-          <!-- C4a -->
-          <rect x="338" y="12" width="72" height="110" rx="8" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
-          <text x="374" y="38" fill="#0f3460" font-size="20" font-weight="900" font-family="sans-serif" text-anchor="middle">C4a</text>
-          <text x="374" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Pigmentation</text>
-          <text x="374" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">/ Eczema</text>
-          <ellipse cx="374" cy="97" rx="18" ry="9" fill="#b97a50" stroke="#8b5a38" stroke-width="1"/>
-          <!-- C5/C6 -->
-          <rect x="420" y="12" width="130" height="110" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
-          <text x="485" y="38" fill="#0f3460" font-size="18" font-weight="900" font-family="sans-serif" text-anchor="middle">C5 / C6</text>
-          <text x="485" y="53" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Healed / Active</text>
-          <text x="485" y="64" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="middle">Venous Ulcer</text>
-          <ellipse cx="485" cy="97" rx="20" ry="10" fill="#b97a50" stroke="#8b5a38" stroke-width="1"/>
-          <circle cx="485" cy="97" r="7" fill="#dc2626" opacity=".85"/>
-          <circle cx="485" cy="97" r="4" fill="#fca5a5" opacity=".5"/>
-          <!-- severity arrow -->
-          <defs>
-            <marker id="arrowSev" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
-              <path d="M0,0 L7,3.5 L0,7 Z" fill="#94a3b8"/>
-            </marker>
-          </defs>
-          <line x1="10" y1="137" x2="548" y2="137" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowSev)"/>
-          <text x="10" y="155" fill="#22c55e" font-size="9.5" font-weight="bold" font-family="sans-serif">Mild</text>
-          <text x="275" y="155" fill="#64748b" font-size="9.5" font-family="sans-serif" text-anchor="middle">Increasing Disease Severity</text>
-          <text x="548" y="155" fill="#dc2626" font-size="9.5" font-weight="bold" font-family="sans-serif" text-anchor="end">Severe</text>
-          <text x="421" y="170" fill="#64748b" font-size="8.5" font-family="sans-serif">C4b: Lipodermatosclerosis / Atrophie blanche</text>
-        </svg>
+        <img src="images/ceap-classification.jpg" alt="CEAP Classification C1-C6 clinical photos" style="width:100%;display:block;background:#fff"/>
+        <div style="padding:.5rem 1rem;font-size:.73rem;color:#475569;background:#f8fafd;border-top:1px solid #e2e8f0">
+          Clinical stages C1–C6 illustrated with real patient examples. Note the progression from spider veins (C1) through varicosities (C2), edema (C3), skin changes (C4a/C4b/C4c), healed ulcer (C5), and active venous ulcer (C6). Image courtesy of Dr. Steve Elias.
+        </div>
       </div>
       <h4 style="margin:.9rem 0 .4rem">Insurance Considerations</h4>
       <p style="line-height:1.65">Most insurance carriers require documentation of symptomatic CVI (C2–C6) with reflux >0.5 sec superficial / >1.0 sec deep, and a trial of conservative therapy (compression stockings 6–12 weeks) before approving thermal ablation. Always verify specific payer requirements.</p>`,
