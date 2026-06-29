@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>VIP Training Schedule</title>
+</head>
+<body style="margin:0;padding:20px;background:#f0f4f8;font-family:Arial,sans-serif;">
+
+<table width="620" cellpadding="0" cellspacing="0" border="0" align="center" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.10);">
+
+  <!-- HEADER -->
+  <tr>
+    <td style="background:linear-gradient(135deg,#1a5276,#2980b9);padding:32px 36px;text-align:center;">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAAAsCAYAAADrVhP0AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAY9ElEQVR4nO19aXRd1Xn28+69z7mDpKt59CAbm8EW2JZnG+MQTDx94GCToV1tadrkSwhpaL+0kKQhGJNA6Aot6fpIWlNIMHFbjEPtkMYDMXjAGDwbebYlYcuWdH0la7zjOWfv3R/7Xkk2GBtkMMvVs9ZdV7o65+x9zn32u99ZpLXGR4MCwKA04GlAEEBk/iKVBBGBEYPSyrwDUBpwpYdYLIZEykV+fj78FofWgJU+l5SG0h4YI0BrgAAoBRBLDyCgtBmbmPnzAK4eUH8J2fdsKTUYByhNE6kkGGPQIGgAbe1daGtrm9MYbp4Qj8cfKy0t+0p5SemygoIC+G0GLQHBM9cGoJUhI2PmVw0QiR4WelJD8AFKXk3oByENlFLQWoMxBiJDPE96UGAQ3BCpO5ZEOBye0xgOj08kEo+DEZRSsLiAzcUPi4qKjlRUVPwmPy8bpABGZk4EZaRiZo5EUArwPA9CCLA0UQdw9aDfhOyRZmDwPA/EmdleAbgSaGpqurmhsXFqPB5/kpiA53ngnINzvjiVSi3hxOAk4wgGgxg9ejSVlxUZAdgrGKGhobUGp3MJKKUE57yf8x/ApwnislxFy/T2zEHEIAG0tLYj3NLyxY72rspYIvFTKRWIK0iloUkDDBwAhBBLAvmF8crKyi2xROq25S+ufK2oqAhTJ02mnJwsCAYABE0ElVYQlFLgBPCB7fqqw2XYsj0ASOuKDB3dUZxubF54prV1dDyR+rHrSmRlZT2ioJnW+mEielS63sNCiEd9Pqs7lJ3TFMzOiuzZs+cPmzdvRltbGwKBLIwcORIzZ854oHrsuCcDQQGB3p1bkNnOzdZt9/MRDODThA9NyAsdHU3E0dgcnhuOnK2KJ1JPaq2hQCAiSE9DKw+2bUNKFwyE0tLSP8nPz6+vq6ubvXHzpiV1de9CE+C6LhxPIScnB36/HzeOGo2bp0/92oTq0c9xAJ4n4RPc6JcAgAE98mpCvwiZocTp5ubJDSdP39wdj/+T0gRNDFrrtOtHQEkXnHMwaPgs63ujRl3/D7mhHLy9ffv3n3nuucc9qaGUcQlZvgBc14VOm9IEjfz8fEybNB5zZt8+eUh5yU4C4LkOfJbAACGvLpDSGYv2wtBa91jSGmbr1AR0dsdxrK7uq5HWlmct4YPUCkQc0jNkNNdVkFIiK+D/wZBB5TsGD6rYEPQJ417UwJ6aA3++cvWq5+tq34UCIZFyYds2GBdwHAdCCBA0OGkUFxbgj79494PTp035KYPxbw5okf1DRnCc/zNgdPVP2pNxSYTMQMEw0dMabW0dONlw6muRtvZ/UyD4/f6H4rHkjyU0/JYNIcQPPTf1I7/f/73iwoKjFWUlq/Pzso0VlXZ+gzg0Y2hqacOOHTv0tre243RTM5KOByklbJ/fkJIzuKkEsgJ+CE64Y948fPmLi4hd4rwHcOnICB8AV8St9gGENBuy8UsbyZjxUUcTDupq6//oxOnG/wzk5DzUHUv8WAhh3DmgJY7jLPb7rEfyQjmnhgwq/2VebggZqailAmkJcA4Q4HoACQZPAicaGm/bvnPHa9t37kJz0xm4SsLn8yGVSsEWDJxzJGJRZAX9+Pa3v/1Xk8dX/9waiNb0G313wCuNSyIkAFB6sgpA+Ewrjhw99lAi5f5IgoPb9hIAcBKJxUII5OeF7htcUb6zvLRol+AAT19fSwWQAqX9iUpJgIueSA4AJD2No8dqv7Rt29srduzaiVg0ASKC0h6UUhCMg0hj3LhxuP++b1JOwBogZD9wvg3Rd8u+ErgoIQFjoGgQiABXAfX17849Xlu31vIF4EiAcwHPcxHw2w8NHTzoreGVg14XzFyCZxadlukRe0fS2ljhKdeBJWxjZXsaQpDRL/cd/Mtlv17+XFO4GbZtw3EcQ0ohUFxcjL9/8MEJleWFewYI+dFxfnBBpSVQjw3wCRP0kmR0ZlJKGYNGac2JTPiPAEjPRW4o+2/G3nTjYyOHD3qdM0B5Kk1GhR5yp8/xVK9LCAB8lm3i1lrBJ8gYTQqYWF31y6f+8Sc0Y/rNIG1WczCQDa0ISgKR1rOj1PtNeACXjAwZ+27bmTDwlcBFCZlZMVob/ZExgIhJy/JBaw3BCJwAAa183IRfBADLWC+A9Mwrs+KYADEOqQme1PAcF9DSXDudliEIyOiGgoAhgyrgOA58Ph9isRjAOTytwYWd+LgezP8mKGU8IRlIKSGlvCKkZIQLGAU6k2Gje94VjORyHCfbUybbx3VdEBEsy4oLIdJSNK2XaA1wYV6aQWuChPFlEgHECcK2YLRMBk/JHl0y83w0zComIjgpD5bf1+OekJ4T+KCb0+/zfrlfFxr3Uo/9sPO80PEf9V1pAMTAhQCI0B2L4syZMxM7Ozs/YMYfH4RhR+8HmcmaxcHAmPmEc0MmIgBMeDptmGQss5TrZkmtEI6cxbPPLNWLFt31RzfdOHpF5po1+w/8yda33l5+5513Toq0tI5ev379su8++B2SALa88dbfv/nWm4+5SkIpBb/lAwAsWvSFudeMHLpegUMSA3gmni0hoCAgNYNJQ8vEtWtr6+ckk8m866+/fgW3OBiA083hiS3hlhvHVt/0vNLA6dNN0w8ePPgm5xyMMQweXLHw+uuvW71nz96vd3R0LfU8B5WVwz8/cuQ1r3BufJ1HjtYuCIWym8rLy3YRgK7uOLZt26o729pRVlqK6vHjKS8vBAA4fKzuDsaYN3z48HVpZwLq6k/enh/K2VBUVACZTpvT6WfvKg0OgiLgwDsH7jlae3SZZflQWTnkq9Xjxv7ybFs7Dh068r1EIvYTm9sYOnzo50YOH7bBkQo2ZzjdHJ5Ys7dmZzQRxTWV13xj/MRxzzAAKU9i/779Xx9TPeYZDgbiQMOJ0zMtvxUdVFa658SppumHDh9+k1kCHISbZ0yjSGvbrbt37NxYXlbyg+nTpz9+oeSVHp58dO69Lxioj453sYPfQ14GbolHXdeFZVlxqQmhvFy0d3Viy5atL3rSTNyRCiv/a9XyeCKBiorSXc2RM8v2HzzcIy19AX+HZgw3jR2LqptuwojrrkU0GseePXvWARnpQOfMkrQCacBxPHBOSCYdAMCRI0fWPf300y+2d3UDMC6qLVu27vzXf3vmVylHQiqgZv+BN4/X1iGZchCLxyEsXywaS2LT5jeWNofDiMYSeGnlyt/+5uVV2nEVPAVs3LTpt41N4QkAcLzuxJwfPvywDocjGD58+N8opeDz+eB5Ch3dcWzYsOF3y1749dqOzq50UjKwa9euP9QcPPSw7LN4iMxOwBkh6Xp4/vkX9MurVy3z+4PICYWQSDq5rgQ6Ortnvfrqqz9xXYlwSwTLl//HHw4drV0gOMPR2nfn/su/LN3ZHY+hpKTsB/+9ds3Spc88p5OugiU4Vv/ulaVIkxEANm7ZvDkcjoxRAI4dP/7m7n370NndjYNHDuPxx57QSinBGEN+fn59/zPBPjwuOduH8P7bjpTyYeIMrusGOecI+BlumTkTr7/2GiJnW1BaUoympqYZx48fxbe+/VcPKA0AGj5/r7umvb3957m5uZg3Zw4xRvA8ic7WNs1AYDqTF3neakirv7Zt/JtCCKRSLrq6ulBeXo5tb2zR8+fPp+bm5tuj0Siys7NNDqbNEQgEUFVVhUmTJpHrpFBYkIuUI6GkxPx58yg3N4QpkydPXrt27fb6urq7Rt1w7WrBOTzXDXiexrq1a9d94e67v3/LjGlPeI4Hny3+OfNsIpHIbL/fj4qKcrz7bv03CgvGLU25LlKpFHJycpoyZJTSqB2cA54HNDQ0zG9tbcV3vvMdyg1lIeUqcM7SOjupvLw8zJs3hzxPYfXq1brjbNtI0sCKFSvWzp49+/u3zJj2BABMnz798aeeekrv27fvvgkTxv/CLBQPgIDgQCAQgG3bUcAYq8OGDcPn77yDmAa++c37dH5+/oa7715IOhOl+bhE4QXQP08oKfMlWxxaa6ZhdMBZs2aRZXEcOHBAS6WxefPmNwqLizBp0qQnFRmd0MSrzX12tLWDaY2uri54noSbTCEe7YaWLgiGi3TOamAmXk5MS6nTWT8s/QVzzJo163sHDhxAe3s7GhoaZpSXlyMUCsF1XcTjDqSUeOedd7B27Rq9ZcsW3RxuMbmcREgmk+OJgLKysh22bSMajZYBQDKZhBAiGYvFEIvFUF1d/QQA+GyBvoJk375964cMGYKZM2d+ae/evf+qNBDwW/D7/XAcJ9t1jXLMGIExIyGFAOrr638/YsQI+Hw+HD1Wd8eOHTu+W1Oz/y8cRyKRSBTEYjGsW/eqfuWVV3RHRwcGDRq0gwhobm7GuHHjnsjog4IDo0ePRlNT0885M/q8ZRkyup6ZqOM42a5nsgUaG05h44aNevnyf9c3XH89CnJzTeY/Y+cYOp8ULiohzUZJeD/ukgakUtCagVsiqbVJkggG/RgzZgwOHjyIqqoq1NTUYM6cOekEC4ALgk5vuQTAFgJNTU34918v052dnWAgRJqaMfqGUeeMZ1yblJbWBGimOScQBDypjQUOID8/v37ixIlYtWqVBhdYsGABHTt2TMfjcZSVFkF6LiqHDsGYMWPmMca8goI8AIDWEkp5NiMg6SShlAchmAOYe3KcZIhzQiqVQCzWjWDQD56uJXI9BSEYdu/ejaKiIrxTU/NSfX09Oju/gKysLDiOA8aYl9HJiADXlRCW+T074H/obOTMj/0+gWDQ35YV9J/9/X+/8sshgyt+RVBkWRwFBXn/r2bvnqemTp2K0tLirVJqCAKSsShyswMAAZ6n4CYTsG0bpAEOjbaWFpSWFsMnCE4iDouRa3MCkQlJZGcFHxh1ww3JayqHPU0ECE5Q3pVJfv5oEpIU9UosBc75YtdLZQkhwNO1WBMnTvxyY2MjXn75Za2UwqzP3kYEkz6mPQnlemA9hWEaBfm5uPP/zJ//lXv+7Lav/eVXpj34dw/M+uytM4kBYFBg76PnKgJlIkmcEzzPg9/vRygUOj1z5kw6fPgwAoEAykqLkJeXhxMnTtwPGKlRVFT0w2tHDl834prKDQDSkt6Cbdtve1Lh+PHj90SjURQWFh7TAFKpFDjnTk52FsaMGYMXX3xRQ5rBXVdCCIba2vo52dnZuPfee+lb991H06ZNw86dO7XWGj6fD0Y/641+WRaHlBpaA9dee+1jhw8fxrHjtXcMHjxo29ixY5/VWiORSMwIBAJtlmVh0qRJP5s7d+7XDhw4gFgsBs4JU6dOxZo1a7TnKSQSKXR0dGDTpk2orq6eTAQUFhbinXfe0QAQDkfQ1dWFYDDYSmQK6q69ZgRumT7lySkTJzxdWloIz5Xp2qgrk4nf74xxn2VWovKknTbIwQBUVFS8VF5evqL22BFUV1cj4LPMgILDFtbigvzcJQRAeYAtLBQXFGLo0KFrbSHACcbtpIAL69UMANOM9dbYZNLcpJR20MS75xYVFa1nAPJDOQj67E6pgIKCgr9+/fXX/3nv3r0/YlphxowZ944dO3ZpdiCIXz37nPb5fOju7sbChQv/tKK0bCsHkJudg4Dt6yQN3P7Z22jlypV68eLFelhlJYgIdy5YQDU1NeumT5mMrKDxEkwYP+7Lr7766oo5n7sNxQX5eP0Prz618+23nmKMYeyYMYtvvXXmo5ybOqHS0lIsXLjwvpdeeul3tm1nyjyQl5e3NRKJzM3LywNjhKqqqueOHz/+bF1d3bdCoeqf33XXXbRixQr9s5/9TOfm5qK+vh733HPPvYMGle/0PIW5c+fe+sILL2w6dOiQdl0Xw4YNQ1lZ2XopNXJzc78ejUafkZ7RVwmAJTiUNA/dc10Iy+ovRT4USGdCemlh+R4dVsuMrwdKAxLAkaO1dzWcblqliUEwQjwex5BB5X9x3XXXPR8M2FDK6DIn3z352dazkVGVlZW/KCkugYYGaUKkpRWRSOTLo0ePXsEJaA6fQTwZu71y+PANHBpKSnBmGUIS8PLv1urlL70ExTg0MZDSKCkoxr3/96t/POGmES+qPuGvs20dyM/P6xuhhNZAd3cUAJAdyoZUQGdnl9lGtYLf70dubggdHZ1IJBITGGO7CwsLIQQHpbfBRCIBzjn8fn9PrU8k0opYNHpbKBR6PTcvD11dXQiFjOuHBIOUCi0tLePLy0r36LRKEY1GJ3DOd2dnZSErK3iOseB5CtFEHK2trbf7/f6O/Pz8XX6/D54n0dXVhcKC/LRnwYXjOMjJyeo5LxwOT1FKidLS0jd9PguJRAqBgFkY0WgcHR0dUzjn24uLiyFMXQii0Tg4YwgG/T1zUJ4G45kS5D6TO8+o+bhsnYsTEn22JcuCp4HDR44vOt0UflmBYAoXgNyc7G9VVVX9Ijto99yH7lOo1fdONPrk4EmAeNpJC7M9u44D2zIPSRPwm9Vr9K9XrABZNqQGBDEUZIdw/333fnHsjSN+84G5nB/1yVwizh/7YuNdaK7nn3e+gnL+Y8xcp7/31yt4LvXAcw+/3IS8+JadXimMpZNhpQLn3AEA5UkQafRQmjEQpev6NcB4n0v0WXEE6rkjYmaFc8EglYQigmWnV6w2X0zS8cAtkwCslIIms4q11lc+X2oAlxWX/IVyQwBzEmOeybphsG37Ec45YolkYWNz0+3dMQdgvVLP+NvQQ0atete+9Dx4rgQXxmTJVC16GnAUIAk4cLB+0Y5du028VWtwMu6SgM9OxzY+GPQxvz7seBebZwbsvNeFjrts8/+QEyeo80IVlwcXl5CZQn0y2TmMESzBk5w0GOdLEqnUI5xzOMnkoydPnnq0o6NjWFlJaU1hYeGOrIAA4wSZVpI5IxBjPaQ08VMT+pPGAQwJDdeVaDrVOHvNmnXr396xx0hgYuAM0NIFJwbSEkMGla34hPy1A/iEcGlWdjqRFjA6YU5OzqZgMPhAVzT+U8vnf9REazSSjvOwc7YdXV1dSwrazl5XUlK8vKS4GHY6OtHTgCKdJCmlqeXWLJ1rqYETDQ2zd+3cvX7b1u1ob+9E0nWhGUExgpdyEfBZUEriphtHobAgdPmfyGXDxbTATws+XdWbFyGkMu7/TLa48sCYQF5eHkpKSg50JxqgoB/2lIRtCyhunN0J11scPtuCts6O4R0dnfvLykpXF+TlmNQioCdCo9K1hYyASHsnNm7Zot/euQNNTWE4cQ9CWOCWD2CElHIQDAbhJOMYUlaMRZ9fQKlUCj6f7+N8PgP4hPGeMthzrac0ITNx5LT7RwLojqVwsrFpQX3Dqd96nodgMLjEdd3FpNOdzxgDIw0pJYJ+/w8qSsv2Dh48eG3QbxmOp6sGXVei5uChr6xY9V+/Ol5bC7KM2wiapx3OAp5WIA64roPhg8vxwF/ff8vIwRVbM3b5pwsX06vOm+8FzNXzjd73qCaXyczVlyjJ3zvMxyNZL0JIM7BWyrhpiEMpBaUJxAkJT6O9owvHao//XTKZ/KnnebAsyyT1KpOBTEz35C/m5oTur6wc+v8rSorgSaC1tRW///0a/ebbb6G9qxuW3wcnHesVzDbNq7SGJyUKiwowZcokLLpzPhWFsiGg0o7bT5uEHCBkf/CRW6lkzlIAorEkwmcit0cikRuj0ehTSpliGsYYXE/1BOqD2VnfLyur2Ms5d06ePDnz5VWrHmlpaUkn9UpYlmUMG9d0t2CMwW9bmDR5Aj7zmc986boRI1b6bRMPH+hccXWi3719vHRSgQbQ1RVHY7j5jpaWltGxeOIfpJRgwoY/GPhuIJB1tqyi/LlDB4/o3fv2Yv/+/YgnE7CEDcYN+dxUElAKDBqh7ByMvGYY5sz+3DeGDh36TFlxAQDjNso42wd6+1x9uAzt+Awc1+iOihii0ShONzZ94cyZMyttf/BvBw8dso2I1H+8+J/bT51qRKS1FVIaiSil7qnhyAqY8oSykmLMmzMXUyZNoIK8bAC9cjCjPvRmdwxIyKsJ/SZkJgO671VcBXiugitNB4rtO3frZcuWwfFcAAxgRjeU2oQdhRBwXReCEebOnYtFCz9PuVkmWmMSMExTVCF4r6WuM0VIA4S8mtDvbJ9MBrRWCpoAlnZgcx+DDRuxeAqnGxuQX5CL1raz8FwJ5SrYtg0tJQTjCPp9GD2+GnfeMX/+iBHD1ipXnZOByUXfgrN0+JEoXVM8QMirCf2WkOc3K1K61x6TMI0CFIATJ07f+tqmjRv37t2Lto52aM/EuquqqjBt2tQlkydMeiQQ8KUblALSNZI3E3U0ASMzVzPegFFzNaL/OuT7uB8yH8n0x55UEJwhnnRx9OjRP9+89Y3nm041Ys6c2aiurqacUBasjPPdM0SzBOv9JwzSNM/vGw9X0APtnK9C9F9CSmX6/vTodpn44PkJbOmfNRCLJ8E5h21x8HRzAXMuenTEnuo8pXF+YkZmvCvRLm4AHy8uY9P7DHoJcqEr9z3jPS31PmpC4QCuClyepvcXAOH9+XVuOtWALjiAXlxGQl5qyOlCyDSkOu/jgRzc/1UY+LYH8KnC/wDBiiskYRHEwAAAAABJRU5ErkJggg==" alt="VIP Medical Group" width="160" style="display:block;margin:0 auto 16px;max-width:160px;width:160px;border-radius:16px;"/>
+      <p style="margin:0 0 6px;font-size:22px;font-weight:bold;color:#ffffff;">Welcome to the Team! 🎉</p>
+      <p style="margin:0;font-size:13px;color:#cce0f0;">Training Schedule for <strong style="color:#ffffff;">[New Hire Name]</strong></p>
+    </td>
+  </tr>
+
+  <!-- BODY -->
+  <tr>
+    <td style="padding:32px 36px;">
+      <p style="margin:0 0 6px;font-size:15px;font-weight:bold;color:#1a5276;">Hi [Name],</p>
+      <p style="margin:0 0 24px;font-size:14px;color:#4a5568;line-height:1.7;">
+        Welcome to VIP Medical Group! We're so excited to have you join our team and can't wait to get you started.
+        Below is your training schedule for your first couple of weeks. You'll be working alongside our experienced
+        sonographers to get comfortable with our workflow, protocols, and day-to-day rhythm.
+      </p>
+
+      <p style="margin:0 0 14px;font-size:11px;font-weight:bold;letter-spacing:2px;color:#2980b9;text-transform:uppercase;">📅 Your Training Schedule</p>
+
+      <!-- WEEK 1 -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+        <tr><td style="background:#eaf3fb;color:#1a5276;font-weight:bold;font-size:13px;padding:8px 14px;border-radius:6px;">Week 1</td></tr>
+      </table>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+        <tr style="background:#f7fafc;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;width:50%;">Tuesday, 2/17</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;"><span style="font-weight:bold;color:#1a5276;">Woodbridge</span> &nbsp;with Julia</td>
+        </tr>
+        <tr style="background:#ffffff;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;border-top:1px solid #edf2f7;">Wednesday, 2/18</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;border-top:1px solid #edf2f7;"><span style="font-weight:bold;color:#1a5276;">Princeton</span> &nbsp;with Julia</td>
+        </tr>
+        <tr style="background:#f7fafc;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;border-top:1px solid #edf2f7;">Thursday, 2/19</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;border-top:1px solid #edf2f7;"><span style="font-weight:bold;color:#1a5276;">Woodbridge</span> &nbsp;with Julia</td>
+        </tr>
+        <tr style="background:#ffffff;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;border-top:1px solid #edf2f7;">Friday, 2/20</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;border-top:1px solid #edf2f7;"><span style="font-weight:bold;color:#1a5276;">Princeton</span> &nbsp;with Julia</td>
+        </tr>
+      </table>
+
+      <!-- WEEK 2 -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+        <tr><td style="background:#eaf3fb;color:#1a5276;font-weight:bold;font-size:13px;padding:8px 14px;border-radius:6px;">Week 2</td></tr>
+      </table>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+        <tr style="background:#f7fafc;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;width:50%;">Monday, 2/23</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;"><span style="font-weight:bold;color:#1a5276;">Woodland Park</span> &nbsp;with Ashley</td>
+        </tr>
+        <tr style="background:#ffffff;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;border-top:1px solid #edf2f7;">Tuesday, 2/24</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;border-top:1px solid #edf2f7;"><span style="font-weight:bold;color:#1a5276;">Woodbridge</span> &nbsp;with Julia</td>
+        </tr>
+        <tr style="background:#f7fafc;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;border-top:1px solid #edf2f7;">Wednesday, 2/25</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;border-top:1px solid #edf2f7;"><span style="font-weight:bold;color:#1a5276;">Princeton</span> &nbsp;with Julia</td>
+        </tr>
+        <tr style="background:#ffffff;">
+          <td style="padding:10px 12px;font-size:14px;font-weight:bold;color:#2d3748;border-top:1px solid #edf2f7;">Thursday, 2/26</td>
+          <td style="padding:10px 12px;font-size:14px;color:#718096;border-top:1px solid #edf2f7;"><span style="font-weight:bold;color:#1a5276;">Woodbridge</span> &nbsp;with Julia</td>
+        </tr>
+      </table>
+
+      <!-- Divider -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 24px;">
+        <tr><td style="border-top:2px solid #edf2f7;font-size:0;">&nbsp;</td></tr>
+      </table>
+
+      <!-- OFFICE ADDRESSES -->
+      <p style="margin:0 0 14px;font-size:11px;font-weight:bold;letter-spacing:2px;color:#2980b9;text-transform:uppercase;">📍 Office Addresses</p>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+        <tr>
+          <td width="33%" style="padding:12px 10px 12px 0;vertical-align:top;">
+            <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+              <p style="margin:0 0 4px;font-size:13px;font-weight:bold;color:#1a5276;">Woodbridge</p>
+              <p style="margin:0;font-size:12px;color:#718096;line-height:1.6;">517 US-1 #1100<br/>Iselin, NJ 08830</p>
+            </div>
+          </td>
+          <td width="33%" style="padding:12px 5px;vertical-align:top;">
+            <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+              <p style="margin:0 0 4px;font-size:13px;font-weight:bold;color:#1a5276;">Princeton</p>
+              <p style="margin:0;font-size:12px;color:#718096;line-height:1.6;">8 Forrestal Rd S<br/>Suite 203<br/>Princeton, NJ 08540</p>
+            </div>
+          </td>
+          <td width="33%" style="padding:12px 0 12px 10px;vertical-align:top;">
+            <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+              <p style="margin:0 0 4px;font-size:13px;font-weight:bold;color:#1a5276;">Woodland Park</p>
+              <p style="margin:0;font-size:12px;color:#718096;line-height:1.6;">1167 McBride Ave<br/>Suite 2<br/>Woodland Park, NJ 07424</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Closing -->
+      <p style="margin:0;font-size:14px;color:#4a5568;line-height:1.7;">
+        Please plan to arrive a few minutes early each day so you have time to park and get settled.
+        If anything comes up or you have questions before your first day, feel free to reach out — we're here to help!
+        <br/><br/>
+        We're really looking forward to working with you and having you as part of the
+        <strong style="color:#1a5276;">VIP family</strong>. Welcome aboard! 💙
+      </p>
+    </td>
+  </tr>
+
+  <!-- FOOTER -->
+  <tr>
+    <td style="background:#1a5276;padding:18px 36px;text-align:center;">
+      <p style="margin:0 0 4px;font-size:13px;font-weight:bold;color:#ffffff;">VIP Medical Group</p>
+      <p style="margin:0;font-size:11px;color:#cce0f0;">Questions? Reply to this email or call us — we're happy to help.</p>
+    </td>
+  </tr>
+
+</table>
+</body>
+</html>
