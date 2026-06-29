@@ -1103,6 +1103,353 @@ const BUILTIN_MODULES = [
     ]
   },
   {
+    id:'mod_nextgen_intake',
+    title:'NextGen: How To Do An Intake',
+    description:'Step-by-step guide to conducting a complete patient intake in NextGen EHR — templates, HPI, vitals, medications, allergies, orders, exam, and assessment.',
+    category:'Clinical Skills',
+    color:'#0f6b3a',
+    icon:'fa-solid fa-clipboard-user',
+    estimatedMin:25,
+    content:`
+      <h3 style="margin-bottom:.75rem">The Intake Process in NextGen EHR</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">Quality documentation is the foundation for superior patient outcomes. This module walks through every step of the intake process — from launching templates to generating the Master Document — as used by all Clinical Staff (MAs, Sonographers, and Providers) at VIP Medical Group.</p>
+
+      <div style="background:#dbeafe;border-left:4px solid #0ea5e9;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin-bottom:1.25rem">
+        <strong style="color:#1e40af">📋 SOP Reference:</strong> The Intake Process in NextGen EHR — Code: SYS-CLNC-CLNCS-001 | Effective: April 16, 2026
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Key Definitions</h4>
+      <div style="overflow-x:auto;margin:.5rem 0 1rem">
+        <table style="width:100%;border-collapse:collapse;font-size:.83rem">
+          <thead><tr style="background:#eff6ff"><th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af">Term</th><th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af">Definition</th></tr></thead>
+          <tbody>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">SOAP</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0"><strong>S</strong>ubjective (patient report) · <strong>O</strong>bjective (observed/measured data) · <strong>A</strong>ssessment (diagnosis) · <strong>P</strong>lan (next steps)</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">HPI</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">History of Present Illness — detailed description of the patient's complaint</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">ROS</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Review of Systems — systematic survey of symptoms organized by body system</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Quick Notes</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Pre-configured templates in NextGen designed to auto-fill common clinical documentation</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Patient Types — Handle Each Differently</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem;margin-bottom:1.25rem">
+        <div style="background:#dcfce7;border-radius:8px;padding:.75rem;font-size:.82rem"><strong style="color:#15803d">🆕 Brand New Patients</strong><br/>Comprehensive intake — all information captured in all sections for the first time.</div>
+        <div style="background:#fef3c7;border-radius:8px;padding:.75rem;font-size:.82rem"><strong style="color:#92400e">🔄 Established → New to NextGen</strong><br/>Confirm/update existing data, add new info including correct Provider and Location.</div>
+        <div style="background:#dbeafe;border-radius:8px;padding:.75rem;font-size:.82rem"><strong style="color:#1e40af">📋 Subsequent Visits</strong><br/>Intake information is reviewed and updated at every new appointment.</div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 1 — Launch Templates & The 4-Point Check</h4>
+      <p style="line-height:1.65;margin-bottom:.65rem">Access the patient chart using one of two workflows:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
+        <div style="border:1px solid #e2e8f0;border-radius:8px;padding:.85rem;font-size:.84rem">
+          <div style="font-weight:700;color:#0f3460;margin-bottom:.4rem">Option A — Patient Chart Search</div>
+          <ol style="padding-left:1.2rem;line-height:2;margin:0">
+            <li>Click the <strong>Patient Chart</strong> icon</li>
+            <li>Search by First Name, Last Name, or DOB</li>
+            <li>Click <strong>Find</strong></li>
+            <li>Double-click the patient's name</li>
+          </ol>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;padding:.85rem;font-size:.84rem">
+          <div style="font-weight:700;color:#0f3460;margin-bottom:.4rem">Option B — Inbox Workflow</div>
+          <ol style="padding-left:1.2rem;line-height:2;margin:0">
+            <li>Navigate to the <strong>Appointments</strong> tab in the Inbox</li>
+            <li>Locate the patient already roomed</li>
+            <li>Click the patient's name to open the chart</li>
+          </ol>
+        </div>
+      </div>
+
+      <div style="background:#fee2e2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin-bottom:.75rem">
+        <strong style="color:#991b1b">⚠️ The 4-Point Check — Do This Before Documenting Anything</strong>
+        <ol style="padding-left:1.2rem;line-height:2;margin:.4rem 0 0">
+          <li><strong>Patient</strong> — Confirm the correct patient chart is open</li>
+          <li><strong>Location</strong> — Verify the service location (determines charge routing)</li>
+          <li><strong>Provider</strong> — Verify the rendering provider for billing alignment</li>
+          <li><strong>Date</strong> — Confirm the encounter date matches the actual date of service</li>
+        </ol>
+        <div style="font-size:.8rem;margin-top:.4rem;color:#991b1b">To fix an incorrect location or provider: click the <strong>Three-Dot Menu</strong> on the encounter → <strong>Properties</strong> → update the fields.</div>
+      </div>
+
+      <p style="line-height:1.65;margin-bottom:.65rem">Next, open the SOAP template from the encounter:</p>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Click the <strong>Open Template</strong> link next to New on the encounter</li>
+        <li>Select <strong>SOAP</strong> from the template list</li>
+        <li>Navigate to the <strong>SOAP</strong> tab</li>
+        <li>Select the appropriate <strong>Specialty</strong> (Pain or Vein) and set <strong>Visit Type</strong> to Office Visit</li>
+        <li>Click <strong>Apply</strong> next to Note → select the note that fits (e.g., VEIN INITIAL or VEIN US REVIEW)</li>
+        <li>Return to the <strong>Intake</strong> template to begin data collection</li>
+      </ol>
+      <div style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:.6rem 1rem;font-size:.82rem;margin:.5rem 0 .75rem">
+        <strong style="color:#92400e">💡 Important:</strong> Notes must be applied <em>before</em> any manual data entry.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.75rem 0 1rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Select SOAP Template</div>
+          <img src="images/nextgen-intake/ni-select-template.png" alt="Select Template dialog with SOAP highlighted" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Select Specialty (e.g., *Vein)</div>
+          <img src="images/nextgen-intake/ni-specialty-selector.png" alt="Specialty selector popup with Vein highlighted" style="width:100%;display:block"/>
+        </div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 2 — General Information</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Verify patient status using <strong>New Patient</strong> or <strong>Established Patient</strong> toggles</li>
+        <li>Select the <strong>Historian</strong> from the drop-down (usually <strong>Self</strong>)</li>
+        <li>If applicable, document language assistance via the <strong>Interpreter Details</strong> link</li>
+      </ol>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.75rem 0 1rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">General Section — Intake Tab</div>
+          <img src="images/nextgen-intake/ni-intake-general.png" alt="Intake tab general section" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Historian Dropdown</div>
+          <img src="images/nextgen-intake/ni-historian-dropdown.png" alt="Historian relationship dropdown showing Self highlighted" style="width:100%;display:block"/>
+        </div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 3 — Reason for Visit / HPI</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Expand the <strong>Reason for Visit</strong> panel</li>
+        <li>Select specialty-specific reasons from the left (e.g., Varicose Veins, Leg Pain) — each opens its HPI template. <strong>Vein visits require a minimum of 3 reasons.</strong> Up to 6 can be added.</li>
+        <li>Use the <strong>Other</strong> text box to manually add additional reasons</li>
+        <li>Click <strong>Additional/Manage</strong> to expand the full list. Check <strong>All HPIs</strong> to see more options. Use <strong>Clear</strong> then <strong>Save & Close</strong> to remove a reason.</li>
+        <li>Select any reason to document: Symptom Onset, Severity, Location, and Quality</li>
+        <li>Click <strong>Save & Close</strong> to populate the grid</li>
+      </ol>
+      <div style="margin:.75rem 0 1rem;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="padding:.45rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">SOAP Tab — Reason for Visit / HPI</div>
+        <img src="images/nextgen-intake/ni-soap-reason-for-visit.png" alt="SOAP tab showing Reason for Visit and HPI section" style="width:100%;display:block"/>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 4 — History Summary</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Select <strong>Past Medical/Surgical</strong> from the left menu → click <strong>Add</strong></li>
+        <li>Select conditions, add onset dates, click <strong>Add To Grid</strong> then <strong>OK</strong></li>
+        <li>Click <strong>Social</strong> to document Tobacco/Vaping, Alcohol, and Occupation</li>
+        <li>Use <strong>Family</strong> to document relevant hereditary conditions</li>
+        <li>Click <strong>Save to Grid</strong> and close the window</li>
+      </ol>
+      <div style="margin:.75rem 0 1rem;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="padding:.45rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Social History — Tobacco Use Screen</div>
+        <img src="images/nextgen-intake/ni-social-history-tobacco.png" alt="Social History Tobacco section" style="width:100%;display:block"/>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 5 — Vital Signs</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Expand <strong>Vital Signs</strong> and click <strong>Add</strong></li>
+        <li>Enter Height, Weight, Blood Pressure, Pulse, and Pain Level</li>
+        <li>Review any values in <strong style="color:#dc2626">Red</strong> — these indicate an anomaly</li>
+        <li>Click <strong>Save</strong> then <strong>Close</strong></li>
+      </ol>
+      <div style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:.6rem 1rem;font-size:.82rem;margin:.5rem 0 .75rem">
+        <strong style="color:#92400e">💡 Note:</strong> The Pain Level captured in Vital Signs appears in the section but does NOT reflect on the Master Document. To show on the note, it must also be registered during the History Summary.
+      </div>
+      <div style="margin:.75rem 0 1rem;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="padding:.45rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Adult Vital Signs Entry Form</div>
+        <img src="images/nextgen-intake/ni-vital-signs-form.png" alt="Vital Signs form with height, weight, BP and pulse fields" style="width:100%;display:block"/>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 6 — Medication Reconciliation</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Click <strong>Reconcile</strong> to query the Surescripts network for participating pharmacies</li>
+        <li>If manual entry is needed, click <strong>Add/Update</strong> to launch the Medication Module</li>
+        <li>Click <strong>Prescribe New</strong> and search for the medication by name or component</li>
+        <li>Double-click the medication with the correct name and strength</li>
+        <li>If a <strong>Drug Interaction Alert</strong> appears — read it, click <strong>Acknowledge</strong>, then <strong>Done</strong></li>
+        <li>Click <strong>Select</strong> to assign it to the Active Medications List</li>
+        <li>Confirm usage info and ensure <strong>Prescribed Elsewhere</strong> is checked</li>
+        <li>Click <strong>Accept</strong> to change status from Temporary → Active</li>
+        <li>Close the window and check the <strong>Medications Reconciled</strong> box</li>
+      </ol>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.75rem 0 .5rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Medication Module — Prescribe New</div>
+          <img src="images/nextgen-intake/ni-medication-module.png" alt="Medication Module with Prescribe New highlighted" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Search & Select Medication</div>
+          <img src="images/nextgen-intake/ni-medication-search.png" alt="Medication search dialog" style="width:100%;display:block"/>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.5rem 0 1rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Status: Temporary → check Prescribed Elsewhere → Accept</div>
+          <img src="images/nextgen-intake/ni-medication-temporary.png" alt="Medication with Temporary status and Prescribed Elsewhere checked" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Status: Active ✓</div>
+          <img src="images/nextgen-intake/ni-medication-active.png" alt="Medication now showing Active status" style="width:100%;display:block"/>
+        </div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 7 — Allergies</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Click <strong>Add</strong> to launch the Adult Allergies Template</li>
+        <li>Select the allergen (e.g., Latex) and document the reaction → click <strong>OK</strong> then <strong>Save & Close</strong></li>
+        <li>If the allergy isn't listed, click <strong>Manage Allergies</strong> → use the Magnifying Glass to search → select the allergen → add Criticality, Comments, Reactions, and Severity → click <strong>Add</strong> to save</li>
+        <li>To remove an allergy: select it → click <strong>Delete</strong> → select reason → click <strong>Yes</strong></li>
+        <li>If no allergies exist, check <strong>No Known Allergies</strong></li>
+      </ol>
+      <div style="background:#fee2e2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:.6rem 1rem;font-size:.82rem;margin:.5rem 0 .75rem">
+        <strong style="color:#991b1b">⚠️ Note:</strong> MAs and Sonographers cannot delete incorrect allergies. Add a comment and notify an Admin or Supervisor for removal.
+      </div>
+      <div style="margin:.75rem 0 1rem;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="padding:.45rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Adult Allergies Dialog</div>
+        <img src="images/nextgen-intake/ni-allergies-dialog.png" alt="Adult Allergies dialog with Latex selected and Rash reaction highlighted" style="width:100%;display:block"/>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 8 — Orders</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Review prepopulated Orders to confirm they match the patient's treatment</li>
+        <li>Double-click an Order or click <strong>Edit</strong> to modify it</li>
+        <li>Use <strong>Add</strong>, <strong>Order Management</strong>, or <strong>Standing Orders</strong> for new or existing requests</li>
+        <li>Create <strong>Follow Up</strong> visits or <strong>Tasks</strong> as applicable</li>
+        <li>Click <strong>Save</strong> or <strong>Save & Close</strong></li>
+      </ol>
+      <div style="margin:.75rem 0 1rem;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="padding:.45rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Orders Edit Dialog</div>
+        <img src="images/nextgen-intake/ni-orders-edit.png" alt="Orders Edit screen showing Venous Duplex Ultrasound order" style="width:100%;display:block"/>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 9 — Review of Systems (ROS)</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Review pre-loaded data and validate it contains all relevant details</li>
+        <li>If blank or incorrect, use <strong>Quick Load</strong> to select the right template</li>
+        <li>Click specific lines to expand findings, add details, or leave comments</li>
+        <li>Click <strong>Save & Close</strong></li>
+        <li>Use the System Link on the left to add new systems to your review</li>
+      </ol>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 10 — Physical Exam (SOAP Template)</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Switch back to the <strong>SOAP</strong> template</li>
+        <li>Launch the <strong>VCSS Calculator</strong> from the link on the left</li>
+        <li>Complete all applicable fields — if a field or side does not apply, leave blank or enter <strong>None</strong></li>
+        <li>Click <strong>Calculate</strong> then <strong>Save & Close</strong></li>
+        <li>Navigate to the <strong>Physical Exam</strong> section</li>
+        <li>Use <strong>Quick Load</strong> to select the appropriate exam (e.g., C2). Use left-side Links or <strong>Additional</strong> for more options.</li>
+        <li>Double-click specific systems (e.g., Vascular) to edit or add findings</li>
+        <li>Click <strong>Save & Close</strong></li>
+      </ol>
+      <div style="margin:.75rem 0 .5rem;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="padding:.45rem 1rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">SOAP Tab — VCSS Calculator Link</div>
+        <img src="images/nextgen-intake/ni-vcss-calculator-link.png" alt="SOAP tab navigation with VCSS Calculator link highlighted" style="width:100%;display:block"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.5rem 0 1rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">VCSS Calculator</div>
+          <img src="images/nextgen-intake/ni-vcss-calculator.png" alt="VCSS Calculator showing Left and Right leg scores" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Vascular Physical Exam</div>
+          <img src="images/nextgen-intake/ni-physical-exam-vascular.png" alt="Vascular physical exam template with pulses and varicosities" style="width:100%;display:block"/>
+        </div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 11 — Assessment / Plan</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Review the <strong>Assessment/Plan</strong> section for ICD-10 codes and treatment plan alignment</li>
+        <li>To add a diagnosis: click <strong>Add/Update</strong> → <strong>Diagnosis Code Lookup</strong> → type and search → select → <strong>Save & Close</strong></li>
+        <li>To delete a diagnosis: select the row in <strong>Today's Assessments</strong> → click <strong>Remove</strong> → confirm <strong>Yes</strong> → <strong>Save & Close</strong></li>
+        <li>To document A/P Details: click <strong>A/P Details</strong> from the side panel or double-click the Plan row</li>
+        <li>Select the diagnosis, then add <strong>My Phrases</strong>, use <strong>Dictation</strong>, or type directly into the fields</li>
+        <li>Click <strong>Save & Close</strong> to finalize and display on the SOAP template</li>
+      </ol>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.75rem 0 .5rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Assessment/Plan — Overview</div>
+          <img src="images/nextgen-intake/ni-assessment-plan.png" alt="Assessment Plan section with multiple diagnoses" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Add Diagnosis Code Lookup</div>
+          <img src="images/nextgen-intake/ni-add-diagnosis.png" alt="Add or Update Assessment window with Diagnosis Code Lookup highlighted" style="width:100%;display:block"/>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.5rem 0 1rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Remove a Diagnosis</div>
+          <img src="images/nextgen-intake/ni-remove-diagnosis.png" alt="Today's Assessments with Remove button highlighted" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">A/P Details — My Phrases & Dictation</div>
+          <img src="images/nextgen-intake/ni-ap-details.png" alt="Assessment Plan Details tab with My Phrases and dictation highlighted" style="width:100%;display:block"/>
+        </div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 12 — Adding Diagnosis Pictures (Mobile App)</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Open the <strong>NextGen Mobile App</strong>. If the patient is in Upcoming Appointments, tap their name. If not, tap the <strong>magnifying glass</strong> to search.</li>
+        <li>Select <strong>All</strong> and search by name → tap their profile to open the chart</li>
+        <li>Perform the <strong>4-Point Check</strong> on the mobile screen</li>
+        <li>Tap the <strong>Capture</strong> icon (camera) on the bottom action bar → select <strong>Take Photo</strong></li>
+        <li>Take the photo — if blurry tap <strong>Retake</strong>; if clear tap <strong>Use Photo</strong></li>
+        <li>Make edits if needed and tap <strong>Done</strong> to upload to the patient's Docs & Images folder</li>
+        <li>Repeat for all required angles (front, back, sides)</li>
+      </ol>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem;margin:.75rem 0 1rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Mobile Hub — Search Icon</div>
+          <img src="images/nextgen-intake/ni-mobile-hub.png" alt="NextGen mobile app Hub screen with search icon highlighted" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Search for Patient</div>
+          <img src="images/nextgen-intake/ni-mobile-search.png" alt="Mobile app patient search results" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Facesheet — 4-Point Check</div>
+          <img src="images/nextgen-intake/ni-mobile-facesheet.png" alt="Mobile patient chart facesheet with encounter details highlighted" style="width:100%;display:block"/>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem;margin:.5rem 0 1rem">
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Tap Capture → Take Photo</div>
+          <img src="images/nextgen-intake/ni-mobile-capture.png" alt="Mobile app capture button and Take Photo option" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Retake or Use Photo</div>
+          <img src="images/nextgen-intake/ni-mobile-use-photo.png" alt="Camera preview with Retake and Use Photo buttons" style="width:100%;display:block"/>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+          <div style="padding:.4rem .85rem;background:#f0f5fb;border-bottom:1px solid #e2e8f0;font-size:.7rem;color:#0f3460;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Edit & Tap Done</div>
+          <img src="images/nextgen-intake/ni-mobile-edit-photo.png" alt="Photo annotation screen with Done button highlighted" style="width:100%;display:block"/>
+        </div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Step 13 — Generate Master Document</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Scroll to the bottom of the <strong>SOAP</strong> template and click the <strong>Generate Note</strong> icon (notepad and pen)</li>
+        <li>Select <strong>Master Document</strong> from the list → click <strong>OK</strong></li>
+        <li>Always review the document for accuracy</li>
+        <li>If changes are needed, return to the templates to fix the data, then re-generate</li>
+      </ol>
+      <div style="background:#fee2e2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:.6rem 1rem;font-size:.82rem;margin:.5rem 0 1rem">
+        <strong style="color:#991b1b">⚠️ Never edit the Master Document directly.</strong> Always go back to the templates, update the data, and regenerate.
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Safety & Compliance Reminders</h4>
+      <ul style="padding-left:1.2rem;line-height:2;font-size:.88rem">
+        <li><strong>HIPAA:</strong> Activate the privacy screen when stepping away. Never share login credentials.</li>
+        <li><strong>Verification:</strong> All identifying information must be validated by the patient directly — never read it to them first.</li>
+        <li><strong>Drug Alerts:</strong> Pay attention to Drug-to-Drug and Drug-to-Allergy alerts (yellow triangles). Only click <strong>Acknowledge</strong> after reviewing.</li>
+        <li><strong>System Errors:</strong> If NextGen fails, contact IT Support immediately.</li>
+      </ul>
+    `,
+    questions:[
+      {type:'mc',text:'Before documenting any clinical information in a patient encounter, what must you always do first?',options:['Select the SOAP template','Complete the 4-Point Check (Patient, Location, Provider, Date)','Add the patient\'s medications','Click Generate Note'],correct:1,explanation:'The 4-Point Check must always be completed before documenting anything. Confirm the correct Patient, Location, Provider, and Date to ensure clinical accountability and prevent billing discrepancies.'},
+      {type:'mc',text:'For Vein visits, what is the minimum number of Reasons for Visit required in the HPI section?',options:['1','2','3','6'],correct:2,explanation:'For Vein visits, a minimum of three reasons for visit is required. Up to six can be added in the Reason for Visit panel.'},
+      {type:'tf',text:'You can edit the Master Document directly if you notice a small error after generating it.',correct:false,explanation:'Never edit the Master Document directly. Always return to the templates to correct the data, then re-generate the Master Document to ensure documentation integrity.'},
+      {type:'mc',text:'When adding a medication, what must you check before clicking Accept to change the status from Temporary to Active?',options:['Seal Note box','Prescribed Elsewhere checkbox','No Known Allergies box','Medications Reconciled box'],correct:1,explanation:'Before clicking Accept, confirm the usage information is correct and ensure the "Prescribed Elsewhere" checkbox is checked. Then click Accept to change the medication status from Temporary to Active.'},
+      {type:'mc',text:'A new MA accidentally added an incorrect allergy to a patient chart. Who can delete it?',options:['The MA who added it','Any clinical staff member','Only an Admin user or Supervisor','The rendering provider'],correct:2,explanation:'MAs and Sonographers cannot delete incorrect allergies from the template. They should add a comment explaining the error and notify an Admin user or Supervisor for removal.'},
+      {type:'mc',text:'Where does Pain Level need to be documented for it to appear on the Master Document (SOAP Note)?',options:['Only in the Vital Signs panel','Only during the History Summary','In both Vital Signs and History Summary','In the Assessment/Plan section'],correct:2,explanation:'The Pain Level captured in Vital Signs appears in that section but does NOT reflect on the Master Document. For it to appear on the note, it must also be registered during the History Summary.'},
+      {type:'tf',text:'Notes (VEIN INITIAL, VEIN US REVIEW, etc.) can be applied after manual data entry has already been started.',correct:false,explanation:'Notes must be applied BEFORE any manual data entry. Applying the note after entering data can cause documentation issues and data loss.'},
+      {type:'mc',text:'When capturing diagnosis photos on the NextGen Mobile App, where are the images saved?',options:['To your device\'s camera roll only','To the patient\'s Docs & Images folder in NextGen','To the encounter notes tab','To the Clinical History section'],correct:1,explanation:'After tapping Done on the edit screen, the image uploads directly to the patient\'s "Docs & Images" folder in NextGen. Capture all required angles (front, back, sides) for a complete clinical record.'},
+    ]
+  },
+  {
     id:'mod_nextgen_navigation',
     title:'NextGen Navigation',
     description:'Master the NextGen Enterprise EPM system — toolbar icons, chart lookup, patient navigation, and core tabs used across all PTJI roles.',
