@@ -1101,6 +1101,165 @@ const BUILTIN_MODULES = [
       {type:'fill',text:'In NY, what measurement does the GSV have to be in order to get approved for a Varithena with the BCBS Highmark plan? (Include the unit in your answer, e.g. 4mm)',answer:'5mm',explanation:'For BCBS Highmark in NY, the GSV must measure at least 5mm to qualify for Varithena approval. Refer to the Doppler Insurance Cheat Sheet for full details.'},
       {type:'fill',text:'In NY, what measurement does the GSV have to be in order to get approved for a Varithena with the Humana plan?',answer:'Not Covered',explanation:'Humana does not cover Varithena in NY. Always check the Doppler Insurance Cheat Sheet before submitting a prior auth to confirm coverage status by payer and state.'},
     ]
+  },
+  {
+    id:'mod_nextgen_navigation',
+    title:'NextGen Navigation',
+    description:'Master the NextGen Enterprise EPM system — toolbar icons, chart lookup, patient navigation, and core tabs used across all PTJI roles.',
+    category:'Clinical Skills',
+    color:'#0369a1',
+    icon:'fa-solid fa-computer',
+    estimatedMin:20,
+    content:`
+      <h3 style="margin-bottom:.75rem">NextGen EPM Core — Navigation Guide</h3>
+      <p style="line-height:1.65;margin-bottom:1rem">Standardized navigation of the NextGen Enterprise EPM system is fundamental to operational excellence and patient safety. Consistency in how charts are accessed and managed ensures data integrity and reduces billing errors. This module covers the core navigation standards that all PTJI team members are responsible for following.</p>
+
+      <div style="background:#dbeafe;border-left:4px solid #0ea5e9;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin-bottom:1.25rem">
+        <strong style="color:#1e40af">📋 SOP Reference:</strong> NextGen EPM Core SOP — Code: SYS-VIP-PTJI-001 | Effective: April 22, 2026
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">Key Definitions</h4>
+      <div style="overflow-x:auto;margin:.5rem 0 1rem">
+        <table style="width:100%;border-collapse:collapse;font-size:.83rem;min-width:400px">
+          <thead>
+            <tr style="background:#eff6ff">
+              <th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af">Term</th>
+              <th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af">Definition</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">EPM</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Enterprise Practice Management — the central software system used for scheduling, billing, and managing patient demographic data.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Encounter</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">A specific documented interaction between the practice and the patient (e.g., office visit, phone call, or telehealth session).</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Person 🌐</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Blue Globe Icon — a record for an individual who is not yet an established patient (e.g., a new lead or insurance guarantor).</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Patient 📁</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Yellow Folder Icon — an active, established patient that has a chart created in the system.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">1. Toolbar Setup</h4>
+      <p style="line-height:1.65;margin-bottom:.65rem">Upon logging in, the top toolbar is the primary navigation hub for all daily tasks. If toolbar captions are not visible, enable them:</p>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Click <strong>Admin</strong></li>
+        <li>Select <strong>Preferences</strong></li>
+        <li>Click <strong>User</strong></li>
+        <li>Navigate to the <strong>General</strong> tab</li>
+        <li>Locate <strong>Main Toolbar Options</strong> and check <strong>Toolbar Captions</strong></li>
+        <li>Click <strong>OK</strong></li>
+      </ol>
+
+      <h4 style="margin:1.1rem 0 .4rem">2. Toolbar Icons Reference</h4>
+      <div style="overflow-x:auto;margin:.5rem 0 1rem">
+        <table style="width:100%;border-collapse:collapse;font-size:.83rem;min-width:480px">
+          <thead>
+            <tr style="background:#eff6ff">
+              <th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af;width:140px">Icon</th>
+              <th style="padding:.55rem .85rem;text-align:left;border:1px solid #bfdbfe;color:#1e40af">What It Does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Lookup</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Search for individuals (patients, guarantors, family members) by name or DOB. Provides basic demographic info only — does <em>not</em> open the full chart.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">ApptList</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">View a list of appointments; search by patient name, DOB, or date range for past and upcoming visits.</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">ApptBook</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Opens the scheduling interface to view and manage all appointments across providers and locations.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Chart</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Search for a patient and open their full PM chart — includes demographics, financial records, clinical notes, and encounter history.</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Encounter</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Opens the Encounter Lookup window to search for and filter specific patient visits.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Posting</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Create and manage financial batches. An active batch must exist before posting any payments.</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Claims</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Opens the claim request lookup window; search for pending or archived claims and print paper claims.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Bill</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Initiates on-demand billing for a single patient encounter.</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Letters</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Generate and print patient correspondence directly from the system.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Charges</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Opens the charge posting window to enter, review, and modify billing charges for patient encounters.</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Edits</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Runs a claim error check to identify missing info or coding issues — does not change billing status.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Mailbox</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Access the internal messaging system for staff communication.</td></tr>
+            <tr><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">EDI File</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Opens the electronic file creation window; groups multiple claims into a batch for submission to clearinghouses or payers.</td></tr>
+            <tr style="background:#f8fafd"><td style="padding:.55rem .85rem;border:1px solid #e2e8f0;font-weight:600">Reports</td><td style="padding:.55rem .85rem;border:1px solid #e2e8f0">Access the reporting tool to run, filter, and customize financial reports including saved/memorized reports.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin-bottom:1.25rem">
+        <strong style="color:#92400e">💡 Window Navigation Tip:</strong> To manage multiple open screens without closing active work, click <strong>Window</strong> above the top toolbar and select the desired workspace from the list. This lets you switch between the Scheduler Book and patient charts without interrupting your workflow.
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">3. Patient Chart Lookup</h4>
+      <ol style="padding-left:1.3rem;line-height:2;font-size:.88rem">
+        <li>Select the <strong>Chart Lookup</strong> icon from the main toolbar.</li>
+        <li>Enter the patient's <strong>Last Name</strong> or <strong>Date of Birth</strong> and click <strong>Find</strong>.</li>
+        <li>Verify search results against the patient's provided information to confirm the correct record.</li>
+        <li>Double-click the patient's name to open their information card.</li>
+      </ol>
+
+      <h4 style="margin:1.1rem 0 .4rem">4. Navigating the Patient Chart</h4>
+      <p style="line-height:1.65;margin-bottom:.65rem">Click the patient's name hyperlink to open the <strong>Modify Patient Information</strong> window. Use the top-level tabs to navigate the patient's complete administrative profile:</p>
+      <ul style="padding-left:1.2rem;line-height:2;font-size:.88rem">
+        <li><strong>Demographics & Insurance</strong> — update addresses, phone numbers, and active coverage</li>
+        <li><strong>Patient Status</strong> — assign conditions (Active, Financial Hardship, Bad Debt)</li>
+        <li><strong>Privacy</strong> — log receipt of HIPAA notices to stop recurring system alerts</li>
+        <li><strong>Employer & Relations/Role</strong> — link employers and establish emergency contacts, parents, or guarantors</li>
+        <li><strong>Pharmacy & Chart Details</strong> — set preferred pharmacies for e-prescribing and track marketing data</li>
+        <li><strong>Patient Portal & Forms</strong> — review portal enrollment status and paperwork</li>
+      </ul>
+
+      <div style="background:#fee2e2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.84rem;margin:.75rem 0 1rem">
+        <strong style="color:#991b1b">⚠️ Important:</strong> When finished reviewing, click <strong>OK</strong> to save changes — or <strong>Cancel</strong> if you made no changes. Clicking OK unnecessarily updates the audit log. NextGen tracks <em>every</em> modification with a full before/after snapshot viewable in the <strong>History tab</strong>.
+      </div>
+
+      <p style="line-height:1.65;margin-bottom:.65rem">The <strong>right side of the patient card</strong> includes four quick-view tabs — <strong>Appointments, Insurance, Patient Balance, and Recall Plans</strong>. Hover over each to see key info instantly, or click to edit. The workspace can also be collapsed using the downward arrow at the top right for extra screen space.</p>
+
+      <h4 style="margin:1.1rem 0 .4rem">5. The Four Core Chart Tabs</h4>
+
+      <div style="display:grid;gap:.75rem;margin-bottom:1rem">
+        <div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+          <div style="background:#0f3460;color:#fff;padding:.5rem 1rem;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em">1 — Patient Information Tab</div>
+          <div style="padding:.85rem 1rem;font-size:.84rem;line-height:1.7">Houses the patient's core profile — demographics, insurance details, and status. Also manages privacy (HIPAA), employer info, relationships (guarantors), preferred pharmacies, and a complete audit trail of every update made to the record.</div>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+          <div style="background:#0369a1;color:#fff;padding:.5rem 1rem;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em">2 — Financial Tab</div>
+          <div style="padding:.85rem 1rem;font-size:.84rem;line-height:1.7">High-level summary of the patient's entire financial history across all encounters — charges, payments, insurance breakdowns (primary/secondary/tertiary), and voided transactions. Double-click any encounter for charge-level detail. Use the <strong>Filter</strong> function to narrow by provider, location, payer, or encounter status; click <strong>Clear</strong> then <strong>Search</strong> to reset.</div>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+          <div style="background:#0369a1;color:#fff;padding:.5rem 1rem;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em">3 — Clinical History / Notes Tab</div>
+          <div style="padding:.85rem 1rem;font-size:.84rem;line-height:1.7">Contains the patient's complete medical and administrative history organized into two groups:
+            <ul style="padding-left:1.2rem;margin-top:.4rem;line-height:2">
+              <li><strong>Clinical History:</strong> Allergies, Diagnoses, Images, Immunizations, Medications, Orders, Problems, Procedures, Results, Therapies, Vitals</li>
+              <li><strong>Chart Notes:</strong> Alerts, Appointments, Authorization Results, Collections, Eligibility Results, Forms, Letters, Notes, Recall, Tasks, and more</li>
+            </ul>
+            <div style="margin-top:.65rem;background:#fef3c7;border-radius:6px;padding:.6rem .85rem;font-size:.82rem;color:#92400e">
+              <strong>⚠️ Quick Notes:</strong> To add an internal note, right-click in Chart Notes → New → Quick Note. Do NOT use the "Notes" folder under "Letters" — it won't let you create a Quick Note. Check <strong>Non-printable</strong> for internal-only notes, and always check <strong>Seal Note</strong> before saving to lock the record.
+            </div>
+          </div>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+          <div style="background:#0369a1;color:#fff;padding:.5rem 1rem;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em">4 — Encounters Tab</div>
+          <div style="padding:.85rem 1rem;font-size:.84rem;line-height:1.7">Central hub for a patient's visits. Each encounter gets a unique number tying together the provider, location, clinical notes, charges, and payments. Select any encounter to view:
+            <ul style="padding-left:1.2rem;margin-top:.4rem;line-height:2">
+              <li><strong>Encounter Number</strong> — unique digital ID generated at check-in</li>
+              <li><strong>Encounter Date</strong> — the actual billable date of the appointment</li>
+              <li><strong>Encounter Status</strong> — Unbilled, Billed, Rebuild, History, or Bad Debt</li>
+              <li><strong>Patient Type</strong> — categorizes the visit for reporting (e.g., vein treatment)</li>
+              <li><strong>Facility, Provider, Diagnoses & Procedures</strong> — click the yellow folder to drill into ICD/CPT codes</li>
+              <li><strong>Guarantor Information</strong> — who is financially responsible for this encounter</li>
+            </ul>
+            Subtabs on the right: <strong>Insurance</strong> (coverage, auth, referrals), <strong>Transactions</strong> (financial detail for this encounter only), and <strong>Notes</strong> (encounter-specific internal notes).
+          </div>
+        </div>
+      </div>
+
+      <h4 style="margin:.9rem 0 .4rem">6. Compliance & Safety Rules</h4>
+      <ul style="padding-left:1.2rem;line-height:2;font-size:.88rem">
+        <li><strong>Duplicate Records:</strong> If a search reveals duplicate patient charts, do NOT enter data — escalate to your supervisor for merging.</li>
+        <li><strong>HIPAA:</strong> Never share login credentials. Always have the patient provide their own identifying information — never read it to them first.</li>
+        <li><strong>Data Integrity:</strong> Always double-check patient identifiers before saving changes to prevent documentation errors.</li>
+      </ul>
+    `,
+    questions:[
+      {type:'mc',text:'What is the purpose of the Lookup (People Lookup) icon in NextGen?',options:['Open a patient\'s full PM chart','Search for individuals by name or DOB for basic demographic info only','View and manage all appointments','Access the internal messaging system'],correct:1,explanation:'The Lookup icon is used to search for individuals such as patients, guarantors, or family members using their name or date of birth. It provides basic demographic information only and does NOT open the full patient chart.'},
+      {type:'mc',text:'Which toolbar icon do you use to open a patient\'s full Practice Management chart including demographics, financial records, and encounter history?',options:['Lookup','ApptBook','Chart','Encounter'],correct:2,explanation:'The Chart icon allows users to search for a patient and open their full PM chart, which includes demographics, financial records, clinical notes, and encounter history.'},
+      {type:'tf',text:'If you open the Modify Patient Information window just to review information and make no changes, you should click OK to close it.',correct:false,explanation:'If you made no changes, always click Cancel instead of OK. Clicking OK unnecessarily updates the system\'s modification log and audit trail, which tracks every action in NextGen.'},
+      {type:'mc',text:'Where do you go to enable toolbar captions if they are not visible?',options:['File → Settings → Display','Admin → Preferences → User → General tab → Toolbar Captions','View → Toolbar → Captions','Window → Configure → Toolbar'],correct:1,explanation:'To enable toolbar captions: click Admin → Preferences → User → General tab → locate Main Toolbar Options → check Toolbar Captions → click OK.'},
+      {type:'mc',text:'What does the Blue Globe icon represent in NextGen?',options:['An established patient with a full chart','A person who is not yet an established patient (e.g., a new lead or guarantor)','A patient with an active insurance authorization','A flagged duplicate record'],correct:1,explanation:'The Blue Globe icon represents a "Person" — an individual who is not yet an established patient, such as a new lead or insurance guarantor. The Yellow Folder icon represents an active, established patient.'},
+      {type:'mc',text:'What is the difference between the Financial Tab and the Transactions Tab?',options:['They display the same information in different formats','The Financial Tab shows one encounter; the Transactions Tab shows all encounters','The Financial Tab is a high-level summary of all encounters; the Transactions Tab is isolated to one specific encounter','The Transactions Tab is only for insurance payments'],correct:2,explanation:'The Financial Tab provides a comprehensive, high-level summary of the patient\'s entire billing history across all encounters. The Transactions Tab focuses strictly on the financial activity for the specific encounter you have selected.'},
+      {type:'mc',text:'When adding an internal Quick Note in NextGen, which of the following is correct?',options:['Use the "Notes" folder under "Letters"','Right-click in Chart Notes → New → Quick Note, then check Seal Note before saving','Open the Mailbox icon and create a new message','Use the Encounter tab → Notes subtab only'],correct:1,explanation:'To add a Quick Note: right-click in the Chart Notes area → New → Quick Note. Do NOT use the "Notes" folder under "Letters" — it won\'t allow you to create a Quick Note. Always check Seal Note before saving to lock the record from further edits.'},
+      {type:'tf',text:'If a search reveals duplicate patient charts, you should choose the most complete record and continue entering data.',correct:false,explanation:'Never enter data into a duplicate record. Escalate the issue to your supervisor for merging. Entering data into a duplicate creates data integrity and billing errors.'},
+    ]
   }
 ];
 
