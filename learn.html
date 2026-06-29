@@ -1304,6 +1304,16 @@ async function openModule(moduleId) {
     </div>
     <div id="tab-quiz" style="display:none">
       <div class="alert alert-info"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Read the study material first, then take the quiz. A passing score is 80% or higher. You can retake as many times as needed!</span></div>
+      ${moduleId === 'mod_insurance_guidelines' ? `
+      <div class="alert alert-warning" style="flex-direction:column;align-items:flex-start;gap:.55rem">
+        <div style="display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:.88rem"><i class="fa-solid fa-book-open" style="flex-shrink:0"></i> This is an open book quiz!</div>
+        <div style="font-size:.83rem;line-height:1.6">Before you start, please have the following reference sheets open and ready:</div>
+        <ul style="font-size:.83rem;line-height:2;padding-left:1.2rem;margin:0">
+          <li><strong>Conservative Workflow by State</strong> — required conservative therapy timelines by state</li>
+          <li><strong>Doppler Insurance Cheat Sheet</strong> — Doppler requirements by state and payer</li>
+        </ul>
+        <div style="font-size:.8rem;color:#92400e">💡 You can find both spreadsheets in the study material above — click the links to open them before starting.</div>
+      </div>` : ''}
       <div style="text-align:center;padding:2rem" id="quiz-start-area-${moduleId}">
         <button class="btn btn-primary" style="padding:.85rem 2.5rem;font-size:1rem" onclick="startQuiz('${moduleId}')"><i class="fa-solid fa-play"></i> Start Quiz (${module.questions.length} questions)</button>
       </div>
