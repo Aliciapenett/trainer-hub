@@ -456,7 +456,8 @@ function renderNav() {
     nav.innerHTML = `
       <button class="nav-btn" id="nav-hub" onclick="renderHub()"><i class="fa-solid fa-house"></i> Hub</button>
       <button class="nav-btn" id="nav-trainers" onclick="renderTrainersPage()"><i class="fa-solid fa-user-nurse"></i> Preceptors</button>
-      <button class="nav-btn" id="nav-trainees" onclick="renderTraineesPage()"><i class="fa-solid fa-user-graduate"></i> Trainees</button>`;
+      <button class="nav-btn" id="nav-trainees" onclick="renderTraineesPage()"><i class="fa-solid fa-user-graduate"></i> Trainees</button>
+      <button class="nav-btn" id="nav-settings" onclick="renderSettingsPage()"><i class="fa-solid fa-gear"></i> Settings</button>`;
   } else {
     nav.innerHTML = `<button class="nav-btn active" id="nav-dashboard"><i class="fa-solid fa-house"></i> My Dashboard</button>`;
   }
@@ -1558,7 +1559,109 @@ function refreshCurrentPage() {
   else if(path==='trainees') renderTraineesPage();
   else if(path==='trainer-detail') renderTrainerDetail(viewTrainerId);
   else if(path==='trainee-detail') renderTraineeDetail(viewTraineeId, traineeBackContext);
+  else if(path==='settings') renderSettingsPage();
   else renderHub();
+}
+
+// ═══════════════════════════════════════
+//  SETTINGS PAGE
+// ═══════════════════════════════════════
+async function renderSettingsPage() {
+  setNavActive('nav-settings');
+  window._currentPage = 'settings';
+  document.getElementById('main-content').innerHTML = '<div class="loading"><i class="fa-solid fa-spinner fa-spin"></i></div>';
+
+  // Load all admin users
+  let admins = [];
+  try {
+    const snap = await db.collection('users').where('role','==','admin').get();
+    admins = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { console.error(e); }
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-hdr">
+      <div>
+        <div class="page-title"><i class="fa-solid fa-gear" style="color:var(--accent)"></i> Settings</div>
+        <div class="page-sub">Manage administrator accounts and application settings</div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:680px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem">
+        <div>
+          <div style="font-size:.95rem;font-weight:700;color:var(--primary)"><i class="fa-solid fa-user-shield" style="color:var(--accent);margin-right:.4rem"></i>Administrator Accounts</div>
+          <div style="font-size:.78rem;color:var(--text-light);margin-top:.15rem">Admins have full access to all trainees, preceptors, and settings.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openInviteAdminModal()"><i class="fa-solid fa-plus"></i> Add Admin</button>
+      </div>
+      <div style="border:1px solid #e2e8f0;border-radius:var(--r-sm);overflow:hidden">
+        ${admins.length ? admins.map(a => `
+          <div style="display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;background:#fff">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0284c7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0">${a.name?a.name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase():'??'}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:.88rem;font-weight:600;color:var(--primary)">${a.name||'—'}</div>
+              <div style="font-size:.75rem;color:var(--text-light)">${a.email||'—'}</div>
+            </div>
+            <span class="badge badge-teal">Admin</span>
+            ${a.id !== currentUser.uid ? `<button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger)" onclick="removeAdmin('${a.id}','${a.name}')"><i class="fa-solid fa-trash"></i></button>` : '<span style="font-size:.72rem;color:var(--text-light);padding:.25rem .5rem">You</span>'}
+          </div>`).join('')
+          : '<div class="empty" style="padding:1.5rem"><i class="fa-solid fa-user-shield"></i><p>No admins found</p></div>'}
+      </div>
+    </div>`;
+}
+
+function openInviteAdminModal() {
+  showModal(`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <span class="modal-title"><i class="fa-solid fa-user-shield" style="color:var(--accent)"></i> Add Administrator</span>
+      <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info"><i class="fa-solid fa-circle-info"></i><span>This person will have full admin access — all trainees, preceptors, assessments, and settings.</span></div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="ia-name" placeholder="e.g. Jane Smith"></div>
+        <div class="form-group"><label class="form-label">Email Address *</label><input class="form-control" id="ia-email" type="email" placeholder="jane@vipmedicalgroup.com"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Temporary Password *</label><input class="form-control" id="ia-pass" type="password" placeholder="They can change it after first login"></div>
+      <div id="ia-error" class="auth-error"></div>
+      <div id="ia-success" class="auth-success"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="ia-btn" onclick="createAdminAccount()"><i class="fa-solid fa-user-shield"></i> Create Admin Account</button>
+    </div>
+  </div>`);
+}
+
+async function createAdminAccount() {
+  const name = v('ia-name'), email = v('ia-email'), pass = v('ia-pass');
+  hideEl('ia-error'); hideEl('ia-success');
+  if(!name) return showEl('ia-error','Full name is required.');
+  if(!email) return showEl('ia-error','Email address is required.');
+  if(!pass || pass.length < 6) return showEl('ia-error','Password must be at least 6 characters.');
+  setBtn('ia-btn', true, 'Creating...');
+  try {
+    const cred = await secondaryAuth.createUserWithEmailAndPassword(email, pass);
+    const uid = cred.user.uid;
+    await secondaryAuth.signOut();
+    await db.collection('users').doc(uid).set({name, email, role:'admin', createdAt:ts()});
+    await logActivity(`Admin account created for ${name}`, 'fa-user-shield');
+    showEl('ia-success', `Admin account created for ${name}. They can now sign in.`);
+    setBtn('ia-btn', false, 'Done ✓');
+    setTimeout(()=>{ forceClose(); renderSettingsPage(); }, 1500);
+  } catch(e) {
+    setBtn('ia-btn', false, '<i class="fa-solid fa-user-shield"></i> Create Admin Account');
+    showEl('ia-error', authErr(e.code) || e.message);
+  }
+}
+
+async function removeAdmin(uid, name) {
+  if(!confirm(`Remove admin access for ${name}? This will delete their account from the system.`)) return;
+  try {
+    await db.collection('users').doc(uid).delete();
+    await logActivity(`Admin account removed: ${name}`, 'fa-user-minus');
+    renderSettingsPage();
+  } catch(e) { alert('Error: ' + e.message); }
 }
 
 // ═══════════════════════════════════════
