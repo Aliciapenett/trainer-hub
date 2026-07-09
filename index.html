@@ -637,6 +637,7 @@ async function renderTrainerDetail(tid) {
 function isCheckinDue(trainee, checkins) {
   if(trainee.status !== 'active') return false;
   const mine = checkins.filter(c=>c.traineeId===trainee.id);
+  if(mine.length >= 4) return false; // stop reminding after 4 weeks
   if(!mine.length) return true; // never had one
   const latest = mine.reduce((a,b)=>(a.date||'') > (b.date||'') ? a : b);
   const daysSince = Math.floor((new Date() - new Date(latest.date+'T12:00:00')) / (1000*60*60*24));
