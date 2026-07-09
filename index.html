@@ -802,13 +802,13 @@ async function renderTraineesPage() {
   var stateOpts = buildStateOptions('');
   el.innerHTML = '<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">All Trainees</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">All trainees across the program</p></div>'
     + '<button class="btn btn-primary" onclick="openTraineeModal(null,null)"><i class="fa-solid fa-plus"></i> Add Trainee</button></div>'
-    + '<div class="card"><div class="card-hdr" style="flex-wrap:wrap;gap:.5rem"><span class="card-hdr-title">All Trainees</span>'
+    + '<div class="card" style="margin-bottom:1.5rem"><div class="card-hdr" style="flex-wrap:wrap;gap:.5rem"><span class="card-hdr-title">Active Trainees</span>'
     + '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">'
     + '<input class="form-control" style="width:180px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()">'
     + '<select class="form-control" style="width:110px;padding:.32rem .55rem;font-size:.78rem" id="trainee-state-filter" onchange="filterTraineesTable()">' + stateOpts + '</select>'
-    + '<button class="btn btn-sm btn-outline" id="trainee-archive-toggle" onclick="toggleArchiveFilter()" style="font-size:.75rem">Active Only</button>'
     + '</div></div>'
-    + '<div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>';
+    + '<div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>'
+    + '<div id="archived-trainees-section"></div>';
   var snaps = await Promise.all([
     db.collection('trainees').get(),
     db.collection('assessments').get(),
@@ -822,34 +822,48 @@ async function renderTraineesPage() {
   });
   window._allAssessments = snaps[1].docs.map(function(d){return {id:d.id,...d.data()};});
   window._allTrainers = snaps[2].docs.map(function(d){return {id:d.id,...d.data()};});
-  window._showAllArchived = false;
-  filterTraineesTable();
-}
-
-function toggleArchiveFilter() {
-  window._showAllArchived = !window._showAllArchived;
-  var btn = document.getElementById('trainee-archive-toggle');
-  if (btn) btn.textContent = window._showAllArchived ? 'Show All' : 'Active Only';
   filterTraineesTable();
 }
 
 function filterTraineesTable() {
   var q = ((document.getElementById('trainee-search')||{}).value||'').toLowerCase();
   var stateFilter = (document.getElementById('trainee-state-filter')||{}).value||'';
-  var showAll = !!window._showAllArchived;
-  var filtered = (window._allTrainees||[]).filter(function(t) {
-    if (!showAll && t.status === 'archived') return false;
+  var all = window._allTrainees||[];
+  // Active section: exclude archived
+  var active = all.filter(function(t) {
+    if (t.status === 'archived') return false;
     if (q && !t.name.toLowerCase().includes(q)) return false;
     if (stateFilter && t.state !== stateFilter) return false;
     return true;
   });
-  renderTraineesTable(filtered);
+  // Archived section: only archived, also respect search/state filter
+  var archived = all.filter(function(t) {
+    if (t.status !== 'archived') return false;
+    if (q && !t.name.toLowerCase().includes(q)) return false;
+    if (stateFilter && t.state !== stateFilter) return false;
+    return true;
+  });
+  renderTraineesTable(active);
+  renderArchivedSection(archived);
 }
 
 function renderTraineesTable(trainees) {
   var el = document.getElementById('trainees-tbl-wrap');
   if(!el) return;
   el.innerHTML = traineeTableHTML(trainees, window._allAssessments||[], null, false);
+}
+
+function renderArchivedSection(trainees) {
+  var el = document.getElementById('archived-trainees-section');
+  if(!el) return;
+  if(!trainees.length) { el.innerHTML = ''; return; }
+  var html = '<div class="card">';
+  html += '<div class="card-hdr" style="background:#f8fafd">';
+  html += '<span class="card-hdr-title" style="color:var(--text-light)"><i class="fa-solid fa-box-archive" style="margin-right:.4rem;opacity:.6"></i>Archived Trainees (' + trainees.length + ')</span>';
+  html += '</div>';
+  html += '<div class="tbl-wrap">' + traineeTableHTML(trainees, window._allAssessments||[], null, false) + '</div>';
+  html += '</div>';
+  el.innerHTML = html;
 }
 
 function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, checkins) {
