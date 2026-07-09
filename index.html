@@ -1352,8 +1352,7 @@ async function saveAssessment(traineeId, day, existingId) {
     // Notify admin if a preceptor (non-admin) submitted the assessment
     if(currentUser && currentUser.role !== 'admin') {
       try {
-        const cfgDoc = await db.collection('config').doc('setup').get();
-        const adminEmail = cfgDoc.exists ? cfgDoc.data().adminEmail : null;
+        const adminEmail = 'alicia.penett@vipmedicalgroup.com';
         if(adminEmail) {
           const labels = {30:'30-Day',60:'60-Day',90:'90-Day'};
           await emailjs.send('service_zbd6z5n', 'template_51iol4q', {
