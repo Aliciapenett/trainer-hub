@@ -590,7 +590,12 @@ async function renderTrainerDetail(tid) {
   ]);
   if(!tDoc.exists){document.getElementById('trainer-detail-body').innerHTML='<p>Trainer not found.</p>';return;}
   const trainer = {id:tDoc.id,...tDoc.data()};
-  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+    if(!a.startDate && !b.startDate) return 0;
+    if(!a.startDate) return 1;
+    if(!b.startDate) return -1;
+    return b.startDate.localeCompare(a.startDate);
+  });
   const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
   const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
   const checkinsDue = trainees.filter(t=>isCheckinDue(t,checkins));
@@ -767,11 +772,16 @@ async function renderTraineesPage() {
     <input class="form-control" style="width:200px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()"></div>
     <div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>`;
   const [tSnap, aSnap, trainerSnap] = await Promise.all([
-    db.collection('trainees').orderBy('name').get(),
+    db.collection('trainees').get(),
     db.collection('assessments').get(),
     db.collection('trainers').get()
   ]);
-  window._allTrainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._allTrainees = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+    if(!a.startDate && !b.startDate) return 0;
+    if(!a.startDate) return 1;
+    if(!b.startDate) return -1;
+    return b.startDate.localeCompare(a.startDate);
+  });
   window._allAssessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
   window._allTrainers = trainerSnap.docs.map(d=>({id:d.id,...d.data()}));
   renderTraineesTable(window._allTrainees);
