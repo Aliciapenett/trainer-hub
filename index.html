@@ -1089,6 +1089,7 @@ async function openTransferModal(traineeId, currentTrainerId, traineeName) {
   const otherTrainers = trainers.filter(t=>t.id!==currentTrainerId);
   const current = trainers.find(t=>t.id===currentTrainerId);
   showModal(`
+    <div class="modal" onclick="event.stopPropagation()">
     <div style="padding:1.5rem">
       <div style="margin-bottom:1.25rem">
         <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.25rem"><i class="fa-solid fa-arrow-right-arrow-left" style="color:#7c3aed;margin-right:.4rem"></i>Transfer Preceptor</h3>
