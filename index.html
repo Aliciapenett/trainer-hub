@@ -593,17 +593,73 @@ function trainerCardHTML(t, trainees, assessments) {
 // ═══════════════════════════════════════
 //  TRAINERS PAGE (ADMIN)
 // ═══════════════════════════════════════
+function getPreceptorStatus(trainer, trainees, assessments, checkins) {
+  var mine = trainees.filter(function(t){ return t.trainerId === trainer.id && t.status === 'active'; });
+  var hasAsmtDue = mine.some(function(t){ return getAssessmentsDue(t, assessments).length > 0; });
+  var hasCheckinDue = mine.some(function(t){ return isCheckinDue(t, checkins); });
+  if (!mine.length) return {color:'#94a3b8', icon:'fa-circle-minus', label:'No Active Trainees', level:0};
+  if (hasAsmtDue) return {color:'#dc2626', icon:'fa-circle-exclamation', label:'Assessment Overdue', level:3};
+  if (hasCheckinDue) return {color:'#d97706', icon:'fa-circle-exclamation', label:'Check-in Due', level:2};
+  return {color:'#16a34a', icon:'fa-circle-check', label:'All Caught Up', level:1};
+}
+
 async function renderTrainersPage() {
   setNavActive('nav-trainers');
-  const el = document.getElementById('main-content');
-  el.innerHTML = `<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">Preceptors</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Manage preceptor profiles and logins</p></div><button class="btn btn-primary" onclick="openTrainerModal(null)"><i class="fa-solid fa-plus"></i> Add Preceptor</button></div>
-    <div class="trainers-grid" id="trainers-grid-page"></div>`;
-  const snap = await db.collection('trainers').orderBy('name').get();
-  const trainers = snap.docs.map(d=>({id:d.id,...d.data()}));
-  const [tSnap, aSnap] = await Promise.all([db.collection('trainees').get(), db.collection('assessments').get()]);
-  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
-  const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
-  document.getElementById('trainers-grid-page').innerHTML = trainers.length ? trainers.map(t=>trainerCardHTML(t,trainees,assessments)).join('') : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
+  window._currentPage = 'trainers';
+  var el = document.getElementById('main-content');
+  el.innerHTML = '<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">Preceptors</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Manage preceptor profiles and logins</p></div><button class="btn btn-primary" onclick="openTrainerModal(null)"><i class="fa-solid fa-plus"></i> Add Preceptor</button></div>'
+    + '<div class="card"><div class="card-hdr"><span class="card-hdr-title">All Preceptors</span></div>'
+    + '<div class="tbl-wrap"><table class="tbl" id="trainers-table"><tbody><tr><td colspan="7" style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</td></tr></tbody></table></div></div>';
+
+  var snap = await db.collection('trainers').orderBy('name').get();
+  var trainers = snap.docs.map(function(d){ return {id:d.id,...d.data()}; });
+  var results = await Promise.all([db.collection('trainees').get(), db.collection('assessments').get(), db.collection('checkins').get()]);
+  var trainees = results[0].docs.map(function(d){ return {id:d.id,...d.data()}; });
+  var assessments = results[1].docs.map(function(d){ return {id:d.id,...d.data()}; });
+  var checkins = results[2].docs.map(function(d){ return {id:d.id,...d.data()}; });
+
+  var tbl = document.getElementById('trainers-table');
+  if (!tbl) return;
+
+  if (!trainers.length) {
+    tbl.innerHTML = '<tbody><tr><td colspan="7"><div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div></td></tr></tbody>';
+    return;
+  }
+
+  var thead = '<thead><tr>'
+    + '<th style="width:32px"></th>'
+    + '<th>Preceptor</th>'
+    + '<th>Credential</th>'
+    + '<th style="text-align:center">Active</th>'
+    + '<th style="text-align:center">Assessments</th>'
+    + '<th style="text-align:center">Certified</th>'
+    + '<th style="text-align:center">Status</th>'
+    + '<th style="text-align:center">Account</th>'
+    + '<th></th>'
+    + '</tr></thead>';
+
+  var rows = trainers.map(function(t) {
+    var mine = trainees.filter(function(tr){ return tr.trainerId === t.id; });
+    var active = mine.filter(function(tr){ return tr.status === 'active'; }).length;
+    var certified = mine.filter(function(tr){ return tr.status === 'certified'; }).length;
+    var asmts = assessments.filter(function(a){ return mine.find(function(tr){ return tr.id === a.traineeId; }); }).length;
+    var status = getPreceptorStatus(t, trainees, assessments, checkins);
+    var hasAccount = !!t.userId;
+    var tid = t.id;
+    return '<tr onclick="renderTrainerDetail(\'' + tid + '\')" style="cursor:pointer">'
+      + '<td><div style="width:36px;height:36px;border-radius:50%;background:' + (t.color||'#0f3460') + ';display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:800">' + (t.initials||t.name[0]) + '</div></td>'
+      + '<td><div style="font-weight:600;font-size:.9rem">' + t.name + '</div>' + (t.notes ? '<div style="font-size:.72rem;color:var(--text-light);margin-top:.08rem">' + t.notes.substring(0,60) + (t.notes.length>60?'…':'') + '</div>' : '') + '</td>'
+      + '<td style="font-size:.82rem;color:var(--text-light)">' + (t.credential||'—') + '</td>'
+      + '<td style="text-align:center;font-weight:700;font-size:.95rem">' + active + '</td>'
+      + '<td style="text-align:center;font-size:.88rem">' + asmts + '</td>'
+      + '<td style="text-align:center;font-size:.88rem">' + certified + '</td>'
+      + '<td style="text-align:center"><span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.76rem;font-weight:600;color:' + status.color + '"><i class="fa-solid ' + status.icon + '"></i>' + status.label + '</span></td>'
+      + '<td style="text-align:center"><span class="account-status ' + (hasAccount?'account-active':'account-pending') + '" style="font-size:.7rem"><i class="fa-solid ' + (hasAccount?'fa-circle-check':'fa-circle-exclamation') + '"></i>' + (hasAccount?'Active':'No Login') + '</span></td>'
+      + '<td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTrainerModal(\'' + tid + '\')"><i class="fa-solid fa-pen"></i></button></td>'
+      + '</tr>';
+  }).join('');
+
+  tbl.innerHTML = thead + '<tbody>' + rows + '</tbody>';
 }
 
 // ═══════════════════════════════════════
