@@ -1347,7 +1347,23 @@ async function saveAssessment(traineeId, day, existingId) {
     if(existingId) await db.collection('assessments').doc(existingId).delete();
     await db.collection('assessments').add({...obj, createdAt:ts()});
     const trDoc = await db.collection('trainees').doc(traineeId).get();
-    await logActivity(`${day}-day assessment completed for ${trDoc.data().name}`,'fa-clipboard-check');
+    const traineeName = trDoc.data().name;
+    await logActivity(`${day}-day assessment completed for ${traineeName}`,'fa-clipboard-check');
+    // Notify admin if a preceptor (non-admin) submitted the assessment
+    if(currentUser && currentUser.role !== 'admin') {
+      try {
+        const cfgDoc = await db.collection('config').doc('setup').get();
+        const adminEmail = cfgDoc.exists ? cfgDoc.data().adminEmail : null;
+        if(adminEmail) {
+          const labels = {30:'30-Day',60:'60-Day',90:'90-Day'};
+          await emailjs.send('service_zbd6z5n', 'template_51iol4q', {
+            to_name: 'Alicia',
+            to_email: adminEmail,
+            trainee_list: `${labels[day]} assessment completed for ${traineeName}\n\nCompleted by: ${currentUser.name}\nDate: ${todayStr()}${obj.sonoSignoff ? '\nSign-off: '+obj.sonoSignoff : ''}${obj.overall ? '\nOverall score: '+obj.overall+'0%' : ''}`
+          });
+        }
+      } catch(emailErr) { console.warn('Assessment notification email failed:', emailErr); }
+    }
     forceClose();
     renderTraineeDetail(traineeId, traineeBackContext);
   } catch(e){ alert('Error: '+e.message); setBtn('asmt-save-btn',false,'Save'); }
