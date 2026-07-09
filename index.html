@@ -846,6 +846,7 @@ async function renderTraineeDetail(tid, fromTid) {
           <div style="display:flex;gap:.45rem;align-items:center;flex-wrap:wrap">
             <span class="badge ${trainee.status==='active'?'badge-success':trainee.status==='certified'?'badge-teal':trainee.status==='completed'?'badge-info':'badge-gray'}">${trainee.status||'active'}</span>
             <button class="btn btn-outline btn-sm" onclick="openTraineeModal('${trainee.id}','${trainee.trainerId||''}')"><i class="fa-solid fa-pen"></i> Edit</button>
+            <button class="btn btn-outline btn-sm" style="color:#7c3aed;border-color:#7c3aed" onclick="openTransferModal('${trainee.id}','${trainee.trainerId||''}','${trainee.name.replace(/'/g,"\\'")}')"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer</button>
           </div>
         </div>
         ${trainee.startDate?`<div style="margin-top:.7rem"><div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--text-light);margin-bottom:.28rem"><span>90-Day Training Progress</span><span>${pct}%</span></div><div style="height:7px;background:var(--border);border-radius:100px;overflow:hidden"><div style="height:100%;width:${pct}%;border-radius:100px;background:linear-gradient(90deg,var(--accent),#0284c7)"></div></div></div>`:''}
@@ -857,6 +858,7 @@ async function renderTraineeDetail(tid, fromTid) {
       <button class="tab-btn active" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>
       <button class="tab-btn" onclick="switchTab(this,'tab-checkins')"><i class="fa-solid fa-calendar-check"></i> Weekly Check-ins</button>
       <button class="tab-btn" onclick="switchTab(this,'tab-notes')"><i class="fa-solid fa-note-sticky"></i> Clinical Notes</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-history')"><i class="fa-solid fa-clock-rotate-left"></i> Preceptor History</button>
     </div>
     <div id="tab-assessments">
       <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0;margin-top:.1rem"></i><span>Click a card to complete or view the assessment for that milestone.</span></div>
@@ -900,7 +902,7 @@ function switchTab(btn, tabId) {
   const p = btn.closest('.main') || document.getElementById('trainee-detail-body') || document.getElementById('main-content');
   p.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  ['tab-assessments','tab-checkins','tab-notes'].forEach(id=>{
+  ['tab-assessments','tab-checkins','tab-notes','tab-history'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display=id===tabId?'block':'none';
   });
@@ -1076,6 +1078,73 @@ async function openTraineeModal(tid, defaultTrainerId) {
       <button class="btn btn-primary" id="trainee-save-btn" onclick="saveTrainee('${tid||''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Assign Trainee'}</button>
     </div>
   </div>`);
+}
+
+
+// ═══════════════════════════════════════
+//  TRANSFER PRECEPTOR
+// ═══════════════════════════════════════
+async function openTransferModal(traineeId, currentTrainerId, traineeName) {
+  const trainers = (await db.collection('trainers').orderBy('name').get()).docs.map(d=>({id:d.id,...d.data()}));
+  const otherTrainers = trainers.filter(t=>t.id!==currentTrainerId);
+  const current = trainers.find(t=>t.id===currentTrainerId);
+  showModal(`
+    <div style="padding:1.5rem">
+      <div style="margin-bottom:1.25rem">
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.25rem"><i class="fa-solid fa-arrow-right-arrow-left" style="color:#7c3aed;margin-right:.4rem"></i>Transfer Preceptor</h3>
+        <p style="font-size:.83rem;color:var(--text-light)">Transferring <strong>${traineeName}</strong> — all assessments, check-ins, and notes will be preserved.</p>
+      </div>
+      ${current?`<div style="background:#f8fafd;border-radius:var(--r-sm);padding:.7rem .9rem;margin-bottom:1rem;font-size:.82rem;border:1px solid var(--border)"><span style="color:var(--text-light)">Current preceptor:</span> <strong>${current.name}</strong>${current.credential?' ('+current.credential+')':''}</div>`:''}
+      <div id="tr-error" class="auth-error"></div>
+      <div class="form-group">
+        <label class="form-label">New Preceptor <span style="color:var(--danger)">*</span></label>
+        <select class="form-control" id="tr-new-trainer">
+          <option value="">— Select preceptor —</option>
+          ${otherTrainers.map(t=>`<option value="${t.id}">${t.name}${t.credential?' ('+t.credential+')':''}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason <span style="font-size:.74rem;font-weight:400;color:var(--text-light)">(optional)</span></label>
+        <input class="form-control" id="tr-reason" type="text" placeholder="e.g. location change, schedule conflict…">
+      </div>
+      <div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.25rem">
+        <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+        <button class="btn btn-primary" id="tr-save-btn" style="background:#7c3aed" onclick="saveTransfer('${traineeId}','${currentTrainerId}','${current?current.name:''}')"><i class="fa-solid fa-check"></i> Confirm Transfer</button>
+      </div>
+    </div>
+  `);
+}
+
+async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
+  const newTrainerId = document.getElementById('tr-new-trainer').value;
+  if(!newTrainerId) { document.getElementById('tr-error').textContent='Please select a new preceptor.'; document.getElementById('tr-error').style.display='block'; return; }
+  setBtn('tr-save-btn', true, 'Transferring…');
+  try {
+    const [newTrainerDoc, traineeDoc] = await Promise.all([
+      db.collection('trainers').doc(newTrainerId).get(),
+      db.collection('trainees').doc(traineeId).get()
+    ]);
+    const newTrainer = newTrainerDoc.data();
+    const trainee = traineeDoc.data();
+    const reason = document.getElementById('tr-reason').value.trim();
+    const historyEntry = {
+      fromId: fromTrainerId||null,
+      fromName: fromTrainerName||'Unassigned',
+      toId: newTrainerId,
+      toName: newTrainer.name,
+      transferredAt: todayStr(),
+      transferredBy: currentUser ? currentUser.name : 'Admin',
+      reason: reason||null
+    };
+    const existingHistory = trainee.preceptorHistory || [];
+    await db.collection('trainees').doc(traineeId).update({
+      trainerId: newTrainerId,
+      preceptorHistory: [...existingHistory, historyEntry]
+    });
+    await logActivity(`Transferred ${trainee.name} from ${fromTrainerName||'unassigned'} to ${newTrainer.name}`,'fa-arrow-right-arrow-left');
+    forceClose();
+    renderTraineeDetail(traineeId, traineeBackContext);
+  } catch(e) { alert('Error: '+e.message); setBtn('tr-save-btn', false, 'Confirm Transfer'); }
 }
 
 async function saveTrainee(id) {
@@ -1571,6 +1640,7 @@ async function renderSettingsPage() {
   window._currentPage = 'settings';
   document.getElementById('main-content').innerHTML = '<div class="loading"><i class="fa-solid fa-spinner fa-spin"></i></div>';
 
+  // Load all admin users
   let admins = [];
   try {
     const snap = await db.collection('users').where('role','==','admin').get();
