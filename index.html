@@ -322,6 +322,14 @@ const SONO_SKILLS = [
   {id:'sono_12', label:'Know most insurance diameter and reflux requirements'},
 ];
 
+const MA_ULTRASOUND_SKILLS = [
+  {id:'ma_us_1', label:'Input patient information and select correct settings on u/s'},
+  {id:'ma_us_2', label:'Ability to predict the physician\'s treatment plan based on the ultrasound data in chart'},
+  {id:'ma_us_3', label:'Ability to identify after effects of vein treatment: hyperpigmentation, thrombophlebitis, etc.'},
+  {id:'ma_us_4', label:'Know most insurance diameter and reflux requirements'},
+  {id:'ma_us_5', label:'Confidently measure catheter tip to SFJ during RFA procedure'},
+];
+
 // Legacy comp arrays (kept for backward compat)
 const COMP_30=[],COMP_60=[],COMP_90=[];
 const INITIAL_TRAINERS = [
@@ -1240,6 +1248,38 @@ function skillRow(item, savedVal, prevVal) {
   </div>`;
 }
 
+function buildAsmtSkills(trainee, done, prev) {
+  const isMA = isMaProtocol(trainee.protocol);
+  const thirdSection = isMA ? MA_ULTRASOUND_SKILLS : SONO_SKILLS;
+  const thirdLabel = isMA ? 'MA Ultrasound Knowledge' : 'Ultrasonographer Skills';
+  const signoffLabel = isMA ? 'Senior Medical Staff Sign-off' : 'Senior Medical Staff (Ultrasonographer Sign-off)';
+  let h = '';
+  h += '<div class="form-section">Program Knowledge</div>';
+  PROGRAM_KNOWLEDGE.forEach(function(sec){
+    h += '<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">'+sec.section+'</div>';
+    sec.items.forEach(function(item){ h += skillRow(item, done?done['sk_'+item.id]||'':'', prev?prev['sk_'+item.id]||'':''); });
+    h += '</div>';
+  });
+  h += '<div class="form-section">Clinical Knowledge</div>';
+  CLINICAL_KNOWLEDGE.forEach(function(sec){
+    h += '<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">'+sec.section+'</div>';
+    sec.items.forEach(function(item){ h += skillRow(item, done?done['sk_'+item.id]||'':'', prev?prev['sk_'+item.id]||'':''); });
+    h += '</div>';
+  });
+  h += '<div class="form-group" style="margin-top:.75rem"><label class="form-label">Clinical Knowledge — Preceptor Sign-off Name</label>';
+  h += '<input class="form-control" id="a-clinical-signoff" value="'+(done?done.clinicalSignoff||'':'')+'" placeholder="Senior Medical Staff name"></div>';
+  h += '<div class="form-section">'+thirdLabel+'</div>';
+  thirdSection.forEach(function(item){ h += skillRow(item, done?done['sk_'+item.id]||'':'', prev?prev['sk_'+item.id]||'':''); });
+  h += '<div class="form-section">Additional Comments &amp; Sign-Off</div>';
+  h += '<div class="form-group"><label class="form-label">Additional Comments</label>';
+  h += '<textarea class="form-control" id="a-comments" placeholder="Any additional observations, strengths, concerns...">'+(done?done.comments||'':'')+'</textarea></div>';
+  h += '<div class="form-group"><label class="form-label">'+signoffLabel+'</label>';
+  h += '<input class="form-control" id="a-sono-signoff" value="'+(done?done.sonoSignoff||'':'')+'" placeholder="Senior Medical Staff name"></div>';
+  h += '<div class="form-group"><label class="form-label">Date of Sign-Off</label>';
+  h += '<input class="form-control" id="a-signoff-date" type="date" value="'+(done?done.signoffDate||todayStr():todayStr())+'"></div>';
+  return h;
+}
+
 async function openAssessmentModal(traineeId, day) {
   // Load this assessment and all previous ones for comparison
   const aSnap = await db.collection('assessments').where('traineeId','==',traineeId).get();
@@ -1265,41 +1305,7 @@ async function openAssessmentModal(traineeId, day) {
       ${done?`<div class="alert alert-success"><i class="fa-solid fa-circle-check" style="flex-shrink:0"></i><span>Completed ${fmtDate(done.completedDate)} · <a href="#" onclick="event.preventDefault();deleteAssessment('${done.id}','${traineeId}',${day})" style="color:var(--danger)">Delete & redo</a></span></div>`:''}
       ${compNote}
 
-      <!-- PROGRAM KNOWLEDGE -->
-      <div class="form-section">Program Knowledge</div>
-      ${PROGRAM_KNOWLEDGE.map(sec=>`
-        <div style="margin-bottom:1rem">
-          <div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">${sec.section}</div>
-          ${sec.items.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
-        </div>`).join('')}
-
-      <!-- CLINICAL KNOWLEDGE -->
-      <div class="form-section">Clinical Knowledge</div>
-      ${CLINICAL_KNOWLEDGE.map(sec=>`
-        <div style="margin-bottom:1rem">
-          <div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">${sec.section}</div>
-          ${sec.items.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
-        </div>`).join('')}
-      <div class="form-group" style="margin-top:.75rem">
-        <label class="form-label">Clinical Knowledge — Preceptor Sign-off Name</label>
-        <input class="form-control" id="a-clinical-signoff" value="${done?done.clinicalSignoff||'':''}" placeholder="Senior Medical Staff name">
-      </div>
-
-      <!-- ULTRASONOGRAPHER SKILLS -->
-      <div class="form-section">Ultrasonographer Skills</div>
-      ${SONO_SKILLS.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
-
-      <!-- COMMENTS & SIGN-OFF -->
-      <div class="form-section">Additional Comments & Sign-Off</div>
-      <div class="form-group"><label class="form-label">Additional Comments</label>
-        <textarea class="form-control" id="a-comments" placeholder="Any additional observations, strengths, concerns...">${done?done.comments||'':''}</textarea>
-      </div>
-      <div class="form-group"><label class="form-label">Senior Medical Staff (Ultrasonographer Sign-off)</label>
-        <input class="form-control" id="a-sono-signoff" value="${done?done.sonoSignoff||'':''}" placeholder="Senior Medical Staff name">
-      </div>
-      <div class="form-group"><label class="form-label">Date of Sign-Off</label>
-        <input class="form-control" id="a-signoff-date" type="date" value="${done?done.signoffDate||todayStr():todayStr()}">
-      </div>
+      ${buildAsmtSkills(trainee, done, prev)}
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
@@ -1316,10 +1322,12 @@ function setRating(el,hid,val){
 }
 
 async function saveAssessment(traineeId, day, existingId) {
+  const traineeForSave = await db.collection('trainees').doc(traineeId).get();
+  const isMAAsmt = traineeForSave.exists && isMaProtocol(traineeForSave.data().protocol);
   const allItems = [
     ...PROGRAM_KNOWLEDGE.flatMap(s=>s.items),
     ...CLINICAL_KNOWLEDGE.flatMap(s=>s.items),
-    ...SONO_SKILLS
+    ...(isMAAsmt ? MA_ULTRASOUND_SKILLS : SONO_SKILLS)
   ];
   const obj = {traineeId, day, completedDate:todayStr(),
     comments: v('a-comments'),
