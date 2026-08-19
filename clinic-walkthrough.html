@@ -746,19 +746,24 @@ function downloadPDF(){
     </div>
   </div>`;
 
-  const container=document.createElement('div');
-  container.style.cssText='position:fixed;top:0;left:0;width:800px;background:#fff;z-index:-9999;pointer-events:none;';
-  container.innerHTML=pdfHTML;
-  document.body.appendChild(container);
-
-  html2pdf().set({
-    margin:[0.4,0.4],
-    filename:`VIP-Walkthrough-${cl.name}-${wt.date}.pdf`,
-    html2canvas:{scale:2,useCORS:true,logging:false,scrollX:0,scrollY:0},
-    jsPDF:{unit:'in',format:'letter',orientation:'portrait'}
-  }).from(container).save().then(()=>{
-    document.body.removeChild(container);
-  });
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VIP Walkthrough Report — ${cl.full} — ${fmt(wt.date)}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#fff;font-family:Arial,sans-serif}
+    @media print{
+      body{margin:0}
+      .no-print{display:none!important}
+      @page{margin:.5in;size:letter portrait}
+    }
+    .print-btn{position:fixed;top:16px;right:16px;background:#0f3460;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+    .print-btn:hover{background:#1a4a7a}
+  </style>
+  </head><body>
+  <button class="print-btn no-print" onclick="window.print()">&#x1F4BE; Save as PDF</button>
+  ${pdfHTML}
+  </body></html>`);
+  win.document.close();
 }
 
 // ══════════════════════════════════════
