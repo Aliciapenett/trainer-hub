@@ -6,106 +6,116 @@
 <title>VIP Clinic Walkthrough Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{--primary:#0f3460;--accent:#0ea5e9;--success:#16a34a;--warning:#d97706;--danger:#dc2626;--bg:#f0f5fb;--card:#fff;--text:#1e293b;--text-light:#64748b;--border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 12px 28px rgba(0,0,0,.13);--r:14px;--r-sm:8px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.hdr{background:var(--primary);color:#fff;padding:0 1.5rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md)}
-.hdr-logo{display:flex;align-items:center;gap:.7rem;cursor:pointer;user-select:none}
-.hdr-logo-icon{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem}
-.hdr-title{font-size:.95rem;font-weight:800}
-.hdr-sub{font-size:.6rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em}
+.hdr{background:var(--primary);color:#fff;padding:0 1.25rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md)}
+.hdr-logo{display:flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none;flex-shrink:0}
+.hdr-logo-icon{width:32px;height:32px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.hdr-title{font-size:.9rem;font-weight:800}
+.hdr-sub{font-size:.58rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em}
+.hdr-nav{display:flex;gap:.1rem}
+.tab-nav-btn{background:none;border:none;color:rgba(255,255,255,.65);padding:.38rem .8rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:500;display:flex;align-items:center;gap:.3rem;transition:.15s}
+.tab-nav-btn.active{background:rgba(255,255,255,.18);color:#fff;font-weight:600}
+.hdr-actions{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
 .main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
-.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:.84rem;font-weight:600;transition:.15s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:600;transition:.15s;white-space:nowrap}
 .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
 .btn-success{background:var(--success);color:#fff}.btn-success:hover{opacity:.88;transform:translateY(-1px)}
 .btn-outline{background:transparent;border:2px solid var(--border);color:var(--text)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-sm{padding:.3rem .7rem;font-size:.77rem}
-.btn-lg{padding:.75rem 1.5rem;font-size:.95rem}
+.btn-ghost{background:transparent;color:var(--text-light);padding:.35rem .6rem}.btn-ghost:hover{background:var(--bg)}
+.btn-sm{padding:.28rem .65rem;font-size:.75rem}
+.btn-lg{padding:.72rem 1.4rem;font-size:.92rem}
+.btn-hdr{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:.35rem;transition:.15s}
+.btn-hdr:hover{background:rgba(255,255,255,.22)}
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border)}
-.card-hdr{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-body{padding:1.4rem}
-.card-hdr-title{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:.5rem}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.75rem}
-.stat-card{background:var(--card);border-radius:var(--r);padding:1rem 1.1rem;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:.85rem}
-.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.card-hdr{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:1.3rem}
+.card-hdr-title{font-weight:700;font-size:.93rem;display:flex;align-items:center;gap:.45rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:var(--card);border-radius:var(--r);padding:.95rem 1rem;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:.15s}
+.stat-card:hover{box-shadow:var(--shadow-md)}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
 .si-blue{background:#dbeafe;color:#1d4ed8}.si-green{background:#dcfce7;color:#15803d}
 .si-orange{background:#ffedd5;color:#c2410c}.si-purple{background:#ede9fe;color:#6d28d9}
-.stat-value{font-size:1.55rem;font-weight:800;line-height:1}
-.stat-label{font-size:.72rem;color:var(--text-light);margin-top:.18rem}
+.si-red{background:#fee2e2;color:#dc2626}.si-teal{background:#ccfbf1;color:#0f766e}
+.stat-value{font-size:1.45rem;font-weight:800;line-height:1}
+.stat-label{font-size:.7rem;color:var(--text-light);margin-top:.15rem}
+.region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem;margin-bottom:1.5rem}
+.region-card{background:var(--card);border-radius:var(--r-sm);border:1px solid var(--border);padding:.9rem 1rem;box-shadow:var(--shadow)}
+.region-state{font-size:1.15rem;font-weight:800;margin-bottom:.25rem}
+.region-meta{font-size:.72rem;color:var(--text-light);margin-bottom:.55rem}
+.region-bar{height:7px;background:var(--border);border-radius:100px;overflow:hidden;margin-bottom:.4rem}
+.region-bar-fill{height:100%;border-radius:100px}
 .tbl-wrap{overflow-x:auto}
-.tbl{width:100%;border-collapse:collapse;min-width:500px}
-.tbl th{text-align:left;padding:.6rem 1rem;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);background:#f8fafd;border-bottom:1px solid var(--border)}
-.tbl td{padding:.8rem 1rem;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+.tbl{width:100%;border-collapse:collapse;min-width:520px}
+.tbl th{text-align:left;padding:.55rem 1rem;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);background:#f8fafd;border-bottom:1px solid var(--border)}
+.tbl td{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.81rem;vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tbody tr:hover td{background:#f0f9ff;cursor:pointer}
-.badge{display:inline-flex;align-items:center;padding:.18rem .55rem;border-radius:100px;font-size:.71rem;font-weight:700}
+.badge{display:inline-flex;align-items:center;padding:.16rem .5rem;border-radius:100px;font-size:.69rem;font-weight:700}
 .badge-A{background:#dcfce7;color:#15803d}.badge-B{background:#dbeafe;color:#1e40af}
 .badge-C{background:#fef3c7;color:#92400e}.badge-D{background:#ffedd5;color:#c2410c}
 .badge-F{background:#fee2e2;color:#991b1b}
-.form-group{margin-bottom:1.05rem}
-.form-label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.32rem}
-.form-hint{font-size:.72rem;color:var(--text-light);margin-top:.18rem}
-.form-control{width:100%;padding:.56rem .78rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.83rem;color:var(--text);background:#fff;transition:.15s;outline:none}
+.badge-recurring{background:#fee2e2;color:#991b1b;font-size:.63rem;padding:.1rem .38rem}
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:.8rem;font-weight:600;margin-bottom:.3rem}
+.form-hint{font-size:.7rem;color:var(--text-light);margin-top:.16rem}
+.form-control{width:100%;padding:.52rem .75rem;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:.81rem;color:var(--text);background:#fff;transition:.15s;outline:none}
 .form-control:focus{border-color:var(--accent)}
-textarea.form-control{resize:vertical;min-height:90px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.form-section{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:1.35rem 0 .85rem;padding-bottom:.4rem;border-bottom:2px solid #e0f2fe}
-.proc-card{border:2px solid var(--border);border-radius:var(--r);margin-bottom:.85rem;overflow:hidden;transition:.18s}
+textarea.form-control{resize:vertical;min-height:85px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+.form-section{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:1.25rem 0 .8rem;padding-bottom:.38rem;border-bottom:2px solid #e0f2fe}
+.proc-card{border:2px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden;transition:.18s}
 .proc-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
-.proc-hdr{display:flex;align-items:center;gap:.9rem;padding:1rem 1.2rem;cursor:pointer;background:#f8fafd;user-select:none}
+.proc-hdr{display:flex;align-items:center;gap:.85rem;padding:.95rem 1.1rem;cursor:pointer;background:#f8fafd;user-select:none}
 .proc-hdr:hover{background:#f0f9ff}
-.proc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.88rem;color:#fff;flex-shrink:0}
-.proc-label{font-weight:700;font-size:.9rem}
-.proc-sublabel{font-size:.72rem;color:var(--text-light);margin-top:.08rem}
-.proc-checklist{padding:1.1rem 1.2rem;border-top:1px solid var(--border);display:none}
+.proc-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:#fff;flex-shrink:0}
+.proc-label{font-weight:700;font-size:.88rem}
+.proc-sublabel{font-size:.7rem;color:var(--text-light);margin-top:.06rem}
+.proc-checklist{padding:1rem 1.1rem;border-top:1px solid var(--border);display:none}
 .proc-card.selected .proc-checklist{display:block}
-.check-item{display:flex;align-items:flex-start;gap:.7rem;padding:.5rem 0;border-bottom:1px solid #f1f5f9}
+.staff-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:.85rem;padding:.7rem .85rem;background:#f8fafd;border-radius:var(--r-sm);border:1px solid var(--border)}
+.staff-field label{font-size:.68rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:.22rem;text-transform:uppercase;letter-spacing:.05em}
+.staff-input{width:100%;padding:.38rem .58rem;border:1.5px solid var(--border);border-radius:6px;font-family:inherit;font-size:.78rem;color:var(--text);background:#fff;outline:none}
+.staff-input:focus{border-color:var(--accent)}
+.check-item{padding:.45rem 0;border-bottom:1px solid #f1f5f9}
 .check-item:last-child{border-bottom:none}
-.check-item input[type="checkbox"]{width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:var(--success);cursor:pointer}
-.check-item label{font-size:.82rem;flex:1;cursor:pointer;line-height:1.4}
-.proc-score-bar{margin-top:.85rem;padding:.65rem .9rem;background:#f8fafd;border-radius:var(--r-sm);display:flex;align-items:center;gap:.75rem}
-.prog-bar{flex:1;height:8px;background:var(--border);border-radius:100px;overflow:hidden}
+.check-item-row{display:flex;align-items:flex-start;gap:.65rem}
+.check-item-row input[type="checkbox"]{width:15px;height:15px;flex-shrink:0;margin-top:3px;accent-color:var(--success);cursor:pointer}
+.check-item-row label{font-size:.8rem;flex:1;cursor:pointer;line-height:1.4}
+.item-note-wrap{display:none;margin:.35rem 0 .15rem 1.5rem}
+.item-note-input{width:100%;padding:.32rem .55rem;border:1.5px solid #fcd34d;border-radius:6px;font-family:inherit;font-size:.76rem;background:#fefce8;outline:none;color:#92400e}
+.item-note-input:focus{border-color:var(--warning)}
+.proc-score-bar{margin-top:.8rem;padding:.6rem .85rem;background:#f8fafd;border-radius:var(--r-sm);display:flex;align-items:center;gap:.7rem}
+.prog-bar{flex:1;height:7px;background:var(--border);border-radius:100px;overflow:hidden}
 .prog-fill{height:100%;border-radius:100px;transition:width .3s}
 .grade-circle{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:800;color:#fff;flex-shrink:0}
-.report-proc-row{display:flex;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.report-proc-row{display:flex;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--border)}
 .report-proc-row:last-child{border-bottom:none}
-.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--accent);cursor:pointer;font-size:.83rem;font-weight:500;margin-bottom:1.2rem;border:none;background:none;font-family:inherit;padding:0}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--accent);cursor:pointer;font-size:.81rem;font-weight:500;margin-bottom:1.1rem;border:none;background:none;font-family:inherit;padding:0}
 .back-btn:hover{text-decoration:underline}
-.empty{text-align:center;padding:3rem 1rem;color:var(--text-light)}
-.empty i{font-size:2.25rem;opacity:.25;margin-bottom:.85rem;display:block}
-.empty p{font-size:.86rem}
+.empty{text-align:center;padding:2.75rem 1rem;color:var(--text-light)}
+.empty i{font-size:2.1rem;opacity:.22;margin-bottom:.75rem;display:block}
+.empty p{font-size:.84rem}
 .screen{display:none}.screen.active{display:block}
-#pdf-template{display:none;}
-.pdf-page{font-family:Arial,sans-serif;padding:36px;width:750px;color:#1e293b;background:#fff}
-.pdf-hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f3460;padding-bottom:14px;margin-bottom:18px}
-.pdf-hdr-left h1{font-size:18px;font-weight:800;color:#0f3460;margin:0 0 3px}
-.pdf-hdr-left p{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin:0}
-.pdf-hdr-right{text-align:right;font-size:10px;color:#64748b}
-.pdf-hdr-right strong{font-size:11px;color:#0f3460;display:block;margin-bottom:2px}
-.pdf-meta{display:flex;gap:0;margin-bottom:18px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden}
-.pdf-meta-item{flex:1;padding:10px 14px;border-right:1px solid #e2e8f0}
-.pdf-meta-item:last-child{border-right:none}
-.pdf-meta-item label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748b;display:block;margin-bottom:3px}
-.pdf-meta-item span{font-size:12px;font-weight:700}
-.pdf-grade-box{display:flex;align-items:center;gap:18px;background:#f8fafd;border-radius:10px;padding:16px 20px;margin-bottom:18px;border:2px solid #e2e8f0}
-.pdf-grade-circle{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;flex-shrink:0}
-.pdf-grade-info h2{font-size:20px;font-weight:800;margin:0 0 3px}
-.pdf-grade-info p{font-size:11px;color:#64748b;margin:0}
-.pdf-grade-info .pdf-criteria{font-size:10px;color:#94a3b8;margin-top:5px}
-.pdf-section{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#0ea5e9;border-bottom:2px solid #e0f2fe;padding-bottom:4px;margin:16px 0 10px}
-.pdf-proc-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f8fafd;font-size:11px}
-.pdf-proc-row:last-child{border-bottom:none}
-.pdf-bar{flex:1;height:6px;background:#f1f5f9;border-radius:100px;overflow:hidden}
-.pdf-bar-fill{height:100%;border-radius:100px}
-.pdf-obs{font-size:11px;padding:4px 0;border-bottom:1px solid #f8fafd;display:flex;gap:6px}
-.pdf-obs:last-child{border-bottom:none}
-.pdf-obs-bullet{font-weight:700;flex-shrink:0}
-.pdf-fail-item{font-size:10px;padding:3px 0;border-bottom:1px solid #fef2f2;color:#dc2626}
-.pdf-sig{margin-top:24px;padding-top:14px;border-top:2px solid #e2e8f0;display:flex;justify-content:space-between;font-size:10px;color:#64748b}
-@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+.trend-up{color:#16a34a;font-weight:700}.trend-down{color:#dc2626;font-weight:700}.trend-flat{color:#64748b}
+.action-form{background:#fef9ee;border:1.5px solid #fcd34d;border-radius:var(--r-sm);padding:.9rem 1rem;margin-top:.6rem;display:none}
+.action-form.open{display:block}
+.chart-wrap{position:relative;height:180px;margin-top:.85rem}
+/* Settings overlay */
+.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:stretch;justify-content:flex-end}
+.settings-panel{background:#fff;width:min(680px,100%);height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.settings-hdr{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.settings-body{padding:1.4rem;flex:1}
+.checklist-item-row{display:flex;align-items:center;gap:.5rem;padding:.45rem 0;border-bottom:1px solid #f8fafd}
+.checklist-item-row:last-child{border-bottom:none}
+.checklist-item-row span{flex:1;font-size:.82rem}
+#pdf-template{display:none}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}.form-grid-3{grid-template-columns:1fr}.region-grid{grid-template-columns:1fr 1fr}.staff-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -118,12 +128,15 @@ textarea.form-control{resize:vertical;min-height:90px}
       <div class="hdr-sub">Clinical Quality &amp; Compliance</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:1rem">
-    <nav style="display:flex;gap:.15rem">
-      <button id="tab-btn-walkthroughs" onclick="switchTab('walkthroughs')" style="background:rgba(255,255,255,.18);border:none;color:#fff;padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.35rem"><i class="fa-solid fa-clipboard-check"></i> Walkthroughs</button>
-      <button id="tab-btn-visits" onclick="switchTab('visits')" style="background:none;border:none;color:rgba(255,255,255,.65);padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;display:flex;align-items:center;gap:.35rem"><i class="fa-solid fa-calendar-check"></i> Visit History</button>
-    </nav>
-    <button class="btn btn-primary" id="new-wt-btn" onclick="startNew()"><i class="fa-solid fa-plus"></i> New Walkthrough</button>
+  <nav class="hdr-nav">
+    <button id="tnb-wt" class="tab-nav-btn active" onclick="switchTab('walkthroughs')"><i class="fa-solid fa-clipboard-check"></i> Walkthroughs</button>
+    <button id="tnb-vi" class="tab-nav-btn" onclick="switchTab('visits')"><i class="fa-solid fa-calendar-check"></i> Visit History</button>
+  </nav>
+  <div class="hdr-actions">
+    <button class="btn-hdr" onclick="showScreen('actions')"><i class="fa-solid fa-bolt"></i> Actions <span id="actions-badge" style="background:#dc2626;color:#fff;border-radius:100px;padding:.05rem .42rem;font-size:.68rem;margin-left:.2rem;display:none"></span></button>
+    <button class="btn-hdr" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+    <button class="btn-hdr" onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
+    <button class="btn btn-primary" id="new-wt-btn" onclick="startNew()" style="padding:.4rem .9rem;font-size:.8rem"><i class="fa-solid fa-plus"></i> New Walkthrough</button>
   </div>
 </header>
 
@@ -131,15 +144,17 @@ textarea.form-control{resize:vertical;min-height:90px}
 
   <!-- DASHBOARD -->
   <div class="screen active" id="screen-dashboard">
-    <div style="margin-bottom:1.75rem">
-      <h1 style="font-size:1.45rem;font-weight:800">Walkthrough Dashboard</h1>
-      <p style="color:var(--text-light);font-size:.86rem;margin-top:.22rem">National Clinical Quality &amp; Compliance Site Visits</p>
+    <div style="margin-bottom:1.5rem">
+      <h1 style="font-size:1.4rem;font-weight:800">Walkthrough Dashboard</h1>
+      <p style="color:var(--text-light);font-size:.84rem;margin-top:.2rem">National Clinical Quality &amp; Compliance Site Visits</p>
     </div>
     <div class="stats-grid" id="dash-stats"></div>
+    <div style="margin-bottom:.6rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)" id="region-hdr" style="display:none">Regional Overview</div>
+    <div class="region-grid" id="region-grid"></div>
     <div class="card">
       <div class="card-hdr">
         <span class="card-hdr-title"><i class="fa-solid fa-list-check"></i> All Walkthroughs</span>
-        <input class="form-control" style="width:190px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search clinic..." id="search-box" oninput="renderDashboard()">
+        <input class="form-control" style="width:180px;padding:.3rem .6rem;font-size:.76rem" placeholder="Search clinic..." id="search-box" oninput="renderDashboard()">
       </div>
       <div class="tbl-wrap" id="dash-table"></div>
     </div>
@@ -148,12 +163,11 @@ textarea.form-control{resize:vertical;min-height:90px}
   <!-- FORM -->
   <div class="screen" id="screen-form">
     <button class="back-btn" onclick="showScreen('dashboard')"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
-    <div style="margin-bottom:1.5rem">
-      <h1 style="font-size:1.3rem;font-weight:800">New Clinic Walkthrough</h1>
-      <p style="color:var(--text-light);font-size:.82rem;margin-top:.2rem">Complete the compliance checklist for each procedure observed during your visit</p>
+    <div style="margin-bottom:1.4rem">
+      <h1 style="font-size:1.25rem;font-weight:800" id="form-heading">New Clinic Walkthrough</h1>
+      <p style="color:var(--text-light);font-size:.8rem;margin-top:.18rem">Complete the compliance checklist for each procedure observed</p>
     </div>
-
-    <div class="card" style="margin-bottom:1.1rem">
+    <div class="card" style="margin-bottom:1rem">
       <div class="card-body">
         <div class="form-section" style="margin-top:0">Visit Details</div>
         <div class="form-grid">
@@ -172,32 +186,29 @@ textarea.form-control{resize:vertical;min-height:90px}
         </div>
       </div>
     </div>
-
-    <div class="card" style="margin-bottom:1.1rem">
+    <div class="card" style="margin-bottom:1rem">
       <div class="card-body">
         <div class="form-section" style="margin-top:0">Procedures Observed</div>
-        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1.1rem">Select each procedure you observed and complete the compliance checklist. Each item is scored pass/fail.</p>
+        <p style="font-size:.8rem;color:var(--text-light);margin-bottom:1rem">Select each procedure observed, enter staff names, and complete the compliance checklist.</p>
         <div id="proc-list"></div>
       </div>
     </div>
-
-    <div class="card" style="margin-bottom:1.1rem">
+    <div class="card" style="margin-bottom:1rem">
       <div class="card-body">
         <div class="form-section" style="margin-top:0">Overall Observations</div>
         <div class="form-group">
           <label class="form-label"><i class="fa-solid fa-circle-check" style="color:#16a34a;margin-right:.3rem"></i>Positive Findings</label>
-          <div class="form-hint" style="margin-bottom:.4rem">What was done well? One observation per line.</div>
-          <textarea class="form-control" id="f-positives" placeholder="e.g. Excellent sterile technique maintained throughout all procedures&#10;Patient communication was thorough and professional&#10;Documentation was complete and timely"></textarea>
+          <div class="form-hint" style="margin-bottom:.38rem">What was done well? One per line.</div>
+          <textarea class="form-control" id="f-positives" placeholder="e.g. Excellent sterile technique throughout&#10;Patient communication was thorough and professional"></textarea>
         </div>
         <div class="form-group" style="margin-bottom:0">
           <label class="form-label"><i class="fa-solid fa-triangle-exclamation" style="color:#dc2626;margin-right:.3rem"></i>Areas for Improvement</label>
-          <div class="form-hint" style="margin-bottom:.4rem">What needs to be addressed? One item per line.</div>
-          <textarea class="form-control" id="f-concerns" placeholder="e.g. Post-procedure instructions were not consistently provided&#10;Compression stocking application technique needs review"></textarea>
+          <div class="form-hint" style="margin-bottom:.38rem">What needs to be addressed? One per line.</div>
+          <textarea class="form-control" id="f-concerns" placeholder="e.g. Post-procedure instructions not consistently provided&#10;Compression stocking application needs review"></textarea>
         </div>
       </div>
     </div>
-
-    <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-bottom:2.5rem">
+    <div style="display:flex;justify-content:flex-end;gap:.55rem;margin-bottom:2.5rem">
       <button class="btn btn-outline" onclick="showScreen('dashboard')">Cancel</button>
       <button class="btn btn-success btn-lg" id="form-submit-btn" onclick="generateReport()"><i class="fa-solid fa-file-contract"></i> Generate Report Card</button>
     </div>
@@ -206,17 +217,38 @@ textarea.form-control{resize:vertical;min-height:90px}
   <!-- REPORT CARD -->
   <div class="screen" id="screen-report">
     <button class="back-btn" onclick="showScreen('dashboard')"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.65rem">
       <div>
-        <h1 style="font-size:1.3rem;font-weight:800" id="report-heading">Report Card</h1>
-        <p style="color:var(--text-light);font-size:.82rem;margin-top:.2rem" id="report-sub"></p>
+        <h1 style="font-size:1.25rem;font-weight:800" id="report-heading">Report Card</h1>
+        <p style="color:var(--text-light);font-size:.8rem;margin-top:.18rem" id="report-sub"></p>
       </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <div style="display:flex;gap:.45rem;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
         <button class="btn btn-outline" onclick="startNew()"><i class="fa-solid fa-plus"></i> New Walkthrough</button>
       </div>
     </div>
     <div id="report-body"></div>
+  </div>
+
+  <!-- ACTION ITEMS -->
+  <div class="screen" id="screen-actions">
+    <button class="back-btn" onclick="showScreen('dashboard')"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.65rem">
+      <div>
+        <h1 style="font-size:1.25rem;font-weight:800">Action Items</h1>
+        <p style="color:var(--text-light);font-size:.8rem;margin-top:.18rem">Follow-up tasks from clinic walkthroughs</p>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <label style="font-size:.78rem;font-weight:600">Filter:</label>
+        <select class="form-control" id="action-filter" onchange="renderActionItems()" style="width:180px;padding:.35rem .6rem;font-size:.78rem">
+          <option value="">All Clinics</option>
+        </select>
+        <label style="font-size:.78rem;font-weight:600;margin-left:.5rem">
+          <input type="checkbox" id="action-show-resolved" onchange="renderActionItems()" style="margin-right:.3rem">Show Resolved
+        </label>
+      </div>
+    </div>
+    <div class="card"><div class="tbl-wrap" id="actions-table"></div></div>
   </div>
 
 </main>
@@ -226,141 +258,98 @@ textarea.form-control{resize:vertical;min-height:90px}
   <iframe src="clinic-tracker/index.html" style="width:100%;height:100%;border:none" title="Visit History"></iframe>
 </div>
 
+<!-- SETTINGS OVERLAY -->
+<div id="settings-overlay" style="display:none" onclick="closeSettingsIfBg(event)">
+  <div class="settings-overlay">
+    <div class="settings-panel">
+      <div class="settings-hdr">
+        <span style="font-size:1rem;font-weight:800"><i class="fa-solid fa-gear" style="color:var(--accent);margin-right:.4rem"></i>Checklist Editor</span>
+        <button class="btn btn-ghost btn-sm" onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="settings-body" id="settings-body"></div>
+    </div>
+  </div>
+</div>
+
 <div id="pdf-template"></div>
 
 <script>
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 //  CLINICS
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 const CLINICS=[
-  {id:1, state:'NY',name:'Midtown',         full:'NY – Midtown'},
-  {id:2, state:'NY',name:'FiDi',            full:'NY – FiDi'},
-  {id:3, state:'NY',name:'Downtown Brooklyn',full:'NY – Downtown Brooklyn'},
-  {id:4, state:'NY',name:'Forest Hills',    full:'NY – Forest Hills'},
-  {id:5, state:'NY',name:'Bronx',           full:'NY – Bronx'},
-  {id:6, state:'NY',name:'UES',             full:'NY – Upper East Side'},
-  {id:7, state:'NY',name:'Brighton Beach',  full:'NY – Brighton Beach'},
-  {id:8, state:'NY',name:'Hartsdale',       full:'NY – Hartsdale'},
-  {id:9, state:'LI',name:'Jericho',         full:'LI – Jericho'},
-  {id:10,state:'LI',name:'Port Jefferson',  full:'LI – Port Jefferson'},
-  {id:11,state:'LI',name:'West Islip',      full:'LI – West Islip'},
-  {id:12,state:'CA',name:'Palo Alto',       full:'CA – Palo Alto'},
-  {id:13,state:'CA',name:'Temecula',        full:'CA – Temecula'},
-  {id:14,state:'CA',name:'Poway',           full:'CA – Poway'},
-  {id:15,state:'CA',name:'Newport Beach',   full:'CA – Newport Beach'},
+  {id:1,state:'NY',name:'Midtown',full:'NY – Midtown'},
+  {id:2,state:'NY',name:'FiDi',full:'NY – FiDi'},
+  {id:3,state:'NY',name:'Downtown Brooklyn',full:'NY – Downtown Brooklyn'},
+  {id:4,state:'NY',name:'Forest Hills',full:'NY – Forest Hills'},
+  {id:5,state:'NY',name:'Bronx',full:'NY – Bronx'},
+  {id:6,state:'NY',name:'UES',full:'NY – Upper East Side'},
+  {id:7,state:'NY',name:'Brighton Beach',full:'NY – Brighton Beach'},
+  {id:8,state:'NY',name:'Hartsdale',full:'NY – Hartsdale'},
+  {id:9,state:'LI',name:'Jericho',full:'LI – Jericho'},
+  {id:10,state:'LI',name:'Port Jefferson',full:'LI – Port Jefferson'},
+  {id:11,state:'LI',name:'West Islip',full:'LI – West Islip'},
+  {id:12,state:'CA',name:'Palo Alto',full:'CA – Palo Alto'},
+  {id:13,state:'CA',name:'Temecula',full:'CA – Temecula'},
+  {id:14,state:'CA',name:'Poway',full:'CA – Poway'},
+  {id:15,state:'CA',name:'Newport Beach',full:'CA – Newport Beach'},
   {id:16,state:'CA',name:'Huntington Beach',full:'CA – Huntington Beach'},
-  {id:17,state:'CA',name:'Irvine',          full:'CA – Irvine'},
-  {id:18,state:'CA',name:'San Diego',       full:'CA – San Diego'},
-  {id:19,state:'CA',name:'San Jose',        full:'CA – San Jose'},
-  {id:20,state:'MD',name:'Bowie',           full:'MD – Bowie'},
-  {id:21,state:'MD',name:'Bethesda',        full:'MD – Bethesda'},
-  {id:22,state:'MD',name:'Maple Lawn',      full:'MD – Maple Lawn'},
-  {id:23,state:'NJ',name:'Clifton',         full:'NJ – Clifton'},
-  {id:24,state:'NJ',name:'Paramus',         full:'NJ – Paramus'},
-  {id:25,state:'NJ',name:'Woodland Park',   full:'NJ – Woodland Park'},
-  {id:26,state:'NJ',name:'Scotch Plains',   full:'NJ – Scotch Plains'},
-  {id:27,state:'NJ',name:'West Orange',     full:'NJ – West Orange'},
-  {id:28,state:'NJ',name:'Woodbridge',      full:'NJ – Woodbridge'},
-  {id:29,state:'NJ',name:'Edgewater',       full:'NJ – Edgewater'},
-  {id:30,state:'NJ',name:'Princeton',       full:'NJ – Princeton'},
-  {id:31,state:'NJ',name:'Morristown',      full:'NJ – Morristown'},
-  {id:32,state:'CT',name:'Farmington',      full:'CT – Farmington'},
-  {id:33,state:'CT',name:'Hamden',          full:'CT – Hamden'},
+  {id:17,state:'CA',name:'Irvine',full:'CA – Irvine'},
+  {id:18,state:'CA',name:'San Diego',full:'CA – San Diego'},
+  {id:19,state:'CA',name:'San Jose',full:'CA – San Jose'},
+  {id:20,state:'MD',name:'Bowie',full:'MD – Bowie'},
+  {id:21,state:'MD',name:'Bethesda',full:'MD – Bethesda'},
+  {id:22,state:'MD',name:'Maple Lawn',full:'MD – Maple Lawn'},
+  {id:23,state:'NJ',name:'Clifton',full:'NJ – Clifton'},
+  {id:24,state:'NJ',name:'Paramus',full:'NJ – Paramus'},
+  {id:25,state:'NJ',name:'Woodland Park',full:'NJ – Woodland Park'},
+  {id:26,state:'NJ',name:'Scotch Plains',full:'NJ – Scotch Plains'},
+  {id:27,state:'NJ',name:'West Orange',full:'NJ – West Orange'},
+  {id:28,state:'NJ',name:'Woodbridge',full:'NJ – Woodbridge'},
+  {id:29,state:'NJ',name:'Edgewater',full:'NJ – Edgewater'},
+  {id:30,state:'NJ',name:'Princeton',full:'NJ – Princeton'},
+  {id:31,state:'NJ',name:'Morristown',full:'NJ – Morristown'},
+  {id:32,state:'CT',name:'Farmington',full:'CT – Farmington'},
+  {id:33,state:'CT',name:'Hamden',full:'CT – Hamden'},
 ];
 
-// ══════════════════════════════════════
-//  PROCEDURE CHECKLISTS (mock — to be replaced with Alicia's actual checklists)
-// ══════════════════════════════════════
-const PROCS={
-  rfa:{
-    label:'RF Ablation (RFA)',icon:'fa-fire',color:'#dc2626',
-    items:[
-      'Patient identity and consent verified',
-      'Appropriate patient positioning confirmed',
-      'Sterile field established and maintained throughout procedure',
-      'Ultrasound guidance used for catheter placement',
-      'Catheter tip position confirmed via ultrasound prior to ablation',
-      'Tumescent anesthesia administered appropriately',
-      'Ablation temperature and pull-back speed appropriate per protocol',
-      'Post-procedure compression applied correctly',
-      'Verbal and written post-procedure instructions provided to patient',
-      'Procedure documentation completed accurately and in timely manner',
-    ]
-  },
-  varithena:{
-    label:'Varithena',icon:'fa-syringe',color:'#7c3aed',
-    items:[
-      'Patient identity and consent verified',
-      'Pre-treatment clinical assessment completed',
-      'Correct foam preparation technique observed',
-      'Appropriate injection sites selected based on mapping',
-      'Ultrasound guidance used throughout injection',
-      'Correct injection technique and volume observed',
-      'Patient monitored post-injection (minimum 15 minutes)',
-      'Compression stocking applied correctly post-procedure',
-      'Post-procedure instructions provided to patient',
-      'Procedure documentation completed accurately',
-    ]
-  },
-  venaseal:{
-    label:'VenaSeal',icon:'fa-droplet',color:'#0891b2',
-    items:[
-      'Patient identity and consent verified',
-      'Proper skin preparation and sterile technique maintained',
-      'Catheter positioned correctly via ultrasound guidance',
-      'Correct adhesive volume delivered per treatment segment',
-      'Compression applied at each adhesive injection point',
-      'Catheter withdrawal technique appropriate',
-      'Post-procedure ultrasound assessment performed',
-      'Patient monitored for adverse reactions post-procedure',
-      'Post-procedure instructions provided to patient',
-      'Procedure documentation completed accurately',
-    ]
-  },
-  ultrasound:{
-    label:'Ultrasound Review',icon:'fa-wave-square',color:'#0f3460',
-    items:[
-      'Correct probe and preset settings selected',
-      'Complete bilateral lower extremity scan performed',
-      'Deep venous system evaluated for DVT',
-      'GSV and SSV reflux accurately measured and documented',
-      'Perforators and accessory veins identified',
-      'CEAP classification documented correctly',
-      'Treatment plan correlates with ultrasound findings',
-      'Prior treatment effects assessed appropriately',
-      'Scan report written clearly and accurately',
-      'Documentation completed accurately and in timely manner',
-    ]
-  },
-  consult:{
-    label:'Initial Consultation with Ultrasound',icon:'fa-user-doctor',color:'#16a34a',
-    items:[
-      'Chief complaint and symptom history documented',
-      'Relevant medical and family history reviewed',
-      'Physical examination performed and documented',
-      'Patient symptoms and risk factors thoroughly assessed',
-      'Ultrasound performed with correct technique',
-      'Findings explained clearly to patient in understandable terms',
-      'CEAP classification discussed with patient',
-      'Treatment options clearly presented with risks/benefits',
-      'Patient questions answered appropriately',
-      'Documentation completed accurately and in timely manner',
-    ]
-  }
+// ═══════════════════════════════════════════
+//  DEFAULT CHECKLISTS
+// ═══════════════════════════════════════════
+const DEFAULT_PROCS={
+  rfa:{label:'RF Ablation (RFA)',icon:'fa-fire',color:'#dc2626',items:['Patient identity and consent verified','Appropriate patient positioning confirmed','Sterile field established and maintained throughout procedure','Ultrasound guidance used for catheter placement','Catheter tip position confirmed via ultrasound prior to ablation','Tumescent anesthesia administered appropriately','Ablation temperature and pull-back speed appropriate per protocol','Post-procedure compression applied correctly','Verbal and written post-procedure instructions provided to patient','Procedure documentation completed accurately and in timely manner']},
+  varithena:{label:'Varithena',icon:'fa-syringe',color:'#7c3aed',items:['Patient identity and consent verified','Pre-treatment clinical assessment completed','Correct foam preparation technique observed','Appropriate injection sites selected based on mapping','Ultrasound guidance used throughout injection','Correct injection technique and volume observed','Patient monitored post-injection (minimum 15 minutes)','Compression stocking applied correctly post-procedure','Post-procedure instructions provided to patient','Procedure documentation completed accurately']},
+  venaseal:{label:'VenaSeal',icon:'fa-droplet',color:'#0891b2',items:['Patient identity and consent verified','Proper skin preparation and sterile technique maintained','Catheter positioned correctly via ultrasound guidance','Correct adhesive volume delivered per treatment segment','Compression applied at each adhesive injection point','Catheter withdrawal technique appropriate','Post-procedure ultrasound assessment performed','Patient monitored for adverse reactions post-procedure','Post-procedure instructions provided to patient','Procedure documentation completed accurately']},
+  ultrasound:{label:'Ultrasound Review',icon:'fa-wave-square',color:'#0f3460',items:['Correct probe and preset settings selected','Complete bilateral lower extremity scan performed','Deep venous system evaluated for DVT','GSV and SSV reflux accurately measured and documented','Perforators and accessory veins identified','CEAP classification documented correctly','Treatment plan correlates with ultrasound findings','Prior treatment effects assessed appropriately','Scan report written clearly and accurately','Documentation completed accurately and in timely manner']},
+  consult:{label:'Initial Consultation with Ultrasound',icon:'fa-user-doctor',color:'#16a34a',items:['Chief complaint and symptom history documented','Relevant medical and family history reviewed','Physical examination performed and documented','Patient symptoms and risk factors thoroughly assessed','Ultrasound performed with correct technique','Findings explained clearly to patient in understandable terms','CEAP classification discussed with patient','Treatment options clearly presented with risks/benefits','Patient questions answered appropriately','Documentation completed accurately and in timely manner']},
 };
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 //  STATE
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 let data=JSON.parse(localStorage.getItem('vip_wt')||'[]');
+let actions=JSON.parse(localStorage.getItem('vip_actions')||'[]');
+let customChecklists=JSON.parse(localStorage.getItem('vip_checklists')||'{}');
+let PROCS={};
 let activeReport=null;
 let editingId=null;
+let trendChart=null;
 
 function save(){localStorage.setItem('vip_wt',JSON.stringify(data));}
+function saveActions(){localStorage.setItem('vip_actions',JSON.stringify(actions));updateActionsBadge();}
+function saveChecklists(){localStorage.setItem('vip_checklists',JSON.stringify(customChecklists));}
+
+function loadProcs(){
+  PROCS={};
+  Object.entries(DEFAULT_PROCS).forEach(([k,p])=>{
+    const items=customChecklists[k]||p.items;
+    PROCS[k]={...p,items:[...items]};
+  });
+}
+
 function today(){return new Date().toISOString().split('T')[0];}
 function fmt(s){if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function clinic(id){return CLINICS.find(c=>c.id===id)||{full:'Unknown',name:'?'};}
-
+function clinic(id){return CLINICS.find(c=>c.id===id)||{full:'Unknown',name:'?',state:'?'};}
 function grade(pct){
   if(pct>=90)return{g:'A',color:'#16a34a',label:'Excellent'};
   if(pct>=80)return{g:'B',color:'#0891b2',label:'Good'};
@@ -368,140 +357,189 @@ function grade(pct){
   if(pct>=60)return{g:'D',color:'#f97316',label:'Needs Improvement'};
   return{g:'F',color:'#dc2626',label:'Unsatisfactory'};
 }
-
 function score(wt){
   let tot=0,pass=0;
   Object.values(wt.procs).forEach(items=>items.forEach(i=>{tot++;if(i.ok)pass++;}));
   return tot===0?0:Math.round(pass/tot*100);
 }
 
+function updateActionsBadge(){
+  const open=actions.filter(a=>!a.resolved).length;
+  const badge=document.getElementById('actions-badge');
+  if(badge){badge.textContent=open;badge.style.display=open?'inline':'none';}
+}
+
 function showScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   if(name==='dashboard')renderDashboard();
+  if(name==='actions')renderActionItems();
   window.scrollTo(0,0);
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 //  DASHBOARD
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
+function getTrend(clinicId,currentId){
+  const visits=[...data].filter(w=>w.clinicId===clinicId&&w.id!==currentId).sort((a,b)=>a.date>b.date?1:-1);
+  if(visits.length<2)return null;
+  const last=score(visits[visits.length-1]);
+  const prev=score(visits[visits.length-2]);
+  if(last>prev+2)return'up';
+  if(last<prev-2)return'down';
+  return'flat';
+}
+
+function hasRecurringFails(wt){
+  const prev=data.filter(w=>w.clinicId===wt.clinicId&&w.id!==wt.id&&w.date<wt.date);
+  if(prev.length<1)return false;
+  const curFailed=Object.values(wt.procs).flatMap(items=>items.filter(i=>!i.ok).map(i=>i.label));
+  return curFailed.some(lbl=>{
+    const failCount=prev.filter(pw=>Object.values(pw.procs).flatMap(it=>it.filter(i=>!i.ok).map(i=>i.label)).includes(lbl)).length;
+    return failCount>=1;
+  });
+}
+
 function renderDashboard(){
   const q=(document.getElementById('search-box')||{}).value||'';
-  const list=[...data]
-    .filter(w=>!q||clinic(w.clinicId).full.toLowerCase().includes(q.toLowerCase()))
-    .sort((a,b)=>b.date>a.date?1:-1);
-
+  const list=[...data].filter(w=>!q||clinic(w.clinicId).full.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>b.date>a.date?1:-1);
   const scores=data.map(w=>score(w));
   const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
   const gAvg=grade(avg);
   const attn=data.filter(w=>score(w)<70).length;
+  const openActs=actions.filter(a=>!a.resolved).length;
 
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-clipboard-check"></i></div><div><div class="stat-value">${data.length}</div><div class="stat-label">Total Walkthroughs</div></div></div>
+    <div class="stat-card" onclick="void(0)"><div class="stat-icon si-blue"><i class="fa-solid fa-clipboard-check"></i></div><div><div class="stat-value">${data.length}</div><div class="stat-label">Total Walkthroughs</div></div></div>
     <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-hospital"></i></div><div><div class="stat-value">${new Set(data.map(w=>w.clinicId)).size}</div><div class="stat-label">Clinics Visited</div></div></div>
     <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-star"></i></div><div><div class="stat-value" style="color:${data.length?gAvg.color:'var(--text-light)'}">${data.length?avg+'%':'—'}</div><div class="stat-label">Avg Compliance</div></div></div>
     <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value">${attn}</div><div class="stat-label">Need Attention</div></div></div>
+    <div class="stat-card" onclick="showScreen('actions')" style="cursor:pointer"><div class="stat-icon si-red"><i class="fa-solid fa-bolt"></i></div><div><div class="stat-value">${openActs}</div><div class="stat-label">Open Actions</div></div></div>
   `;
 
+  // Regional overview
+  const byState={};
+  data.forEach(w=>{const cl=clinic(w.clinicId);const st=cl.state;if(!byState[st])byState[st]={scores:[],clinics:new Set()};byState[st].scores.push(score(w));byState[st].clinics.add(w.clinicId);});
+  const regionEl=document.getElementById('region-grid');
+  const regionHdr=document.getElementById('region-hdr');
+  if(Object.keys(byState).length){
+    regionHdr.style.display='';
+    regionEl.innerHTML=Object.entries(byState).sort((a,b)=>a[0]>b[0]?1:-1).map(([st,d])=>{
+      const avg=Math.round(d.scores.reduce((a,b)=>a+b,0)/d.scores.length);
+      const g=grade(avg);
+      return`<div class="region-card">
+        <div class="region-state">${st}</div>
+        <div class="region-meta">${d.clinics.size} clinic${d.clinics.size>1?'s':''} · ${d.scores.length} visit${d.scores.length>1?'s':''}</div>
+        <div class="region-bar"><div class="region-bar-fill" style="width:${avg}%;background:${g.color}"></div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:.82rem;font-weight:800;color:${g.color}">${avg}%</span>
+          <span class="badge badge-${g.g}">${g.g} — ${g.label}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } else {regionHdr.style.display='none';regionEl.innerHTML='';}
+
   const tbl=document.getElementById('dash-table');
-  if(!list.length){
-    tbl.innerHTML='<div class="empty"><i class="fa-solid fa-clipboard-check"></i><p>No walkthroughs yet — click <strong>New Walkthrough</strong> to get started</p></div>';
-    return;
-  }
-  tbl.innerHTML=`<table class="tbl"><thead><tr><th>Clinic</th><th>Date</th><th>Procedures</th><th>Score</th><th>Grade</th><th></th></tr></thead><tbody>
+  if(!list.length){tbl.innerHTML='<div class="empty"><i class="fa-solid fa-clipboard-check"></i><p>No walkthroughs yet — click <strong>New Walkthrough</strong> to get started</p></div>';return;}
+
+  tbl.innerHTML=`<table class="tbl"><thead><tr><th>Clinic</th><th>Date</th><th>Procedures</th><th>Score</th><th>Grade</th><th>Trend</th><th></th></tr></thead><tbody>
     ${list.map(w=>{
-      const cl=clinic(w.clinicId);
-      const sc=score(w);
-      const g=grade(sc);
-      const procs=Object.keys(w.procs).map(k=>PROCS[k]?.label.split(' ')[0]).join(', ');
+      const cl=clinic(w.clinicId);const sc=score(w);const g=grade(sc);
+      const procs=Object.keys(w.procs).map(k=>PROCS[k]?.label.split(' ')[0]||k).join(', ');
+      const trend=getTrend(w.clinicId,w.id);
+      const trendHTML=trend==='up'?'<span class="trend-up">↑</span>':trend==='down'?'<span class="trend-down">↓</span>':trend==='flat'?'<span class="trend-flat">→</span>':'<span style="color:var(--text-light);font-size:.72rem">first</span>';
+      const recurring=hasRecurringFails(w)?'<span style="font-size:.65rem;background:#fee2e2;color:#991b1b;border-radius:4px;padding:.06rem .32rem;margin-left:.3rem;font-weight:700">⚠ recurring</span>':'';
+      const openAct=actions.filter(a=>a.walkthroughId===w.id&&!a.resolved).length;
+      const actBadge=openAct?`<span style="font-size:.65rem;background:#ffedd5;color:#c2410c;border-radius:4px;padding:.06rem .32rem;margin-left:.3rem;font-weight:700">${openAct} action${openAct>1?'s':''}</span>`:'';
       return`<tr onclick="viewReport(${w.id})">
-        <td style="font-weight:600">${cl.full}</td>
+        <td style="font-weight:600">${cl.full}${recurring}${actBadge}</td>
         <td>${fmt(w.date)}</td>
-        <td style="font-size:.75rem;color:var(--text-light);max-width:180px">${procs}</td>
+        <td style="font-size:.73rem;color:var(--text-light);max-width:160px">${procs}</td>
         <td style="font-weight:800;color:${g.color}">${sc}%</td>
-        <td><span class="badge badge-${g.g}">${g.g} — ${g.label}</span></td>
-        <td style="white-space:nowrap;display:flex;gap:.35rem;padding:.6rem 1rem">
-          <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();editWalkthrough(${w.id})" title="Edit"><i class="fa-solid fa-pen"></i> Edit</button>
-          <button class="btn btn-sm" style="background:transparent;border:1.5px solid #fca5a5;color:#dc2626" onclick="event.stopPropagation();del(${w.id})" title="Delete"><i class="fa-solid fa-trash"></i> Delete</button>
+        <td><span class="badge badge-${g.g}">${g.g}</span></td>
+        <td>${trendHTML}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();editWalkthrough(${w.id})" style="margin-right:.3rem"><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="btn btn-sm" style="background:transparent;border:1.5px solid #fca5a5;color:#dc2626" onclick="event.stopPropagation();del(${w.id})"><i class="fa-solid fa-trash"></i> Delete</button>
         </td>
       </tr>`;
     }).join('')}
   </tbody></table>`;
 }
 
-function del(id){
-  if(!confirm('Delete this walkthrough? This cannot be undone.'))return;
-  data=data.filter(w=>w.id!==id);save();renderDashboard();
-}
+function del(id){if(!confirm('Delete this walkthrough?'))return;data=data.filter(w=>w.id!==id);save();renderDashboard();}
 
+// ═══════════════════════════════════════════
+//  EDIT
+// ═══════════════════════════════════════════
 function editWalkthrough(id){
-  const wt=data.find(w=>w.id===id);
-  if(!wt)return;
-  editingId=id;
-  startNew(false);
-  // Pre-populate fields
+  const wt=data.find(w=>w.id===id);if(!wt)return;
+  editingId=id;startNew(false);
   document.getElementById('f-clinic').value=wt.clinicId;
   document.getElementById('f-date').value=wt.date;
   document.getElementById('f-reviewer').value=wt.reviewer;
   document.getElementById('f-positives').value=(wt.positives||[]).join('\n');
   document.getElementById('f-concerns').value=(wt.concerns||[]).join('\n');
-  // Pre-check procedures and their items
   Object.entries(wt.procs).forEach(([key,items])=>{
     const cb=document.getElementById('cb-'+key);
     if(cb){cb.checked=true;cbChange(key);}
+    // Staff
+    const staff=wt.staff&&wt.staff[key]||{};
+    ['sono','provider','ma'].forEach(f=>{const el=document.getElementById(`staff-${key}-${f}`);if(el)el.value=staff[f]||'';});
     items.forEach((item,i)=>{
       const el=document.getElementById(`ci-${key}-${i}`);
-      if(el){el.checked=item.ok;}
+      if(el){el.checked=item.ok;if(!item.ok){const nw=document.getElementById(`note-${key}-${i}`);if(nw){nw.parentElement.style.display='block';nw.value=item.note||'';}}};
     });
     updateScore(key);
   });
-  // Update heading and button
-  document.querySelector('#screen-form h1').textContent='Edit Walkthrough';
+  document.getElementById('form-heading').textContent='Edit Walkthrough';
   document.getElementById('form-submit-btn').innerHTML='<i class="fa-solid fa-check"></i> Save Changes';
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 //  FORM
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 function startNew(resetEdit=true){
   if(resetEdit)editingId=null;
-  // Populate clinic select
   const sel=document.getElementById('f-clinic');
   const byState={};
   CLINICS.forEach(c=>{(byState[c.state]=byState[c.state]||[]).push(c);});
-  sel.innerHTML='<option value="">— Select a clinic —</option>'+
-    Object.entries(byState).map(([st,cs])=>
-      `<optgroup label="${st}">${cs.map(c=>`<option value="${c.id}">${c.full}</option>`).join('')}</optgroup>`
-    ).join('');
+  sel.innerHTML='<option value="">— Select a clinic —</option>'+Object.entries(byState).map(([st,cs])=>`<optgroup label="${st}">${cs.map(c=>`<option value="${c.id}">${c.full}</option>`).join('')}</optgroup>`).join('');
   document.getElementById('f-date').value=today();
   document.getElementById('f-positives').value='';
   document.getElementById('f-concerns').value='';
-  document.querySelector('#screen-form h1').textContent='New Clinic Walkthrough';
+  document.getElementById('form-heading').textContent='New Clinic Walkthrough';
   document.getElementById('form-submit-btn').innerHTML='<i class="fa-solid fa-file-contract"></i> Generate Report Card';
 
-  // Render procedure cards
   document.getElementById('proc-list').innerHTML=Object.entries(PROCS).map(([key,p])=>`
     <div class="proc-card" id="pc-${key}">
       <div class="proc-hdr" onclick="hdrClick('${key}')">
-        <input type="checkbox" id="cb-${key}" onchange="cbChange('${key}')" onclick="event.stopPropagation()" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
+        <input type="checkbox" id="cb-${key}" onchange="cbChange('${key}')" onclick="event.stopPropagation()" style="width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
         <div class="proc-icon" style="background:${p.color}"><i class="fa-solid ${p.icon}"></i></div>
-        <div style="flex:1">
-          <div class="proc-label">${p.label}</div>
-          <div class="proc-sublabel">${p.items.length} compliance items · pass/fail</div>
-        </div>
-        <i class="fa-solid fa-chevron-down" id="chev-${key}" style="color:var(--text-light);font-size:.75rem;transition:.2s"></i>
+        <div style="flex:1"><div class="proc-label">${p.label}</div><div class="proc-sublabel">${p.items.length} compliance items · pass/fail</div></div>
+        <i class="fa-solid fa-chevron-down" id="chev-${key}" style="color:var(--text-light);font-size:.72rem;transition:.2s"></i>
       </div>
       <div class="proc-checklist">
+        <div class="staff-row">
+          <div class="staff-field"><label>Sonographer</label><input class="staff-input" id="staff-${key}-sono" placeholder="Name..."></div>
+          <div class="staff-field"><label>Provider</label><input class="staff-input" id="staff-${key}-provider" placeholder="Name..."></div>
+          <div class="staff-field"><label>MA</label><input class="staff-input" id="staff-${key}-ma" placeholder="Name..."></div>
+        </div>
         ${p.items.map((item,i)=>`
           <div class="check-item">
-            <input type="checkbox" id="ci-${key}-${i}" onchange="updateScore('${key}')">
-            <label for="ci-${key}-${i}">${item}</label>
+            <div class="check-item-row">
+              <input type="checkbox" id="ci-${key}-${i}" onchange="onItemChange('${key}',${i})">
+              <label for="ci-${key}-${i}">${item}</label>
+            </div>
+            <div class="item-note-wrap" id="note-wrap-${key}-${i}">
+              <input class="item-note-input" id="note-${key}-${i}" placeholder="Observation note (optional)…">
+            </div>
           </div>
         `).join('')}
         <div class="proc-score-bar">
-          <span style="font-size:.75rem;font-weight:600;color:var(--text-light);white-space:nowrap">Procedure score</span>
+          <span style="font-size:.73rem;font-weight:600;color:var(--text-light);white-space:nowrap">Procedure score</span>
           <div class="prog-bar"><div class="prog-fill" id="pb-${key}" style="width:0%;background:var(--text-light)"></div></div>
-          <span id="ps-${key}" style="font-size:.82rem;font-weight:700;color:var(--text-light);min-width:60px;text-align:right">0 / ${p.items.length}</span>
+          <span id="ps-${key}" style="font-size:.8rem;font-weight:700;color:var(--text-light);min-width:58px;text-align:right">0 / ${p.items.length}</span>
         </div>
       </div>
     </div>
@@ -509,300 +547,393 @@ function startNew(resetEdit=true){
   showScreen('form');
 }
 
-function hdrClick(key){
-  const cb=document.getElementById('cb-'+key);
-  cb.checked=!cb.checked;
-  cbChange(key);
-}
+function hdrClick(key){const cb=document.getElementById('cb-'+key);cb.checked=!cb.checked;cbChange(key);}
 function cbChange(key){
   const checked=document.getElementById('cb-'+key).checked;
-  const card=document.getElementById('pc-'+key);
-  card.classList.toggle('selected',checked);
+  document.getElementById('pc-'+key).classList.toggle('selected',checked);
   const chev=document.getElementById('chev-'+key);
   if(chev)chev.style.transform=checked?'rotate(180deg)':'rotate(0)';
-  if(!checked){
-    PROCS[key].items.forEach((_,i)=>{const el=document.getElementById(`ci-${key}-${i}`);if(el)el.checked=false;});
-    updateScore(key);
-  }
+  if(!checked){PROCS[key].items.forEach((_,i)=>{const el=document.getElementById(`ci-${key}-${i}`);if(el){el.checked=false;onItemChange(key,i,true);}});updateScore(key);}
+}
+function onItemChange(key,i,forceHide=false){
+  const cb=document.getElementById(`ci-${key}-${i}`);
+  const nw=document.getElementById(`note-wrap-${key}-${i}`);
+  if(nw)nw.style.display=(!forceHide&&cb&&!cb.checked)?'block':'none';
+  updateScore(key);
 }
 function updateScore(key){
   const p=PROCS[key];
   const passed=p.items.filter((_,i)=>document.getElementById(`ci-${key}-${i}`)?.checked).length;
   const pct=passed===0?0:Math.round(passed/p.items.length*100);
   const g=grade(pct);
-  const pb=document.getElementById('pb-'+key);
-  const ps=document.getElementById('ps-'+key);
+  const pb=document.getElementById('pb-'+key);const ps=document.getElementById('ps-'+key);
   if(pb){pb.style.width=pct+'%';pb.style.background=passed>0?g.color:'var(--text-light)';}
   if(ps){ps.textContent=`${passed} / ${p.items.length}`;ps.style.color=passed>0?g.color:'var(--text-light)';}
 }
 
-// ══════════════════════════════════════
-//  GENERATE REPORT
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
+//  GENERATE / VIEW REPORT
+// ═══════════════════════════════════════════
 function generateReport(){
   const clinicId=parseInt(document.getElementById('f-clinic').value);
   const date=document.getElementById('f-date').value;
   const reviewer=document.getElementById('f-reviewer').value;
   if(!clinicId){alert('Please select a clinic.');return;}
   if(!date){alert('Please enter the date of visit.');return;}
-
-  const procs={};
+  const procs={};const staff={};
   Object.entries(PROCS).forEach(([key,p])=>{
     if(document.getElementById('cb-'+key)?.checked){
-      procs[key]=p.items.map((label,i)=>({label,ok:document.getElementById(`ci-${key}-${i}`)?.checked||false}));
+      procs[key]=p.items.map((label,i)=>({label,ok:document.getElementById(`ci-${key}-${i}`)?.checked||false,note:(document.getElementById(`ci-${key}-${i}`)?.checked?'':(document.getElementById(`note-${key}-${i}`)?.value||''))}));
+      staff[key]={sono:document.getElementById(`staff-${key}-sono`)?.value||'',provider:document.getElementById(`staff-${key}-provider`)?.value||'',ma:document.getElementById(`staff-${key}-ma`)?.value||''};
     }
   });
   if(!Object.keys(procs).length){alert('Please select at least one procedure.');return;}
-
   const positives=(document.getElementById('f-positives').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
   const concerns=(document.getElementById('f-concerns').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
-
   let wt;
   if(editingId){
     const idx=data.findIndex(w=>w.id===editingId);
-    if(idx>-1){data[idx]={...data[idx],clinicId,date,reviewer,procs,positives,concerns};wt=data[idx];}
+    if(idx>-1){data[idx]={...data[idx],clinicId,date,reviewer,procs,staff,positives,concerns};wt=data[idx];}
     editingId=null;
-  } else {
-    wt={id:Date.now(),clinicId,date,reviewer,procs,positives,concerns};
-    data.push(wt);
-  }
-  save();
-  activeReport=wt;
-  renderReport(wt);
-  showScreen('report');
+  } else {wt={id:Date.now(),clinicId,date,reviewer,procs,staff,positives,concerns};data.push(wt);}
+  save();activeReport=wt;renderReport(wt);showScreen('report');
 }
 
-function viewReport(id){
-  const wt=data.find(w=>w.id===id);if(!wt)return;
-  activeReport=wt;renderReport(wt);showScreen('report');
-}
+function viewReport(id){const wt=data.find(w=>w.id===id);if(!wt)return;activeReport=wt;renderReport(wt);showScreen('report');}
 
 function renderReport(wt){
   const cl=clinic(wt.clinicId);
-  const sc=score(wt);
-  const g=grade(sc);
+  const sc=score(wt);const g=grade(sc);
   const totalItems=Object.values(wt.procs).reduce((a,b)=>a+b.length,0);
   const totalPassed=Object.values(wt.procs).reduce((a,b)=>a+b.filter(i=>i.ok).length,0);
-
   document.getElementById('report-heading').textContent=`Report Card — ${cl.full}`;
   document.getElementById('report-sub').textContent=`${fmt(wt.date)} · Reviewed by ${wt.reviewer}`;
 
-  const procRows=Object.entries(wt.procs).map(([key,items])=>{
-    const p=PROCS[key];
-    const passed=items.filter(i=>i.ok).length;
-    const pct=Math.round(passed/items.length*100);
-    const pg=grade(pct);
-    return`<div class="report-proc-row">
-      <div style="display:flex;align-items:center;gap:.6rem;min-width:200px">
-        <div style="width:30px;height:30px;border-radius:8px;background:${p.color};display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <i class="fa-solid ${p.icon}" style="color:#fff;font-size:.72rem"></i>
-        </div>
-        <span style="font-size:.82rem;font-weight:600">${p.label}</span>
-      </div>
-      <div class="prog-bar" style="margin:0 .85rem">
-        <div class="prog-fill" style="width:${pct}%;background:${pg.color}"></div>
-      </div>
-      <span style="font-weight:800;color:${pg.color};min-width:42px;text-align:right">${pct}%</span>
-      <span class="badge badge-${pg.g}" style="margin-left:.5rem">${pg.g}</span>
-    </div>`;
-  }).join('');
+  // Get previous visits for recurring check
+  const prevVisits=data.filter(w=>w.clinicId===wt.clinicId&&w.id!==wt.id&&w.date<wt.date);
+  function isRecurring(label){return prevVisits.filter(pw=>Object.values(pw.procs).flatMap(it=>it.filter(i=>!i.ok).map(i=>i.label)).includes(label)).length>=1;}
 
-  const failedItems=Object.entries(wt.procs).map(([key,items])=>{
-    const p=PROCS[key];const failed=items.filter(i=>!i.ok);
-    if(!failed.length)return'';
-    return`<div style="margin-bottom:.85rem">
-      <div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.45rem">
-        <div style="width:24px;height:24px;border-radius:6px;background:${p.color};display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <i class="fa-solid ${p.icon}" style="color:#fff;font-size:.6rem"></i>
-        </div>
-        <span style="font-size:.8rem;font-weight:700">${p.label}</span>
-        <span style="font-size:.72rem;background:#fee2e2;color:#991b1b;padding:.1rem .45rem;border-radius:100px;font-weight:700">${failed.length} failed</span>
-      </div>
-      ${failed.map(i=>`<div style="font-size:.8rem;padding:.28rem 0 .28rem 1.75rem;border-bottom:1px solid #fef2f2;color:#64748b;display:flex;gap:.5rem"><i class="fa-solid fa-circle-xmark" style="color:#fca5a5;flex-shrink:0;margin-top:.1rem"></i>${i.label}</div>`).join('')}
-    </div>`;
-  }).join('');
-
-  document.getElementById('report-body').innerHTML=`
-    <div class="card" style="margin-bottom:1.1rem">
-      <div class="card-body">
-        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
-          <div class="grade-circle" style="width:90px;height:90px;font-size:2.75rem;background:${g.color}">${g.g}</div>
-          <div style="flex:1">
-            <div style="font-size:1.65rem;font-weight:800;color:${g.color}">${sc}% Compliance</div>
-            <div style="font-size:1rem;color:var(--text-light);margin-top:.15rem">${g.label}</div>
-            <div style="margin-top:.6rem;font-size:.78rem;color:var(--text-light)">
-              ${totalPassed} of ${totalItems} criteria passed &nbsp;·&nbsp;
-              ${Object.keys(wt.procs).length} procedure${Object.keys(wt.procs).length>1?'s':''} evaluated &nbsp;·&nbsp;
-              ${cl.full} &nbsp;·&nbsp; ${fmt(wt.date)}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:1.1rem">
-      <div class="card-hdr"><span class="card-hdr-title"><i class="fa-solid fa-list-check"></i> Procedure Scores</span></div>
-      <div class="card-body">${procRows}</div>
-    </div>
-    ${wt.positives.length?`
-    <div class="card" style="margin-bottom:1.1rem;border-color:#bbf7d0">
-      <div class="card-hdr" style="background:#f0fdf4;border-color:#bbf7d0">
-        <span class="card-hdr-title" style="color:#15803d"><i class="fa-solid fa-circle-check"></i> Positive Findings</span>
-      </div>
-      <div class="card-body">
-        ${wt.positives.map(p=>`<div style="font-size:.84rem;padding:.38rem 0;border-bottom:1px solid #f0fdf4;display:flex;gap:.6rem"><i class="fa-solid fa-check" style="color:#16a34a;flex-shrink:0;margin-top:.15rem"></i>${p}</div>`).join('')}
-      </div>
-    </div>`:''}
-    ${wt.concerns.length?`
-    <div class="card" style="margin-bottom:1.1rem;border-color:#fca5a5">
-      <div class="card-hdr" style="background:#fef2f2;border-color:#fca5a5">
-        <span class="card-hdr-title" style="color:#dc2626"><i class="fa-solid fa-triangle-exclamation"></i> Areas for Improvement</span>
-      </div>
-      <div class="card-body">
-        ${wt.concerns.map(c=>`<div style="font-size:.84rem;padding:.38rem 0;border-bottom:1px solid #fef2f2;display:flex;gap:.6rem"><i class="fa-solid fa-arrow-right" style="color:#dc2626;flex-shrink:0;margin-top:.15rem"></i>${c}</div>`).join('')}
-      </div>
-    </div>`:''}
-    ${failedItems?`
-    <div class="card" style="margin-bottom:1.1rem">
-      <div class="card-hdr"><span class="card-hdr-title"><i class="fa-solid fa-circle-xmark" style="color:#fca5a5"></i> Failed Checklist Items</span></div>
-      <div class="card-body">${failedItems}</div>
-    </div>`:''}
-  `;
-}
-
-// ══════════════════════════════════════
-//  PDF EXPORT
-// ══════════════════════════════════════
-function downloadPDF(){
-  if(!activeReport)return;
-  const wt=activeReport;
-  const cl=clinic(wt.clinicId);
-  const sc=score(wt);
-  const g=grade(sc);
-  const totalItems=Object.values(wt.procs).reduce((a,b)=>a+b.length,0);
-  const totalPassed=Object.values(wt.procs).reduce((a,b)=>a+b.filter(i=>i.ok).length,0);
-
+  // Procedure score rows
   const procRows=Object.entries(wt.procs).map(([key,items])=>{
     const p=PROCS[key];const passed=items.filter(i=>i.ok).length;
     const pct=Math.round(passed/items.length*100);const pg=grade(pct);
-    return`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:11px;font-family:Arial,sans-serif">
-      <span style="min-width:190px;font-weight:700;color:#1e293b">${p.label}</span>
-      <div style="flex:1;height:7px;background:#e2e8f0;border-radius:10px;overflow:hidden">
-        <div style="width:${pct}%;height:100%;background:${pg.color};border-radius:10px"></div>
+    const staff=wt.staff&&wt.staff[key]||{};
+    const staffStr=[staff.sono&&`Sono: ${staff.sono}`,staff.provider&&`Provider: ${staff.provider}`,staff.ma&&`MA: ${staff.ma}`].filter(Boolean).join(' · ');
+    return`<div>
+      <div class="report-proc-row">
+        <div style="display:flex;align-items:center;gap:.55rem;min-width:200px">
+          <div style="width:28px;height:28px;border-radius:7px;background:${p.color};display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid ${p.icon}" style="color:#fff;font-size:.68rem"></i></div>
+          <div><div style="font-size:.81rem;font-weight:600">${p.label}</div>${staffStr?`<div style="font-size:.68rem;color:var(--text-light)">${staffStr}</div>`:''}</div>
+        </div>
+        <div class="prog-bar" style="margin:0 .8rem"><div class="prog-fill" style="width:${pct}%;background:${pg.color}"></div></div>
+        <span style="font-weight:800;color:${pg.color};min-width:40px;text-align:right">${pct}%</span>
+        <span class="badge badge-${pg.g}" style="margin-left:.5rem">${pg.g}</span>
       </div>
-      <span style="font-weight:800;color:${pg.color};min-width:38px;text-align:right">${pct}%</span>
-      <span style="font-weight:800;color:${pg.color};min-width:16px;text-align:right;margin-left:6px">${pg.g}</span>
-      <span style="font-size:9px;color:#64748b;min-width:52px;text-align:right">${passed}/${items.length} passed</span>
     </div>`;
   }).join('');
 
-  const failedItems=Object.entries(wt.procs).map(([key,items])=>{
-    const p=PROCS[key];const failed=items.filter(i=>!i.ok);
-    if(!failed.length)return'';
-    return`<div style="margin-bottom:12px;font-family:Arial,sans-serif">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:5px 8px;background:#f8fafd;border-radius:6px;border-left:3px solid ${p.color}">
-        <span style="font-size:11px;font-weight:700;color:#1e293b">${p.label}</span>
-        <span style="font-size:9px;background:#fee2e2;color:#991b1b;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:4px">${failed.length} failed</span>
+  // Failed items grouped by procedure
+  const failedSections=Object.entries(wt.procs).map(([key,items])=>{
+    const p=PROCS[key];const failed=items.filter(i=>!i.ok);if(!failed.length)return'';
+    const openActCount=actions.filter(a=>a.walkthroughId===wt.id&&a.procKey===key&&!a.resolved).length;
+    return`<div style="margin-bottom:1rem" id="fail-group-${wt.id}-${key}">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem;flex-wrap:wrap">
+        <div style="width:22px;height:22px;border-radius:5px;background:${p.color};display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid ${p.icon}" style="color:#fff;font-size:.58rem"></i></div>
+        <span style="font-size:.8rem;font-weight:700">${p.label}</span>
+        <span style="font-size:.7rem;background:#fee2e2;color:#991b1b;padding:.1rem .42rem;border-radius:100px;font-weight:700">${failed.length} failed</span>
+        <button class="btn btn-sm" style="margin-left:auto;background:#fffbeb;border:1.5px solid #fcd34d;color:#92400e;font-size:.72rem" onclick="toggleActionForm('${wt.id}','${key}')"><i class="fa-solid fa-plus"></i> Add Action${openActCount?` (${openActCount} open)`:''}</button>
       </div>
-      ${failed.map(i=>`<div style="font-size:10px;padding:3px 0 3px 14px;border-bottom:1px solid #fef2f2;color:#64748b">✗ ${i.label}</div>`).join('')}
+      <div class="action-form" id="aform-${wt.id}-${key}">
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:.6rem;color:#92400e"><i class="fa-solid fa-bolt"></i> New Action Item — ${p.label}</div>
+        <div class="form-grid" style="margin-bottom:.55rem">
+          <div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Assignee</label><input class="form-control" id="af-assignee-${wt.id}-${key}" placeholder="Staff member name..." style="padding:.38rem .6rem;font-size:.78rem"></div>
+          <div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Due Date</label><input class="form-control" type="date" id="af-due-${wt.id}-${key}" style="padding:.38rem .6rem;font-size:.78rem"></div>
+        </div>
+        <div style="margin-bottom:.55rem"><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Which failed item?</label>
+          <select class="form-control" id="af-item-${wt.id}-${key}" style="padding:.38rem .6rem;font-size:.78rem">
+            ${failed.map(i=>`<option value="${i.label.replace(/"/g,'&quot;')}">${i.label}</option>`).join('')}
+            <option value="General">General — applies to all failed items</option>
+          </select>
+        </div>
+        <div style="margin-bottom:.55rem"><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Notes</label><textarea class="form-control" id="af-notes-${wt.id}-${key}" placeholder="Action to take..." style="min-height:60px;padding:.38rem .6rem;font-size:.78rem"></textarea></div>
+        <div style="display:flex;gap:.4rem;justify-content:flex-end">
+          <button class="btn btn-sm btn-outline" onclick="toggleActionForm('${wt.id}','${key}')">Cancel</button>
+          <button class="btn btn-sm btn-success" onclick="saveActionItem('${wt.id}',${wt.clinicId},'${key}')"><i class="fa-solid fa-check"></i> Save Action</button>
+        </div>
+      </div>
+      ${failed.map(i=>`<div style="font-size:.8rem;padding:.3rem 0 .3rem 1.65rem;border-bottom:1px solid #fef2f2;color:#64748b">
+        <div style="display:flex;align-items:flex-start;gap:.45rem">
+          <i class="fa-solid fa-circle-xmark" style="color:#fca5a5;flex-shrink:0;margin-top:.15rem"></i>
+          <div style="flex:1">
+            ${i.label}
+            ${isRecurring(i.label)?'<span class="badge badge-recurring" style="margin-left:.4rem">⚠ Recurring</span>':''}
+            ${i.note?`<div style="font-size:.74rem;font-style:italic;color:#d97706;margin-top:.18rem;padding:.2rem .45rem;background:#fefce8;border-radius:4px;border-left:2px solid #fcd34d">"${i.note}"</div>`:''}
+          </div>
+        </div>
+      </div>`).join('')}
     </div>`;
   }).join('');
 
-  const posHTML=wt.positives.length?`
-    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#16a34a;border-bottom:2px solid #bbf7d0;padding-bottom:4px;margin:16px 0 10px;font-family:Arial,sans-serif">✓ Positive Findings</div>
-    ${wt.positives.map(p=>`<div style="font-size:11px;padding:4px 0;border-bottom:1px solid #f0fdf4;display:flex;gap:6px;font-family:Arial,sans-serif"><span style="color:#16a34a;font-weight:700;flex-shrink:0">•</span>${p}</div>`).join('')}`:'';
+  // Trend chart history
+  const clinicVisits=[...data].filter(w=>w.clinicId===wt.clinicId).sort((a,b)=>a.date>b.date?1:-1);
+  const showChart=clinicVisits.length>1;
 
-  const conHTML=wt.concerns.length?`
-    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#dc2626;border-bottom:2px solid #fecaca;padding-bottom:4px;margin:16px 0 10px;font-family:Arial,sans-serif">⚠ Areas for Improvement</div>
-    ${wt.concerns.map(c=>`<div style="font-size:11px;padding:4px 0;border-bottom:1px solid #fef2f2;display:flex;gap:6px;font-family:Arial,sans-serif"><span style="color:#dc2626;font-weight:700;flex-shrink:0">•</span>${c}</div>`).join('')}`:'';
+  document.getElementById('report-body').innerHTML=`
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-body">
+        <div style="display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap">
+          <div class="grade-circle" style="width:88px;height:88px;font-size:2.65rem;background:${g.color}">${g.g}</div>
+          <div style="flex:1">
+            <div style="font-size:1.6rem;font-weight:800;color:${g.color}">${sc}% Compliance</div>
+            <div style="font-size:.95rem;color:var(--text-light);margin-top:.12rem">${g.label}</div>
+            <div style="margin-top:.55rem;font-size:.76rem;color:var(--text-light)">${totalPassed} of ${totalItems} criteria passed · ${Object.keys(wt.procs).length} procedure${Object.keys(wt.procs).length>1?'s':''} evaluated · ${cl.full} · ${fmt(wt.date)}</div>
+          </div>
+        </div>
+        ${showChart?`<div class="chart-wrap"><canvas id="trend-chart"></canvas></div>`:''}
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-hdr"><span class="card-hdr-title"><i class="fa-solid fa-list-check"></i> Procedure Scores</span></div>
+      <div class="card-body">${procRows}</div>
+    </div>
+    ${wt.positives.length?`<div class="card" style="margin-bottom:1rem;border-color:#bbf7d0"><div class="card-hdr" style="background:#f0fdf4;border-color:#bbf7d0"><span class="card-hdr-title" style="color:#15803d"><i class="fa-solid fa-circle-check"></i> Positive Findings</span></div><div class="card-body">${wt.positives.map(p=>`<div style="font-size:.83rem;padding:.35rem 0;border-bottom:1px solid #f0fdf4;display:flex;gap:.55rem"><i class="fa-solid fa-check" style="color:#16a34a;flex-shrink:0;margin-top:.13rem"></i>${p}</div>`).join('')}</div></div>`:''}
+    ${wt.concerns.length?`<div class="card" style="margin-bottom:1rem;border-color:#fca5a5"><div class="card-hdr" style="background:#fef2f2;border-color:#fca5a5"><span class="card-hdr-title" style="color:#dc2626"><i class="fa-solid fa-triangle-exclamation"></i> Areas for Improvement</span></div><div class="card-body">${wt.concerns.map(c=>`<div style="font-size:.83rem;padding:.35rem 0;border-bottom:1px solid #fef2f2;display:flex;gap:.55rem"><i class="fa-solid fa-arrow-right" style="color:#dc2626;flex-shrink:0;margin-top:.13rem"></i>${c}</div>`).join('')}</div></div>`:''}
+    ${failedSections?`<div class="card" style="margin-bottom:1rem"><div class="card-hdr"><span class="card-hdr-title"><i class="fa-solid fa-circle-xmark" style="color:#fca5a5"></i> Failed Checklist Items</span></div><div class="card-body">${failedSections}</div></div>`:''}
+  `;
 
-  const failHTML=failedItems?`
-    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#64748b;border-bottom:2px solid #e2e8f0;padding-bottom:4px;margin:16px 0 10px;font-family:Arial,sans-serif">Failed Checklist Items</div>
-    ${failedItems}`:'';
+  // Render trend chart
+  if(showChart){
+    if(trendChart)trendChart.destroy();
+    const ctx=document.getElementById('trend-chart').getContext('2d');
+    trendChart=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:clinicVisits.map(v=>fmt(v.date)),
+        datasets:[{label:'Compliance Score',data:clinicVisits.map(v=>score(v)),borderColor:'#0ea5e9',backgroundColor:'rgba(14,165,233,.1)',pointBackgroundColor:clinicVisits.map(v=>{const g=grade(score(v));return g.color;}),pointRadius:5,tension:.35,fill:true}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}% — ${grade(ctx.parsed.y).label}`}}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'rgba(0,0,0,.05)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}
+    });
+  }
+}
 
-  const pdfHTML=`
-  <div style="font-family:Arial,sans-serif;padding:36px;width:750px;color:#1e293b;background:#fff">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f3460;padding-bottom:14px;margin-bottom:18px">
+// ═══════════════════════════════════════════
+//  ACTION ITEMS
+// ═══════════════════════════════════════════
+function toggleActionForm(wtId,procKey){
+  const f=document.getElementById(`aform-${wtId}-${procKey}`);
+  if(f)f.classList.toggle('open');
+}
+function saveActionItem(wtId,clinicId,procKey){
+  const assignee=document.getElementById(`af-assignee-${wtId}-${procKey}`)?.value||'';
+  const dueDate=document.getElementById(`af-due-${wtId}-${procKey}`)?.value||'';
+  const itemLabel=document.getElementById(`af-item-${wtId}-${procKey}`)?.value||'';
+  const notes=document.getElementById(`af-notes-${wtId}-${procKey}`)?.value||'';
+  if(!assignee&&!notes){alert('Please enter at least an assignee or notes.');return;}
+  actions.push({id:Date.now(),walkthroughId:parseInt(wtId),clinicId,procKey,itemLabel,assignee,dueDate,notes,resolved:false,createdAt:today()});
+  saveActions();
+  toggleActionForm(wtId,procKey);
+  // Refresh the button label
+  const wt=data.find(w=>w.id===parseInt(wtId));if(wt)viewReport(wt.id);
+}
+function resolveAction(id){
+  const a=actions.find(x=>x.id===id);if(a){a.resolved=true;a.resolvedAt=today();}
+  saveActions();renderActionItems();
+}
+function renderActionItems(){
+  const filterCid=parseInt(document.getElementById('action-filter')?.value||0)||null;
+  const showResolved=document.getElementById('action-show-resolved')?.checked;
+  // Populate filter dropdown
+  const filterEl=document.getElementById('action-filter');
+  if(filterEl&&filterEl.options.length<=1){
+    const usedClinics=[...new Set(actions.map(a=>a.clinicId))];
+    usedClinics.forEach(cid=>{const cl=clinic(cid);const opt=document.createElement('option');opt.value=cid;opt.textContent=cl.full;filterEl.appendChild(opt);});
+  }
+  const list=actions.filter(a=>(!filterCid||a.clinicId===filterCid)&&(showResolved||!a.resolved)).sort((a,b)=>a.resolved-b.resolved||b.id-a.id);
+  const tbl=document.getElementById('actions-table');
+  if(!tbl)return;
+  if(!list.length){tbl.innerHTML='<div class="empty"><i class="fa-solid fa-bolt"></i><p>No action items yet — they appear when you add them from a report card</p></div>';return;}
+  tbl.innerHTML=`<table class="tbl"><thead><tr><th>Clinic</th><th>Procedure</th><th>Checklist Item</th><th>Assignee</th><th>Due</th><th>Notes</th><th>Status</th><th></th></tr></thead><tbody>
+    ${list.map(a=>{
+      const cl=clinic(a.clinicId);const p=PROCS[a.procKey];
+      return`<tr style="${a.resolved?'opacity:.55':''}">
+        <td style="font-weight:600;font-size:.78rem">${cl.full}</td>
+        <td style="font-size:.75rem">${p?.label||a.procKey}</td>
+        <td style="font-size:.75rem;max-width:180px">${a.itemLabel}</td>
+        <td style="font-size:.78rem">${a.assignee||'—'}</td>
+        <td style="font-size:.75rem;color:${a.dueDate&&a.dueDate<today()&&!a.resolved?'#dc2626':'var(--text-light)'}">${a.dueDate?fmt(a.dueDate):'—'}</td>
+        <td style="font-size:.75rem;max-width:160px;color:var(--text-light)">${a.notes||'—'}</td>
+        <td><span class="badge ${a.resolved?'badge-A':'badge-C'}">${a.resolved?'Resolved':'Open'}</span></td>
+        <td>${!a.resolved?`<button class="btn btn-sm btn-success" onclick="resolveAction(${a.id})"><i class="fa-solid fa-check"></i> Resolve</button>`:''}</td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+
+// ═══════════════════════════════════════════
+//  SETTINGS / CHECKLIST EDITOR
+// ═══════════════════════════════════════════
+function openSettings(){
+  document.getElementById('settings-overlay').style.display='flex';
+  renderSettings();
+}
+function closeSettings(){document.getElementById('settings-overlay').style.display='none';}
+function closeSettingsIfBg(e){if(e.target===document.getElementById('settings-overlay'))closeSettings();}
+function renderSettings(){
+  document.getElementById('settings-body').innerHTML=Object.entries(PROCS).map(([key,p])=>`
+    <div style="margin-bottom:1.75rem">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.85rem">
+        <div style="width:28px;height:28px;border-radius:7px;background:${p.color};display:flex;align-items:center;justify-content:center"><i class="fa-solid ${p.icon}" style="color:#fff;font-size:.68rem"></i></div>
+        <span style="font-size:.9rem;font-weight:700;flex:1">${p.label}</span>
+        <button class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#fca5a5;font-size:.72rem" onclick="resetProcDefaults('${key}')"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      </div>
+      <div class="card" style="margin-bottom:.55rem">
+        <div class="card-body" style="padding:.75rem">
+          ${p.items.map((item,i)=>`<div class="checklist-item-row">
+            <span>${item}</span>
+            <button class="btn btn-sm btn-ghost" onclick="editChecklistItem('${key}',${i})" style="padding:.22rem .5rem"><i class="fa-solid fa-pen" style="font-size:.7rem"></i></button>
+            <button class="btn btn-sm btn-ghost" onclick="deleteChecklistItem('${key}',${i})" style="padding:.22rem .5rem;color:#dc2626"><i class="fa-solid fa-trash" style="font-size:.7rem"></i></button>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <input class="form-control" id="new-item-${key}" placeholder="New checklist item..." style="padding:.38rem .65rem;font-size:.79rem" onkeydown="if(event.key==='Enter')addChecklistItem('${key}')">
+        <button class="btn btn-outline btn-sm" onclick="addChecklistItem('${key}')"><i class="fa-solid fa-plus"></i> Add</button>
+      </div>
+    </div>
+  `).join('');
+}
+function addChecklistItem(key){
+  const inp=document.getElementById('new-item-'+key);
+  const val=inp.value.trim();if(!val)return;
+  if(!customChecklists[key])customChecklists[key]=[...DEFAULT_PROCS[key].items];
+  customChecklists[key].push(val);saveChecklists();loadProcs();inp.value='';renderSettings();
+}
+function editChecklistItem(key,idx){
+  const current=PROCS[key].items[idx];
+  const newVal=prompt('Edit checklist item:',current);
+  if(!newVal||newVal===current)return;
+  if(!customChecklists[key])customChecklists[key]=[...DEFAULT_PROCS[key].items];
+  customChecklists[key][idx]=newVal.trim();saveChecklists();loadProcs();renderSettings();
+}
+function deleteChecklistItem(key,idx){
+  if(!confirm('Delete this checklist item?'))return;
+  if(!customChecklists[key])customChecklists[key]=[...DEFAULT_PROCS[key].items];
+  customChecklists[key].splice(idx,1);saveChecklists();loadProcs();renderSettings();
+}
+function resetProcDefaults(key){
+  if(!confirm(`Reset "${PROCS[key].label}" to default checklist items?`))return;
+  delete customChecklists[key];saveChecklists();loadProcs();renderSettings();
+}
+
+// ═══════════════════════════════════════════
+//  CSV EXPORT
+// ═══════════════════════════════════════════
+function csvEsc(val){const s=String(val||'');return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}
+function exportCSV(){
+  if(!data.length){alert('No walkthrough data to export.');return;}
+  const headers=['Clinic','State','Date','Reviewer','Procedures','Score (%)','Grade','Positives','Concerns','Failed Items'];
+  const rows=data.map(wt=>{
+    const cl=clinic(wt.clinicId);const sc=score(wt);const g=grade(sc);
+    const procs=Object.keys(wt.procs).map(k=>PROCS[k]?.label||k).join('; ');
+    const failed=Object.entries(wt.procs).flatMap(([k,items])=>items.filter(i=>!i.ok).map(i=>`[${PROCS[k]?.label||k}] ${i.label}`)).join('; ');
+    return[cl.full,cl.state,wt.date,wt.reviewer,procs,sc,g.g,(wt.positives||[]).join('; '),(wt.concerns||[]).join('; '),failed].map(csvEsc).join(',');
+  });
+  const csv=[headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`VIP-Walkthroughs-${today()}.csv`;a.click();
+}
+
+// ═══════════════════════════════════════════
+//  PDF (print window)
+// ═══════════════════════════════════════════
+function downloadPDF(){
+  if(!activeReport)return;
+  const wt=activeReport;const cl=clinic(wt.clinicId);const sc=score(wt);const g=grade(sc);
+  const totalItems=Object.values(wt.procs).reduce((a,b)=>a+b.length,0);
+  const totalPassed=Object.values(wt.procs).reduce((a,b)=>a+b.filter(i=>i.ok).length,0);
+  const prevVisits=data.filter(w=>w.clinicId===wt.clinicId&&w.id!==wt.id&&w.date<wt.date);
+  function isRec(label){return prevVisits.filter(pw=>Object.values(pw.procs).flatMap(it=>it.filter(i=>!i.ok).map(i=>i.label)).includes(label)).length>=1;}
+
+  const procRows=Object.entries(wt.procs).map(([key,items])=>{
+    const p=PROCS[key];const passed=items.filter(i=>i.ok).length;const pct=Math.round(passed/items.length*100);const pg=grade(pct);
+    const staff=wt.staff&&wt.staff[key]||{};
+    const staffStr=[staff.sono&&`Sono: ${staff.sono}`,staff.provider&&`Provider: ${staff.provider}`,staff.ma&&`MA: ${staff.ma}`].filter(Boolean).join(' · ');
+    return`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:11px">
+      <div><div style="min-width:185px;font-weight:700;color:#1e293b">${p.label}</div>${staffStr?`<div style="font-size:9px;color:#64748b">${staffStr}</div>`:''}</div>
+      <div style="flex:1;height:6px;background:#e2e8f0;border-radius:10px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${pg.color};border-radius:10px"></div></div>
+      <span style="font-weight:800;color:${pg.color};min-width:36px;text-align:right">${pct}%</span>
+      <span style="font-weight:800;color:${pg.color};min-width:14px;margin-left:5px">${pg.g}</span>
+    </div>`;
+  }).join('');
+
+  const failedHTML=Object.entries(wt.procs).map(([key,items])=>{
+    const p=PROCS[key];const failed=items.filter(i=>!i.ok);if(!failed.length)return'';
+    return`<div style="margin-bottom:11px">
+      <div style="padding:4px 8px;background:#f8fafd;border-left:3px solid ${p.color};margin-bottom:4px;border-radius:4px">
+        <span style="font-size:11px;font-weight:700">${p.label}</span>
+        <span style="font-size:9px;background:#fee2e2;color:#991b1b;padding:1px 5px;border-radius:100px;font-weight:700;margin-left:4px">${failed.length} failed</span>
+      </div>
+      ${failed.map(i=>`<div style="font-size:10px;padding:2px 0 2px 10px;border-bottom:1px solid #fef2f2;color:#64748b">
+        ✗ ${i.label}${isRec(i.label)?' <span style="background:#fee2e2;color:#991b1b;border-radius:3px;padding:0 4px;font-size:8px;font-weight:700">⚠ Recurring</span>':''}
+        ${i.note?`<div style="font-style:italic;color:#d97706;font-size:9px;margin-top:2px;padding:2px 5px;background:#fefce8;border-left:2px solid #fcd34d">"${i.note}"</div>`:''}
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  const pdfHTML=`<div style="font-family:Arial,sans-serif;padding:32px;width:750px;color:#1e293b;background:#fff">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f3460;padding-bottom:12px;margin-bottom:16px">
+      <div><div style="font-size:19px;font-weight:800;color:#0f3460;margin-bottom:3px">VIP Medical Group</div><div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px">Clinic Walkthrough Report Card</div></div>
+      <div style="text-align:right;font-size:10px;color:#64748b"><div style="font-size:11px;color:#0f3460;font-weight:700;margin-bottom:2px">COMPLIANCE REPORT</div>Generated ${fmt(today())}</div>
+    </div>
+    <div style="display:flex;margin-bottom:16px;border:1px solid #e2e8f0;border-radius:9px;overflow:hidden">
+      <div style="flex:1;padding:9px 13px;border-right:1px solid #e2e8f0"><div style="font-size:9px;text-transform:uppercase;color:#64748b;margin-bottom:2px">Clinic</div><div style="font-size:12px;font-weight:700">${cl.full}</div></div>
+      <div style="flex:1;padding:9px 13px;border-right:1px solid #e2e8f0"><div style="font-size:9px;text-transform:uppercase;color:#64748b;margin-bottom:2px">Date</div><div style="font-size:12px;font-weight:700">${fmt(wt.date)}</div></div>
+      <div style="flex:1;padding:9px 13px"><div style="font-size:9px;text-transform:uppercase;color:#64748b;margin-bottom:2px">Reviewed By</div><div style="font-size:12px;font-weight:700">${wt.reviewer}</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;background:#f8fafd;border-radius:9px;padding:14px 18px;margin-bottom:16px;border:2px solid #e2e8f0">
+      <div style="width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;background:${g.color};flex-shrink:0">${g.g}</div>
       <div>
-        <div style="font-size:20px;font-weight:800;color:#0f3460;margin:0 0 4px">VIP Medical Group</div>
-        <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px">Clinic Walkthrough Report Card</div>
-      </div>
-      <div style="text-align:right;font-size:10px;color:#64748b">
-        <div style="font-size:11px;color:#0f3460;font-weight:700;margin-bottom:2px">COMPLIANCE REPORT</div>
-        Generated ${fmt(today())}
+        <div style="font-size:19px;font-weight:800;color:${g.color};margin-bottom:3px">${sc}% Overall Compliance — ${g.label}</div>
+        <div style="font-size:11px;color:#64748b">${totalPassed} of ${totalItems} criteria passed · ${Object.keys(wt.procs).length} procedure${Object.keys(wt.procs).length>1?'s':''}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-top:4px">A ≥90% · B ≥80% · C ≥70% · D ≥60% · F &lt;60%</div>
       </div>
     </div>
-    <div style="display:flex;margin-bottom:18px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
-      <div style="flex:1;padding:10px 14px;border-right:1px solid #e2e8f0">
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748b;margin-bottom:3px">Clinic Location</div>
-        <div style="font-size:12px;font-weight:700">${cl.full}</div>
-      </div>
-      <div style="flex:1;padding:10px 14px;border-right:1px solid #e2e8f0">
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748b;margin-bottom:3px">Date of Visit</div>
-        <div style="font-size:12px;font-weight:700">${fmt(wt.date)}</div>
-      </div>
-      <div style="flex:1;padding:10px 14px">
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748b;margin-bottom:3px">Reviewed By</div>
-        <div style="font-size:12px;font-weight:700">${wt.reviewer}</div>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:18px;background:#f8fafd;border-radius:10px;padding:16px 20px;margin-bottom:18px;border:2px solid #e2e8f0">
-      <div style="width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;background:${g.color};flex-shrink:0">${g.g}</div>
-      <div>
-        <div style="font-size:20px;font-weight:800;color:${g.color};margin-bottom:4px">${sc}% Overall Compliance — ${g.label}</div>
-        <div style="font-size:11px;color:#64748b">${totalPassed} of ${totalItems} criteria passed across ${Object.keys(wt.procs).length} procedure${Object.keys(wt.procs).length>1?'s':''}</div>
-        <div style="font-size:10px;color:#94a3b8;margin-top:5px">Grading: A ≥90% Excellent · B ≥80% Good · C ≥70% Satisfactory · D ≥60% Needs Improvement · F &lt;60% Unsatisfactory</div>
-      </div>
-    </div>
-    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#0ea5e9;border-bottom:2px solid #e0f2fe;padding-bottom:4px;margin:0 0 10px">Procedure Scores</div>
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#0ea5e9;border-bottom:2px solid #e0f2fe;padding-bottom:3px;margin:0 0 8px">Procedure Scores</div>
     ${procRows}
-    ${posHTML}
-    ${conHTML}
-    ${failHTML}
-    <div style="margin-top:24px;padding-top:14px;border-top:2px solid #e2e8f0;display:flex;justify-content:space-between;font-size:10px;color:#64748b">
-      <span>Reviewer: ${wt.reviewer}</span>
-      <span>Signature: _________________________________</span>
-      <span>Date: ${fmt(wt.date)}</span>
+    ${wt.positives.length?`<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#16a34a;border-bottom:2px solid #bbf7d0;padding-bottom:3px;margin:14px 0 8px">✓ Positive Findings</div>${wt.positives.map(p=>`<div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0fdf4">• ${p}</div>`).join('')}`:''}
+    ${wt.concerns.length?`<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#dc2626;border-bottom:2px solid #fecaca;padding-bottom:3px;margin:14px 0 8px">⚠ Areas for Improvement</div>${wt.concerns.map(c=>`<div style="font-size:11px;padding:3px 0;border-bottom:1px solid #fef2f2">• ${c}</div>`).join('')}`:''}
+    ${failedHTML?`<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#64748b;border-bottom:2px solid #e2e8f0;padding-bottom:3px;margin:14px 0 8px">Failed Checklist Items</div>${failedHTML}`:''}
+    <div style="margin-top:22px;padding-top:12px;border-top:2px solid #e2e8f0;display:flex;justify-content:space-between;font-size:10px;color:#64748b">
+      <span>Reviewer: ${wt.reviewer}</span><span>Signature: _________________________________</span><span>Date: ${fmt(wt.date)}</span>
     </div>
   </div>`;
 
   const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VIP Walkthrough Report — ${cl.full} — ${fmt(wt.date)}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:#fff;font-family:Arial,sans-serif}
-    @media print{
-      body{margin:0}
-      .no-print{display:none!important}
-      @page{margin:.5in;size:letter portrait}
-    }
-    .print-btn{position:fixed;top:16px;right:16px;background:#0f3460;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-    .print-btn:hover{background:#1a4a7a}
-  </style>
-  </head><body>
-  <button class="print-btn no-print" onclick="window.print()">&#x1F4BE; Save as PDF</button>
-  ${pdfHTML}
-  </body></html>`);
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VIP Report — ${cl.full} — ${fmt(wt.date)}</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{background:#fff}@media print{body{margin:0}.no-print{display:none!important}@page{margin:.45in;size:letter portrait}}
+  .print-btn{position:fixed;top:14px;right:14px;background:#0f3460;color:#fff;border:none;padding:9px 18px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2)}</style>
+  </head><body><button class="print-btn no-print" onclick="window.print()">💾 Save as PDF</button>${pdfHTML}</body></html>`);
   win.document.close();
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 //  TAB SWITCHING
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 function switchTab(name){
-  const isWt = name==='walkthroughs';
-  document.getElementById('tab-walkthroughs').style.display = isWt ? 'block' : 'none';
-  document.getElementById('tab-visits').style.display      = isWt ? 'none'  : 'block';
-  document.getElementById('new-wt-btn').style.display      = isWt ? ''      : 'none';
-  const active  = 'background:rgba(255,255,255,.18);border:none;color:#fff;padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.35rem';
-  const inactive= 'background:none;border:none;color:rgba(255,255,255,.65);padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;display:flex;align-items:center;gap:.35rem';
-  document.getElementById('tab-btn-walkthroughs').style.cssText = isWt ? active : inactive;
-  document.getElementById('tab-btn-visits').style.cssText        = isWt ? inactive : active;
+  const isWt=name==='walkthroughs';
+  document.getElementById('tab-walkthroughs').style.display=isWt?'block':'none';
+  document.getElementById('tab-visits').style.display=isWt?'none':'block';
+  document.getElementById('new-wt-btn').style.display=isWt?'':'none';
+  document.getElementById('tnb-wt').classList.toggle('active',isWt);
+  document.getElementById('tnb-vi').classList.toggle('active',!isWt);
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
 //  INIT
-// ══════════════════════════════════════
+// ═══════════════════════════════════════════
+loadProcs();
 renderDashboard();
+updateActionsBadge();
 </script>
 </body>
 </html>
