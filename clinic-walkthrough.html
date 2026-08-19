@@ -78,7 +78,7 @@ textarea.form-control{resize:vertical;min-height:90px}
 .empty i{font-size:2.25rem;opacity:.25;margin-bottom:.85rem;display:block}
 .empty p{font-size:.86rem}
 .screen{display:none}.screen.active{display:block}
-#pdf-template{display:none;position:absolute;left:-9999px;top:0}
+#pdf-template{display:none;}
 .pdf-page{font-family:Arial,sans-serif;padding:36px;width:750px;color:#1e293b;background:#fff}
 .pdf-hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f3460;padding-bottom:14px;margin-bottom:18px}
 .pdf-hdr-left h1{font-size:18px;font-weight:800;color:#0f3460;margin:0 0 3px}
@@ -724,15 +724,18 @@ function downloadPDF(){
     </div>`;
 
   const tmpl=document.getElementById('pdf-template');
-  tmpl.style.display='block';
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;top:-20000px;left:0;width:800px;background:#fff;';
+  container.innerHTML=tmpl.innerHTML;
+  document.body.appendChild(container);
 
   html2pdf().set({
     margin:[0.4,0.4],
     filename:`VIP-Walkthrough-${cl.name}-${wt.date}.pdf`,
-    html2canvas:{scale:2,useCORS:true},
+    html2canvas:{scale:2,useCORS:true,logging:false},
     jsPDF:{unit:'in',format:'letter',orientation:'portrait'}
-  }).from(tmpl).save().then(()=>{
-    tmpl.style.display='none';
+  }).from(container).save().then(()=>{
+    document.body.removeChild(container);
     tmpl.innerHTML='';
   });
 }
