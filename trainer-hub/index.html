@@ -854,6 +854,15 @@ async function renderTraineeDetail(tid, fromTid) {
         ${trainee.notes?`<div style="font-size:.78rem;margin-top:.4rem;padding:.45rem .7rem;border-radius:var(--r-sm);background:#f8fafd;border-left:3px solid #cbd5e1">${trainee.notes}</div>`:''}
       </div>
     </div>
+    <div style="margin-bottom:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+        <span style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)"><i class="fa-solid fa-note-sticky" style="margin-right:.35rem;color:#d97706"></i>Admin Notes</span>
+        <button class="btn btn-ghost btn-sm" onclick="openAdminNoteModal('${trainee.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+      </div>
+      ${trainee.adminNotes ?
+        `<div style="font-size:.83rem;padding:.75rem .95rem;border-radius:var(--r-sm);background:#fef3c7;border-left:3px solid #d97706;color:#92400e;white-space:pre-line">${trainee.adminNotes}${trainee.adminNotesUpdated?`<div style="font-size:.7rem;opacity:.75;margin-top:.35rem">Updated ${fmtDate(trainee.adminNotesUpdated)}</div>`:''}</div>` :
+        `<div style="font-size:.8rem;padding:.6rem .9rem;border-radius:var(--r-sm);background:#f8fafd;border:1px dashed var(--border);color:var(--text-light);cursor:pointer" onclick="openAdminNoteModal('${trainee.id}')"><i class="fa-solid fa-plus" style="margin-right:.3rem"></i>Add a note (e.g. terminated, on leave…)</div>`}
+    </div>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>
       <button class="tab-btn" onclick="switchTab(this,'tab-checkins')"><i class="fa-solid fa-calendar-check"></i> Weekly Check-ins</button>
@@ -1065,6 +1074,7 @@ async function openTraineeModal(tid, defaultTrainerId) {
             <option value="paused" ${trainee&&trainee.status==='paused'?'selected':''}>Paused</option>
             <option value="completed" ${trainee&&trainee.status==='completed'?'selected':''}>Completed</option>
             <option value="certified" ${trainee&&trainee.status==='certified'?'selected':''}>Certified ✓</option>
+            <option value="archived" ${trainee&&trainee.status==='archived'?'selected':''}>Archived</option>
           </select>
         </div>
       </div>
@@ -1142,6 +1152,7 @@ async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
       preceptorHistory: [...existingHistory, historyEntry]
     });
     await logActivity(`Transferred ${trainee.name} from ${fromTrainerName||'unassigned'} to ${newTrainer.name}`,'fa-arrow-right-arrow-left');
+    sendNewTraineeEmail(traineeId, trainee.name, newTrainerId, trainee.startDate, trainee.protocol);
     forceClose();
     renderTraineeDetail(traineeId, traineeBackContext);
   } catch(e) { alert('Error: '+e.message); setBtn('tr-save-btn', false, 'Confirm Transfer'); }
@@ -1150,6 +1161,7 @@ async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
 async function saveTrainee(id) {
   const name = v('fn-name');
   if(!name) return alert('Name is required');
+  alert('saveTrainee called — id: "' + id + '" | trainerId: "' + (v('fn-trainer')||'none') + '"');
   const initials = name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
   const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes')};
   setBtn('trainee-save-btn',true,'Saving...');
@@ -1158,9 +1170,10 @@ async function saveTrainee(id) {
       await db.collection('trainees').doc(id).update(obj);
       await logActivity(`Updated trainee ${name}`,'fa-pen');
     } else {
-      await db.collection('trainees').add({...obj, progressNotes:[], createdAt:ts()});
+      const newDoc = await db.collection('trainees').add({...obj, progressNotes:[], createdAt:ts()});
       const trainer = obj.trainerId ? (await db.collection('trainers').doc(obj.trainerId).get()).data() : null;
       await logActivity(`Assigned new trainee ${name} to ${trainer?trainer.name:'no preceptor'}`,'fa-user-graduate');
+      if (obj.trainerId) sendNewTraineeEmail(newDoc.id, name, obj.trainerId, obj.startDate, obj.protocol);
     }
     forceClose(); refreshCurrentPage();
   } catch(e){ alert('Error: '+e.message); setBtn('trainee-save-btn',false,'Save'); }
@@ -1577,6 +1590,38 @@ async function saveNote(traineeId) {
   } catch(e){ alert('Error: '+e.message); setBtn('note-save-btn',false,'Save'); }
 }
 
+async function openAdminNoteModal(traineeId) {
+  const doc = await db.collection('trainees').doc(traineeId).get();
+  const currentNote = doc.exists ? (doc.data().adminNotes || '') : '';
+  showModal(`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title"><i class="fa-solid fa-note-sticky" style="color:#d97706;margin-right:.4rem"></i>Admin Notes</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="alert alert-warning" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Use this for admin notes — status changes, termination, leave, or anything to record before archiving a trainee.</span></div>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <textarea class="form-control" id="admin-note-text" style="min-height:130px" placeholder="e.g. Terminated 8/15/2026 — voluntary resignation. Do not rehire.">${currentNote}</textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="admin-note-save-btn" onclick="saveAdminNote('${traineeId}')"><i class="fa-solid fa-check"></i> Save Note</button>
+    </div>
+  </div>`);
+}
+
+async function saveAdminNote(traineeId) {
+  const text = v('admin-note-text');
+  setBtn('admin-note-save-btn', true, 'Saving...');
+  try {
+    await db.collection('trainees').doc(traineeId).update({adminNotes: text, adminNotesUpdated: todayStr()});
+    forceClose();
+    renderTraineeDetail(traineeId, traineeBackContext);
+  } catch(e) {
+    alert('Error: ' + e.message);
+    setBtn('admin-note-save-btn', false, '<i class="fa-solid fa-check"></i> Save Note');
+  }
+}
+
 // ═══════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════
@@ -1846,6 +1891,29 @@ async function downloadCheckinPDF(checkinId, traineeName) {
 //  EMAILJS — REMINDERS
 // ═══════════════════════════════════════
 emailjs.init('JeI4EaHZq9fT_iwQi');
+const EJ_SERVICE   = 'service_zbd6z5n';
+const EJ_REMINDER  = 'template_51iol4q';   // existing assessment/check-in reminder
+const EJ_ASSIGNED  = 'template_new_trainee';   // ← create this in EmailJS dashboard
+
+// Sends a welcome/assignment email to the trainer when a trainee is newly assigned or transferred
+async function sendNewTraineeEmail(traineeId, traineeName, trainerId, startDate, protocol) {
+  alert('sendNewTraineeEmail called — trainerId: ' + trainerId + ', email will go to trainer');
+  try {
+    const trDoc = await db.collection('trainers').doc(trainerId).get();
+    if (!trDoc.exists) { alert('Trainer doc not found in Firestore'); return; }
+    const trainer = trDoc.data();
+    if (!trainer.email) { alert('Trainer has no email in Firestore'); return; }
+    await emailjs.send(EJ_SERVICE, EJ_ASSIGNED, {
+      to_name:      trainer.name,
+      to_email:     trainer.email,
+      trainee_name: traineeName,
+      start_date:   startDate ? fmtDate(startDate) : 'TBD',
+      protocol:     protocol || 'Not specified',
+      tracker_url:  window.location.href,
+    });
+    await logActivity(`Assignment email → ${trainer.name} for ${traineeName}`,'fa-envelope');
+  } catch(e) { alert('Email error: ' + (e.text || e.message || JSON.stringify(e))); }
+}
 
 async function sendAssessmentReminder(trainerId, btnEl) {
   const origHTML = btnEl.innerHTML;
@@ -1894,7 +1962,7 @@ async function sendAssessmentReminder(trainerId, btnEl) {
     if (assessmentLines.length) traineeList += 'MILESTONE ASSESSMENTS DUE:\n' + assessmentLines.join('\n');
     if (checkinLines.length) { if (traineeList) traineeList += '\n\n'; traineeList += 'WEEKLY CHECK-INS DUE:\n' + checkinLines.join('\n'); }
 
-    await emailjs.send('service_zbd6z5n', 'template_51iol4q', {
+    await emailjs.send(EJ_SERVICE, EJ_REMINDER, {
       to_name: trainer.name,
       to_email: trainer.email,
       trainee_list: traineeList,
