@@ -673,70 +673,91 @@ function downloadPDF(){
   const procRows=Object.entries(wt.procs).map(([key,items])=>{
     const p=PROCS[key];const passed=items.filter(i=>i.ok).length;
     const pct=Math.round(passed/items.length*100);const pg=grade(pct);
-    return`<div class="pdf-proc-row">
-      <span style="min-width:195px;font-weight:600">${p.label}</span>
-      <div class="pdf-bar"><div class="pdf-bar-fill" style="width:${pct}%;background:${pg.color}"></div></div>
-      <span style="font-weight:800;color:${pg.color};min-width:40px;text-align:right">${pct}%</span>
-      <span style="font-weight:800;color:${pg.color};min-width:18px;text-align:center;margin-left:6px">${pg.g}</span>
-      <span style="font-size:9px;color:#64748b;min-width:55px;text-align:right">${passed}/${items.length} passed</span>
+    return`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:11px;font-family:Arial,sans-serif">
+      <span style="min-width:190px;font-weight:700;color:#1e293b">${p.label}</span>
+      <div style="flex:1;height:7px;background:#e2e8f0;border-radius:10px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${pg.color};border-radius:10px"></div>
+      </div>
+      <span style="font-weight:800;color:${pg.color};min-width:38px;text-align:right">${pct}%</span>
+      <span style="font-weight:800;color:${pg.color};min-width:16px;text-align:right;margin-left:6px">${pg.g}</span>
+      <span style="font-size:9px;color:#64748b;min-width:52px;text-align:right">${passed}/${items.length} passed</span>
     </div>`;
   }).join('');
 
   const failedItems=Object.entries(wt.procs).flatMap(([key,items])=>
-    items.filter(i=>!i.ok).map(i=>`<div class="pdf-fail-item">✗ [${PROCS[key]?.label.split('(')[0].trim()}] ${i.label}</div>`)
+    items.filter(i=>!i.ok).map(i=>`<div style="font-size:10px;padding:3px 0;border-bottom:1px solid #fef2f2;color:#dc2626;font-family:Arial,sans-serif">✗ [${PROCS[key]?.label.split('(')[0].trim()}] ${i.label}</div>`)
   ).join('');
 
-  document.getElementById('pdf-template').innerHTML=`
-    <div class="pdf-page">
-      <div class="pdf-hdr">
-        <div class="pdf-hdr-left">
-          <h1>VIP Medical Group</h1>
-          <p>Clinic Walkthrough Report Card</p>
-        </div>
-        <div class="pdf-hdr-right">
-          <strong>COMPLIANCE REPORT</strong>
-          Generated ${fmt(today())}
-        </div>
-      </div>
-      <div class="pdf-meta">
-        <div class="pdf-meta-item"><label>Clinic Location</label><span>${cl.full}</span></div>
-        <div class="pdf-meta-item"><label>Date of Visit</label><span>${fmt(wt.date)}</span></div>
-        <div class="pdf-meta-item"><label>Reviewed By</label><span>${wt.reviewer}</span></div>
-      </div>
-      <div class="pdf-grade-box">
-        <div class="pdf-grade-circle" style="background:${g.color}">${g.g}</div>
-        <div class="pdf-grade-info">
-          <h2 style="color:${g.color}">${sc}% Overall Compliance — ${g.label}</h2>
-          <p>${totalPassed} of ${totalItems} criteria passed across ${Object.keys(wt.procs).length} procedure${Object.keys(wt.procs).length>1?'s':''}</p>
-          <p class="pdf-criteria">Grading: A ≥90% Excellent · B ≥80% Good · C ≥70% Satisfactory · D ≥60% Needs Improvement · F &lt;60% Unsatisfactory</p>
-        </div>
-      </div>
-      <div class="pdf-section">Procedure Scores</div>
-      ${procRows}
-      ${wt.positives.length?`<div class="pdf-section" style="color:#16a34a;border-color:#bbf7d0">✓ Positive Findings</div>${wt.positives.map(p=>`<div class="pdf-obs"><span class="pdf-obs-bullet" style="color:#16a34a">•</span>${p}</div>`).join('')}`:''}
-      ${wt.concerns.length?`<div class="pdf-section" style="color:#dc2626;border-color:#fecaca">⚠ Areas for Improvement</div>${wt.concerns.map(c=>`<div class="pdf-obs"><span class="pdf-obs-bullet" style="color:#dc2626">•</span>${c}</div>`).join('')}`:''}
-      ${failedItems?`<div class="pdf-section">Failed Checklist Items</div>${failedItems}`:''}
-      <div class="pdf-sig">
-        <span>Reviewer: ${wt.reviewer}</span>
-        <span>Signature: _________________________________</span>
-        <span>Date: ${fmt(wt.date)}</span>
-      </div>
-    </div>`;
+  const posHTML=wt.positives.length?`
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#16a34a;border-bottom:2px solid #bbf7d0;padding-bottom:4px;margin:16px 0 10px;font-family:Arial,sans-serif">✓ Positive Findings</div>
+    ${wt.positives.map(p=>`<div style="font-size:11px;padding:4px 0;border-bottom:1px solid #f0fdf4;display:flex;gap:6px;font-family:Arial,sans-serif"><span style="color:#16a34a;font-weight:700;flex-shrink:0">•</span>${p}</div>`).join('')}`:'';
 
-  const tmpl=document.getElementById('pdf-template');
+  const conHTML=wt.concerns.length?`
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#dc2626;border-bottom:2px solid #fecaca;padding-bottom:4px;margin:16px 0 10px;font-family:Arial,sans-serif">⚠ Areas for Improvement</div>
+    ${wt.concerns.map(c=>`<div style="font-size:11px;padding:4px 0;border-bottom:1px solid #fef2f2;display:flex;gap:6px;font-family:Arial,sans-serif"><span style="color:#dc2626;font-weight:700;flex-shrink:0">•</span>${c}</div>`).join('')}`:'';
+
+  const failHTML=failedItems?`
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#64748b;border-bottom:2px solid #e2e8f0;padding-bottom:4px;margin:16px 0 10px;font-family:Arial,sans-serif">Failed Checklist Items</div>
+    ${failedItems}`:'';
+
+  const pdfHTML=`
+  <div style="font-family:Arial,sans-serif;padding:36px;width:750px;color:#1e293b;background:#fff">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f3460;padding-bottom:14px;margin-bottom:18px">
+      <div>
+        <div style="font-size:20px;font-weight:800;color:#0f3460;margin:0 0 4px">VIP Medical Group</div>
+        <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px">Clinic Walkthrough Report Card</div>
+      </div>
+      <div style="text-align:right;font-size:10px;color:#64748b">
+        <div style="font-size:11px;color:#0f3460;font-weight:700;margin-bottom:2px">COMPLIANCE REPORT</div>
+        Generated ${fmt(today())}
+      </div>
+    </div>
+    <div style="display:flex;margin-bottom:18px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+      <div style="flex:1;padding:10px 14px;border-right:1px solid #e2e8f0">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748b;margin-bottom:3px">Clinic Location</div>
+        <div style="font-size:12px;font-weight:700">${cl.full}</div>
+      </div>
+      <div style="flex:1;padding:10px 14px;border-right:1px solid #e2e8f0">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748b;margin-bottom:3px">Date of Visit</div>
+        <div style="font-size:12px;font-weight:700">${fmt(wt.date)}</div>
+      </div>
+      <div style="flex:1;padding:10px 14px">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748b;margin-bottom:3px">Reviewed By</div>
+        <div style="font-size:12px;font-weight:700">${wt.reviewer}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px;background:#f8fafd;border-radius:10px;padding:16px 20px;margin-bottom:18px;border:2px solid #e2e8f0">
+      <div style="width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;background:${g.color};flex-shrink:0">${g.g}</div>
+      <div>
+        <div style="font-size:20px;font-weight:800;color:${g.color};margin-bottom:4px">${sc}% Overall Compliance — ${g.label}</div>
+        <div style="font-size:11px;color:#64748b">${totalPassed} of ${totalItems} criteria passed across ${Object.keys(wt.procs).length} procedure${Object.keys(wt.procs).length>1?'s':''}</div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:5px">Grading: A ≥90% Excellent · B ≥80% Good · C ≥70% Satisfactory · D ≥60% Needs Improvement · F &lt;60% Unsatisfactory</div>
+      </div>
+    </div>
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#0ea5e9;border-bottom:2px solid #e0f2fe;padding-bottom:4px;margin:0 0 10px">Procedure Scores</div>
+    ${procRows}
+    ${posHTML}
+    ${conHTML}
+    ${failHTML}
+    <div style="margin-top:24px;padding-top:14px;border-top:2px solid #e2e8f0;display:flex;justify-content:space-between;font-size:10px;color:#64748b">
+      <span>Reviewer: ${wt.reviewer}</span>
+      <span>Signature: _________________________________</span>
+      <span>Date: ${fmt(wt.date)}</span>
+    </div>
+  </div>`;
+
   const container=document.createElement('div');
-  container.style.cssText='position:fixed;top:-20000px;left:0;width:800px;background:#fff;';
-  container.innerHTML=tmpl.innerHTML;
+  container.style.cssText='position:fixed;top:0;left:0;width:800px;background:#fff;z-index:-9999;pointer-events:none;';
+  container.innerHTML=pdfHTML;
   document.body.appendChild(container);
 
   html2pdf().set({
     margin:[0.4,0.4],
     filename:`VIP-Walkthrough-${cl.name}-${wt.date}.pdf`,
-    html2canvas:{scale:2,useCORS:true,logging:false},
+    html2canvas:{scale:2,useCORS:true,logging:false,scrollX:0,scrollY:0},
     jsPDF:{unit:'in',format:'letter',orientation:'portrait'}
   }).from(container).save().then(()=>{
     document.body.removeChild(container);
-    tmpl.innerHTML='';
   });
 }
 
