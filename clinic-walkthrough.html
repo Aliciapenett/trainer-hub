@@ -607,9 +607,20 @@ function renderReport(wt){
     </div>`;
   }).join('');
 
-  const failedItems=Object.entries(wt.procs).flatMap(([key,items])=>
-    items.filter(i=>!i.ok).map(i=>`<div style="font-size:.8rem;padding:.28rem 0;border-bottom:1px solid #fef2f2;color:#64748b;display:flex;gap:.5rem"><i class="fa-solid fa-circle-xmark" style="color:#fca5a5;flex-shrink:0;margin-top:.1rem"></i><span>[${PROCS[key]?.label.split('(')[0].trim()}] ${i.label}</span></div>`)
-  ).join('');
+  const failedItems=Object.entries(wt.procs).map(([key,items])=>{
+    const p=PROCS[key];const failed=items.filter(i=>!i.ok);
+    if(!failed.length)return'';
+    return`<div style="margin-bottom:.85rem">
+      <div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.45rem">
+        <div style="width:24px;height:24px;border-radius:6px;background:${p.color};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fa-solid ${p.icon}" style="color:#fff;font-size:.6rem"></i>
+        </div>
+        <span style="font-size:.8rem;font-weight:700">${p.label}</span>
+        <span style="font-size:.72rem;background:#fee2e2;color:#991b1b;padding:.1rem .45rem;border-radius:100px;font-weight:700">${failed.length} failed</span>
+      </div>
+      ${failed.map(i=>`<div style="font-size:.8rem;padding:.28rem 0 .28rem 1.75rem;border-bottom:1px solid #fef2f2;color:#64748b;display:flex;gap:.5rem"><i class="fa-solid fa-circle-xmark" style="color:#fca5a5;flex-shrink:0;margin-top:.1rem"></i>${i.label}</div>`).join('')}
+    </div>`;
+  }).join('');
 
   document.getElementById('report-body').innerHTML=`
     <div class="card" style="margin-bottom:1.1rem">
@@ -684,9 +695,17 @@ function downloadPDF(){
     </div>`;
   }).join('');
 
-  const failedItems=Object.entries(wt.procs).flatMap(([key,items])=>
-    items.filter(i=>!i.ok).map(i=>`<div style="font-size:10px;padding:3px 0;border-bottom:1px solid #fef2f2;color:#dc2626;font-family:Arial,sans-serif">✗ [${PROCS[key]?.label.split('(')[0].trim()}] ${i.label}</div>`)
-  ).join('');
+  const failedItems=Object.entries(wt.procs).map(([key,items])=>{
+    const p=PROCS[key];const failed=items.filter(i=>!i.ok);
+    if(!failed.length)return'';
+    return`<div style="margin-bottom:12px;font-family:Arial,sans-serif">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:5px 8px;background:#f8fafd;border-radius:6px;border-left:3px solid ${p.color}">
+        <span style="font-size:11px;font-weight:700;color:#1e293b">${p.label}</span>
+        <span style="font-size:9px;background:#fee2e2;color:#991b1b;padding:1px 6px;border-radius:100px;font-weight:700;margin-left:4px">${failed.length} failed</span>
+      </div>
+      ${failed.map(i=>`<div style="font-size:10px;padding:3px 0 3px 14px;border-bottom:1px solid #fef2f2;color:#64748b">✗ ${i.label}</div>`).join('')}
+    </div>`;
+  }).join('');
 
   const posHTML=wt.positives.length?`
     <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#16a34a;border-bottom:2px solid #bbf7d0;padding-bottom:4px;margin:16px 0 10px;font-family:Arial,sans-serif">✓ Positive Findings</div>
