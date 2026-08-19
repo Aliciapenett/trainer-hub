@@ -1152,7 +1152,7 @@ async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
       preceptorHistory: [...existingHistory, historyEntry]
     });
     await logActivity(`Transferred ${trainee.name} from ${fromTrainerName||'unassigned'} to ${newTrainer.name}`,'fa-arrow-right-arrow-left');
-    sendNewTraineeEmail(traineeId, trainee.name, newTrainerId, trainee.startDate, trainee.protocol);
+    sendNewTraineeEmail(trainee.name, newTrainer, trainee.startDate, trainee.protocol);
     forceClose();
     renderTraineeDetail(traineeId, traineeBackContext);
   } catch(e) { alert('Error: '+e.message); setBtn('tr-save-btn', false, 'Confirm Transfer'); }
@@ -1161,7 +1161,6 @@ async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
 async function saveTrainee(id) {
   const name = v('fn-name');
   if(!name) return alert('Name is required');
-  await logActivity('DEBUG: saveTrainee called — id: "' + (id||'NEW') + '" | trainerId: "' + (v('fn-trainer')||'none') + '"', 'fa-bug');
   const initials = name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
   const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes')};
   setBtn('trainee-save-btn',true,'Saving...');
@@ -1171,9 +1170,24 @@ async function saveTrainee(id) {
       await logActivity(`Updated trainee ${name}`,'fa-pen');
     } else {
       const newDoc = await db.collection('trainees').add({...obj, progressNotes:[], createdAt:ts()});
-      const trainer = obj.trainerId ? (await db.collection('trainers').doc(obj.trainerId).get()).data() : null;
+      const trainerSnap = obj.trainerId ? await db.collection('trainers').doc(obj.trainerId).get() : null;
+      const trainer = trainerSnap ? trainerSnap.data() : null;
       await logActivity(`Assigned new trainee ${name} to ${trainer?trainer.name:'no preceptor'}`,'fa-user-graduate');
-      if (obj.trainerId) sendNewTraineeEmail(newDoc.id, name, obj.trainerId, obj.startDate, obj.protocol);
+      if (trainer && trainer.email) {
+        try {
+          await emailjs.send(EJ_SERVICE, EJ_ASSIGNED, {
+            to_name:      trainer.name,
+            to_email:     trainer.email,
+            trainee_name: name,
+            start_date:   obj.startDate ? fmtDate(obj.startDate) : 'TBD',
+            protocol:     obj.protocol || 'Not specified',
+            tracker_url:  window.location.href,
+          });
+          await logActivity(`Assignment email sent to ${trainer.name}`,'fa-envelope');
+        } catch(emailErr) {
+          alert('Email send failed: ' + (emailErr.text || emailErr.message || JSON.stringify(emailErr)));
+        }
+      }
     }
     forceClose(); refreshCurrentPage();
   } catch(e){ alert('Error: '+e.message); setBtn('trainee-save-btn',false,'Save'); }
@@ -1896,14 +1910,9 @@ const EJ_REMINDER  = 'template_51iol4q';   // existing assessment/check-in remin
 const EJ_ASSIGNED  = 'template_new_trainee';   // ← create this in EmailJS dashboard
 
 // Sends a welcome/assignment email to the trainer when a trainee is newly assigned or transferred
-async function sendNewTraineeEmail(traineeId, traineeName, trainerId, startDate, protocol) {
-  await logActivity('DEBUG: sendNewTraineeEmail called for ' + traineeName + ' — trainerId: ' + trainerId, 'fa-bug');
+async function sendNewTraineeEmail(traineeName, trainer, startDate, protocol) {
+  if (!trainer || !trainer.email) return;
   try {
-    const trDoc = await db.collection('trainers').doc(trainerId).get();
-    if (!trDoc.exists) { await logActivity('DEBUG: trainer doc not found — id: ' + trainerId, 'fa-bug'); return; }
-    const trainer = trDoc.data();
-    if (!trainer.email) { await logActivity('DEBUG: trainer has no email — ' + trainer.name, 'fa-bug'); return; }
-    await logActivity('DEBUG: attempting emailjs.send to ' + trainer.email, 'fa-bug');
     await emailjs.send(EJ_SERVICE, EJ_ASSIGNED, {
       to_name:      trainer.name,
       to_email:     trainer.email,
@@ -1912,8 +1921,10 @@ async function sendNewTraineeEmail(traineeId, traineeName, trainerId, startDate,
       protocol:     protocol || 'Not specified',
       tracker_url:  window.location.href,
     });
-    await logActivity(`Assignment email → ${trainer.name} for ${traineeName}`,'fa-envelope');
-  } catch(e) { await logActivity('DEBUG: email error — ' + (e.text || e.message || JSON.stringify(e)), 'fa-bug'); }
+    await logActivity(`Assignment email sent to ${trainer.name} for ${traineeName}`,'fa-envelope');
+  } catch(e) {
+    alert('Email send failed: ' + (e.text || e.message || JSON.stringify(e)));
+  }
 }
 
 async function sendAssessmentReminder(trainerId, btnEl) {
