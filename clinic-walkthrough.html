@@ -193,7 +193,7 @@ textarea.form-control{resize:vertical;min-height:90px}
 
     <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-bottom:2.5rem">
       <button class="btn btn-outline" onclick="showScreen('dashboard')">Cancel</button>
-      <button class="btn btn-success btn-lg" onclick="generateReport()"><i class="fa-solid fa-file-contract"></i> Generate Report Card</button>
+      <button class="btn btn-success btn-lg" id="form-submit-btn" onclick="generateReport()"><i class="fa-solid fa-file-contract"></i> Generate Report Card</button>
     </div>
   </div>
 
@@ -343,6 +343,7 @@ const PROCS={
 // ══════════════════════════════════════
 let data=JSON.parse(localStorage.getItem('vip_wt')||'[]');
 let activeReport=null;
+let editingId=null;
 
 function save(){localStorage.setItem('vip_wt',JSON.stringify(data));}
 function today(){return new Date().toISOString().split('T')[0];}
@@ -408,21 +409,51 @@ function renderDashboard(){
         <td style="font-size:.75rem;color:var(--text-light);max-width:180px">${procs}</td>
         <td style="font-weight:800;color:${g.color}">${sc}%</td>
         <td><span class="badge badge-${g.g}">${g.g} — ${g.label}</span></td>
-        <td><button class="btn btn-sm" style="background:transparent;border:1.5px solid #fca5a5;color:#dc2626" onclick="event.stopPropagation();del(${w.id})"><i class="fa-solid fa-trash"></i></button></td>
+        <td style="white-space:nowrap;display:flex;gap:.35rem;padding:.6rem 1rem">
+          <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();editWalkthrough(${w.id})" title="Edit"><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="btn btn-sm" style="background:transparent;border:1.5px solid #fca5a5;color:#dc2626" onclick="event.stopPropagation();del(${w.id})" title="Delete"><i class="fa-solid fa-trash"></i> Delete</button>
+        </td>
       </tr>`;
     }).join('')}
   </tbody></table>`;
 }
 
 function del(id){
-  if(!confirm('Delete this walkthrough?'))return;
+  if(!confirm('Delete this walkthrough? This cannot be undone.'))return;
   data=data.filter(w=>w.id!==id);save();renderDashboard();
+}
+
+function editWalkthrough(id){
+  const wt=data.find(w=>w.id===id);
+  if(!wt)return;
+  editingId=id;
+  startNew(false);
+  // Pre-populate fields
+  document.getElementById('f-clinic').value=wt.clinicId;
+  document.getElementById('f-date').value=wt.date;
+  document.getElementById('f-reviewer').value=wt.reviewer;
+  document.getElementById('f-positives').value=(wt.positives||[]).join('\n');
+  document.getElementById('f-concerns').value=(wt.concerns||[]).join('\n');
+  // Pre-check procedures and their items
+  Object.entries(wt.procs).forEach(([key,items])=>{
+    const cb=document.getElementById('cb-'+key);
+    if(cb){cb.checked=true;cbChange(key);}
+    items.forEach((item,i)=>{
+      const el=document.getElementById(`ci-${key}-${i}`);
+      if(el){el.checked=item.ok;}
+    });
+    updateScore(key);
+  });
+  // Update heading and button
+  document.querySelector('#screen-form h1').textContent='Edit Walkthrough';
+  document.getElementById('form-submit-btn').innerHTML='<i class="fa-solid fa-check"></i> Save Changes';
 }
 
 // ══════════════════════════════════════
 //  FORM
 // ══════════════════════════════════════
-function startNew(){
+function startNew(resetEdit=true){
+  if(resetEdit)editingId=null;
   // Populate clinic select
   const sel=document.getElementById('f-clinic');
   const byState={};
@@ -434,6 +465,8 @@ function startNew(){
   document.getElementById('f-date').value=today();
   document.getElementById('f-positives').value='';
   document.getElementById('f-concerns').value='';
+  document.querySelector('#screen-form h1').textContent='New Clinic Walkthrough';
+  document.getElementById('form-submit-btn').innerHTML='<i class="fa-solid fa-file-contract"></i> Generate Report Card';
 
   // Render procedure cards
   document.getElementById('proc-list').innerHTML=Object.entries(PROCS).map(([key,p])=>`
@@ -513,8 +546,16 @@ function generateReport(){
   const positives=(document.getElementById('f-positives').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
   const concerns=(document.getElementById('f-concerns').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
 
-  const wt={id:Date.now(),clinicId,date,reviewer,procs,positives,concerns};
-  data.push(wt);save();
+  let wt;
+  if(editingId){
+    const idx=data.findIndex(w=>w.id===editingId);
+    if(idx>-1){data[idx]={...data[idx],clinicId,date,reviewer,procs,positives,concerns};wt=data[idx];}
+    editingId=null;
+  } else {
+    wt={id:Date.now(),clinicId,date,reviewer,procs,positives,concerns};
+    data.push(wt);
+  }
+  save();
   activeReport=wt;
   renderReport(wt);
   showScreen('report');
