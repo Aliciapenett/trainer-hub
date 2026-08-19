@@ -758,7 +758,7 @@ async function renderTraineesPage() {
     <input class="form-control" style="width:200px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()"></div>
     <div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>`;
   const [tSnap, aSnap, trainerSnap] = await Promise.all([
-    db.collection('trainees').orderBy('name').get(),
+    db.collection('trainees').orderBy('createdAt','desc').get(),
     db.collection('assessments').get(),
     db.collection('trainers').get()
   ]);
