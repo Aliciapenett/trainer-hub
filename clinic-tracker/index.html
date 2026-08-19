@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinic Walkthrough Tracker</title>
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    --accent: #0ea5e9;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --yellow: #ca8a04;
+    --yellow-light: #fef9c3;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --gray: #6b7280;
+    --gray-light: #f3f4f6;
+    --border: #e5e7eb;
+    --text: #111827;
+    --text-muted: #6b7280;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    color: white;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+  header p { font-size: 0.85rem; opacity: 0.8; margin-top: 2px; }
+  .header-right { display: flex; gap: 10px; align-items: center; }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: white; color: #1e3a5f; }
+  .btn-primary:hover { background: #f0f4f8; }
+  .btn-outline { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+  .btn-outline:hover { background: rgba(255,255,255,0.25); }
+  .btn-danger { background: var(--red-light); color: var(--red); }
+  .btn-danger:hover { background: #fca5a5; }
+
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    padding: 16px 32px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--gray-light);
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .stat strong { color: var(--text); font-weight: 700; }
+  .stat.green { background: var(--green-light); color: var(--green); }
+  .stat.green strong { color: var(--green); }
+  .stat.yellow { background: var(--yellow-light); color: var(--yellow); }
+  .stat.yellow strong { color: var(--yellow); }
+  .stat.red { background: var(--red-light); color: var(--red); }
+  .stat.red strong { color: var(--red); }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    padding: 16px 32px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+    padding: 8px 14px 8px 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+    transition: border-color 0.15s;
+  }
+  .search-box:focus { border-color: var(--primary); }
+
+  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-muted);
+  }
+  .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+  .view-toggle { display: flex; gap: 4px; margin-left: auto; }
+  .view-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+    color: var(--text-muted);
+  }
+  .view-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+  .main {
+    padding: 24px 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* TABLE */
+  .table-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead th {
+    background: var(--gray-light);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { background: #e9ecf0; }
+  thead th.sort-asc::after { content: ' ↑'; }
+  thead th.sort-desc::after { content: ' ↓'; }
+  tbody tr:hover { background: #f8fafc; }
+  tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; vertical-align: middle; }
+
+  .location-name { font-weight: 600; color: var(--text); }
+  .state-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  .visits-list { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .visit-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .visit-chip.recent { background: var(--green-light); color: var(--green); }
+  .visit-chip.mid    { background: var(--primary-light); color: var(--primary); }
+  .visit-chip.old    { background: var(--gray-light); color: var(--gray); }
+  .visit-chip.note   { background: #fef3c7; color: #92400e; font-style: italic; }
+
+  .chip-del {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    line-height: 1;
+    padding: 0 1px;
+    opacity: 0.5;
+    transition: opacity 0.1s;
+    color: inherit;
+  }
+  .chip-del:hover { opacity: 1; }
+
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .status-badge.overdue { background: var(--red-light); color: var(--red); }
+  .status-badge.due     { background: var(--yellow-light); color: var(--yellow); }
+  .status-badge.ok      { background: var(--green-light); color: var(--green); }
+  .status-badge.none    { background: var(--gray-light); color: var(--gray); }
+
+  .last-visit { font-size: 0.8rem; }
+  .last-visit.recent { color: var(--green); font-weight: 600; }
+  .last-visit.mid    { color: var(--yellow); font-weight: 600; }
+  .last-visit.old    { color: var(--red); font-weight: 600; }
+  .last-visit.none   { color: var(--gray); font-style: italic; }
+
+  .row-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 4px 7px;
+    font-size: 0.78rem;
+    transition: all 0.15s;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .icon-btn.del:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+
+  /* CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .clinic-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1.5px solid transparent;
+    transition: all 0.2s;
+  }
+  .clinic-card:hover { box-shadow: var(--shadow-lg); border-color: var(--primary); transform: translateY(-1px); }
+  .card-header {
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  .card-location { font-weight: 700; font-size: 0.95rem; }
+  .card-state { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+  .card-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .card-body { padding: 14px 16px; }
+  .card-meta { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.8rem; }
+  .card-meta-item { color: var(--text-muted); }
+  .card-meta-item strong { color: var(--text); display: block; font-size: 0.88rem; }
+  .card-actions { display: flex; gap: 6px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+
+  .visits-timeline { display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto; }
+  .timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    padding: 3px 0;
+  }
+  .timeline-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .timeline-dot.recent { background: var(--green); }
+  .timeline-dot.mid    { background: var(--primary); }
+  .timeline-dot.old    { background: var(--gray); }
+  .timeline-dot.note   { background: #f59e0b; }
+  .timeline-date  { font-weight: 600; color: var(--text); min-width: 80px; }
+  .timeline-quarter { color: var(--text-muted); }
+  .timeline-note  { color: #92400e; font-style: italic; font-size: 0.72rem; flex: 1; }
+  .timeline-del {
+    background: none; border: none; cursor: pointer;
+    font-size: 0.78rem; color: var(--gray); opacity: 0.5;
+    transition: opacity 0.1s; margin-left: auto; padding: 0 2px;
+  }
+  .timeline-del:hover { opacity: 1; color: var(--red); }
+
+  /* MODALS */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: var(--shadow-lg);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 0.82rem; font-weight: 600;
+    margin-bottom: 6px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .form-group select, .form-group input, .form-group textarea {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 0.9rem;
+    outline: none; transition: border-color 0.15s; font-family: inherit;
+  }
+  .form-group select:focus,
+  .form-group input:focus,
+  .form-group textarea:focus { border-color: var(--primary); }
+  .form-hint { font-size: 0.77rem; color: var(--text-muted); margin-top: 4px; }
+
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+  .btn-cancel { background: var(--gray-light); color: var(--text); }
+  .btn-save   { background: var(--primary); color: white; }
+  .btn-cancel:hover { background: var(--border); }
+  .btn-save:hover   { background: #1d4ed8; }
+
+  /* CONFIRM DIALOG */
+  .confirm-box {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+  .confirm-box .confirm-icon { font-size: 2rem; margin-bottom: 10px; }
+  .confirm-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .confirm-box p  { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+  /* ADD SECTION */
+  .add-location-section {
+    margin-top: 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 2px dashed var(--border);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  .add-location-section:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+  .today-marker {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 6px 32px;
+    background: var(--gray-light);
+    border-top: 1px solid var(--border);
+    text-align: right;
+  }
+
+  .empty-state { text-align: center; padding: 48px; color: var(--text-muted); }
+  .empty-state .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+
+  @media (max-width: 768px) {
+    header { padding: 16px; }
+    .stats-bar, .controls, .main { padding-left: 16px; padding-right: 16px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .table-wrapper { overflow-x: auto; }
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🏥 Clinic Walkthrough Tracker</h1>
+    <p>Quality Assurance Visit Log — All Locations</p>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-outline" onclick="openAddLocation()">+ Add Location</button>
+    <button class="btn btn-primary" onclick="openAddVisit()">+ Log Visit</button>
+  </div>
+</header>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<div class="controls">
+  <input class="search-box" type="text" id="searchBox" placeholder="Search locations..." oninput="applyFilters()">
+  <div class="filter-group" id="stateFilters"></div>
+  <div class="filter-group" id="statusFilters">
+    <button class="filter-btn active" data-status="all"     onclick="setStatusFilter('all',this)">All</button>
+    <button class="filter-btn"        data-status="overdue" onclick="setStatusFilter('overdue',this)">Overdue</button>
+    <button class="filter-btn"        data-status="due"     onclick="setStatusFilter('due',this)">Due Soon</button>
+    <button class="filter-btn"        data-status="ok"      onclick="setStatusFilter('ok',this)">Up to Date</button>
+    <button class="filter-btn"        data-status="none"    onclick="setStatusFilter('none',this)">No Visits</button>
+  </div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="viewTable" onclick="setView('table')">≡ Table</button>
+    <button class="view-btn"        id="viewCards" onclick="setView('cards')">⊞ Cards</button>
+  </div>
+</div>
+
+<div class="main">
+  <div id="tableView">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('location')">Location</th>
+            <th onclick="sortBy('state')">State</th>
+            <th>Visit History</th>
+            <th onclick="sortBy('lastVisit')">Last Visit</th>
+            <th onclick="sortBy('totalVisits')">Visits</th>
+            <th onclick="sortBy('status')">Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="cardsView" class="hidden">
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+
+  <div class="add-location-section" onclick="openAddLocation()">
+    ＋ Add a new clinic location
+  </div>
+</div>
+
+<div class="today-marker" id="todayMarker"></div>
+
+<!-- Add Visit Modal -->
+<div class="modal-overlay" id="visitModal">
+  <div class="modal">
+    <h2 id="visitModalTitle">Log a Visit</h2>
+    <div class="form-group">
+      <label>Location</label>
+      <select id="visitLocation"></select>
+    </div>
+    <div class="form-group">
+      <label>Visit Date</label>
+      <input type="date" id="visitDate">
+    </div>
+    <div class="form-group">
+      <label>Notes (optional)</label>
+      <textarea id="visitNotes" rows="3" placeholder="e.g. Kevin Rodriguez, OPTISIGNS, follow-up needed..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('visitModal')">Cancel</button>
+      <button class="btn btn-save"   onclick="saveVisit()">Save Visit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Location Modal -->
+<div class="modal-overlay" id="locationModal">
+  <div class="modal">
+    <h2>Add New Location</h2>
+    <div class="form-group">
+      <label>State / Region</label>
+      <input type="text" id="newLocState" list="stateDatalist" placeholder="e.g. NY, NJ, FL, TX…" autocomplete="off">
+      <datalist id="stateDatalist"></datalist>
+      <p class="form-hint">Pick an existing state or type a new one.</p>
+    </div>
+    <div class="form-group">
+      <label>Location Name</label>
+      <input type="text" id="newLocName" placeholder="e.g. Midtown, Palo Alto, Miami Beach…">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('locationModal')">Cancel</button>
+      <button class="btn btn-save"   onclick="saveLocation()">Add Location</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Dialog -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmMsg">This cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-danger btn" id="confirmOkBtn" onclick="confirmAction()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+
+let clinics = [
+  { id: 1,  state: 'NY', name: 'Midtown',          fullName: 'NY – Midtown' },
+  { id: 2,  state: 'NY', name: 'FiDi',             fullName: 'NY – FiDi' },
+  { id: 3,  state: 'NY', name: 'Downtown Brooklyn', fullName: 'NY – Downtown Brooklyn' },
+  { id: 4,  state: 'NY', name: 'Forest Hills',      fullName: 'NY – Forest Hills' },
+  { id: 5,  state: 'NY', name: 'Bronx',             fullName: 'NY – Bronx' },
+  { id: 6,  state: 'NY', name: 'UES',               fullName: 'NY – Upper East Side' },
+  { id: 7,  state: 'NY', name: 'Brighton Beach',    fullName: 'NY – Brighton Beach' },
+  { id: 8,  state: 'NY', name: 'Hartsdale',         fullName: 'NY – Hartsdale' },
+  { id: 9,  state: 'LI', name: 'Jericho',           fullName: 'LI – Jericho' },
+  { id: 10, state: 'LI', name: 'Port Jefferson',    fullName: 'LI – Port Jefferson' },
+  { id: 11, state: 'LI', name: 'West Islip',        fullName: 'LI – West Islip' },
+  { id: 12, state: 'CA', name: 'Palo Alto',         fullName: 'CA – Palo Alto' },
+  { id: 13, state: 'CA', name: 'Temecula',          fullName: 'CA – Temecula' },
+  { id: 14, state: 'CA', name: 'Poway',             fullName: 'CA – Poway' },
+  { id: 15, state: 'CA', name: 'Newport Beach',     fullName: 'CA – Newport Beach' },
+  { id: 16, state: 'CA', name: 'Huntington Beach',  fullName: 'CA – Huntington Beach' },
+  { id: 17, state: 'CA', name: 'Irvine',            fullName: 'CA – Irvine' },
+  { id: 18, state: 'CA', name: 'San Diego',         fullName: 'CA – San Diego' },
+  { id: 19, state: 'CA', name: 'San Jose',          fullName: 'CA – San Jose' },
+  { id: 20, state: 'MD', name: 'Bowie',             fullName: 'MD – Bowie' },
+  { id: 21, state: 'MD', name: 'Bethesda',          fullName: 'MD – Bethesda' },
+  { id: 22, state: 'MD', name: 'Maple Lawn',        fullName: 'MD – Maple Lawn' },
+  { id: 23, state: 'NJ', name: 'Clifton',           fullName: 'NJ – Clifton' },
+  { id: 24, state: 'NJ', name: 'Paramus',           fullName: 'NJ – Paramus' },
+  { id: 25, state: 'NJ', name: 'Woodland Park',     fullName: 'NJ – Woodland Park' },
+  { id: 26, state: 'NJ', name: 'Scotch Plains',     fullName: 'NJ – Scotch Plains' },
+  { id: 27, state: 'NJ', name: 'West Orange',       fullName: 'NJ – West Orange' },
+  { id: 28, state: 'NJ', name: 'Woodbridge',        fullName: 'NJ – Woodbridge' },
+  { id: 29, state: 'NJ', name: 'Edgewater',         fullName: 'NJ – Edgewater' },
+  { id: 30, state: 'NJ', name: 'Princeton',         fullName: 'NJ – Princeton' },
+  { id: 31, state: 'NJ', name: 'Morristown',        fullName: 'NJ – Morristown' },
+  { id: 32, state: 'CT', name: 'Farmington',        fullName: 'CT – Farmington' },
+  { id: 33, state: 'CT', name: 'Hamden',            fullName: 'CT – Hamden' },
+];
+
+let visits = [
+  { id:1,  clinicId:1,  date:'2023-11-10', note:'' },
+  { id:2,  clinicId:1,  date:'2024-04-10', note:'' },
+  { id:3,  clinicId:1,  date:'2024-09-11', note:'' },
+  { id:4,  clinicId:1,  date:'2025-12-17', note:'' },
+  { id:5,  clinicId:2,  date:'2023-12-15', note:'' },
+  { id:6,  clinicId:2,  date:'2024-09-12', note:'' },
+  { id:7,  clinicId:2,  date:'2026-03-19', note:'' },
+  { id:8,  clinicId:3,  date:'2024-05-24', note:'' },
+  { id:9,  clinicId:3,  date:'2024-12-11', note:'' },
+  { id:10, clinicId:3,  date:'2026-01-07', note:'' },
+  { id:11, clinicId:4,  date:'2025-09-18', note:'' },
+  { id:12, clinicId:5,  date:'2025-06-09', note:'' },
+  { id:13, clinicId:5,  date:'2026-06-17', note:'' },
+  { id:14, clinicId:6,  date:'2025-12-10', note:'' },
+  { id:15, clinicId:7,  date:'2025-03-25', note:'' },
+  { id:16, clinicId:7,  date:'2026-04-22', note:'' },
+  { id:17, clinicId:8,  date:'2024-01-09', note:'' },
+  { id:18, clinicId:8,  date:'2024-11-12', note:'' },
+  { id:19, clinicId:8,  date:'2025-08-26', note:'' },
+  { id:20, clinicId:9,  date:'2024-02-20', note:'' },
+  { id:21, clinicId:9,  date:'2024-08-15', note:'' },
+  { id:22, clinicId:10, date:'2024-02-07', note:'' },
+  { id:23, clinicId:10, date:'2026-04-28', note:'' },
+  { id:24, clinicId:11, date:'2024-02-08', note:'' },
+  { id:25, clinicId:11, date:'2024-08-15', note:'' },
+  { id:26, clinicId:11, date:'2026-04-28', note:'' },
+  { id:27, clinicId:12, date:'2024-10-15', note:'' },
+  { id:28, clinicId:18, date:'2024-02-14', note:'' },
+  { id:29, clinicId:19, date:'2024-02-15', note:'' },
+  { id:30, clinicId:19, date:'2024-10-14', note:'' },
+  { id:31, clinicId:20, date:'2024-01-26', note:'' },
+  { id:32, clinicId:20, date:'2025-02-20', note:'' },
+  { id:33, clinicId:20, date:'2026-05-14', note:'' },
+  { id:34, clinicId:21, date:'2024-01-25', note:'' },
+  { id:35, clinicId:21, date:'2025-02-19', note:'' },
+  { id:36, clinicId:21, date:'2026-05-13', note:'' },
+  { id:37, clinicId:23, date:'2024-01-16', note:'' },
+  { id:38, clinicId:23, date:'2024-10-09', note:'' },
+  { id:39, clinicId:23, date:'2025-09-25', note:'' },
+  { id:40, clinicId:24, date:'2023-12-07', note:'' },
+  { id:41, clinicId:24, date:'2024-04-16', note:'' },
+  { id:42, clinicId:24, date:'2025-01-23', note:'' },
+  { id:43, clinicId:24, date:'2025-12-08', note:'' },
+  { id:44, clinicId:25, date:'2024-01-10', note:'' },
+  { id:45, clinicId:25, date:'2024-09-04', note:'' },
+  { id:46, clinicId:25, date:'2025-04-28', note:'' },
+  { id:47, clinicId:25, date:'2026-03-18', note:'' },
+  { id:48, clinicId:26, date:'2023-12-01', note:'' },
+  { id:49, clinicId:26, date:'2024-04-03', note:'' },
+  { id:50, clinicId:26, date:'2025-01-20', note:'' },
+  { id:51, clinicId:27, date:'2023-12-13', note:'' },
+  { id:52, clinicId:27, date:'2024-04-17', note:'' },
+  { id:53, clinicId:27, date:'2024-12-09', note:'' },
+  { id:54, clinicId:27, date:'2025-09-29', note:'' },
+  { id:55, clinicId:28, date:'2024-01-04', note:'' },
+  { id:56, clinicId:28, date:'2024-04-30', note:'' },
+  { id:57, clinicId:28, date:'2024-12-05', note:'' },
+  { id:58, clinicId:28, date:'2025-08-19', note:'' },
+  { id:59, clinicId:29, date:'2024-04-09', note:'' },
+  { id:60, clinicId:29, date:'2024-11-14', note:'' },
+  { id:61, clinicId:29, date:'2025-08-21', note:'' },
+  { id:62, clinicId:30, date:'2025-04-30', note:'' },
+  { id:63, clinicId:30, date:'2026-05-06', note:'' },
+  { id:64, clinicId:31, date:'2024-08-21', note:'' },
+  { id:65, clinicId:31, date:'2025-07-09', note:'' },
+  { id:66, clinicId:31, date:'2026-06-17', note:'' },
+  { id:67, clinicId:32, date:'2026-01-13', note:'' },
+  { id:68, clinicId:33, date:'2026-01-14', note:'' },
+];
+
+let nextClinicId = Math.max(...clinics.map(c => c.id)) + 1;
+let nextVisitId  = Math.max(...visits.map(v => v.id)) + 1;
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+function parseDate(d) {
+  if (!d) return null;
+  const dt = new Date(d + 'T00:00:00');
+  return isNaN(dt) ? null : dt;
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  return parseDate(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function daysSince(dateStr) {
+  const dt = parseDate(dateStr);
+  if (!dt) return Infinity;
+  return Math.floor((TODAY - dt) / 86400000);
+}
+function getClinicVisits(cid) {
+  return visits.filter(v => v.clinicId === cid).sort((a,b) => a.date.localeCompare(b.date));
+}
+function getLastVisit(cid) {
+  const past = getClinicVisits(cid).filter(v => parseDate(v.date) <= TODAY);
+  return past.length ? past[past.length - 1] : null;
+}
+function getStatus(cid) {
+  const last = getLastVisit(cid);
+  if (!last) return 'none';
+  const d = daysSince(last.date);
+  if (d > 365) return 'overdue';
+  if (d > 180) return 'due';
+  return 'ok';
+}
+function statusLabel(s) {
+  return { overdue:'Overdue', due:'Due Soon', ok:'Up to Date', none:'No Visits' }[s] || s;
+}
+function chipClass(dateStr) {
+  const d = daysSince(dateStr);
+  return d < 180 ? 'recent' : d < 730 ? 'mid' : 'old';
+}
+function dotClass(dateStr) { return chipClass(dateStr); }
+function lastVisitClass(d) {
+  return d < 180 ? 'recent' : d < 365 ? 'mid' : d < Infinity ? 'old' : 'none';
+}
+
+const DEFAULT_STATE_COLORS = {
+  NY: { bg:'#dbeafe', color:'#1d4ed8' },
+  NJ: { bg:'#dcfce7', color:'#15803d' },
+  LI: { bg:'#fce7f3', color:'#be185d' },
+  CA: { bg:'#fed7aa', color:'#c2410c' },
+  MD: { bg:'#e0e7ff', color:'#4338ca' },
+  CT: { bg:'#ccfbf1', color:'#0f766e' },
+};
+const EXTRA_PALETTES = [
+  { bg:'#fef9c3', color:'#854d0e' },
+  { bg:'#f3e8ff', color:'#7e22ce' },
+  { bg:'#fce7f3', color:'#9d174d' },
+  { bg:'#ecfdf5', color:'#065f46' },
+  { bg:'#fff7ed', color:'#9a3412' },
+  { bg:'#f0f9ff', color:'#0c4a6e' },
+];
+const dynamicColors = {};
+let extraPaletteIdx = 0;
+function getStateColor(state) {
+  if (DEFAULT_STATE_COLORS[state]) return DEFAULT_STATE_COLORS[state];
+  if (!dynamicColors[state]) {
+    dynamicColors[state] = EXTRA_PALETTES[extraPaletteIdx % EXTRA_PALETTES.length];
+    extraPaletteIdx++;
+  }
+  return dynamicColors[state];
+}
+function stateBadge(state) {
+  const c = getStateColor(state);
+  return `<span class="state-badge" style="background:${c.bg};color:${c.color}">${state}</span>`;
+}
+
+// ══════════════════════════════════════════════
+//  UI STATE
+// ══════════════════════════════════════════════
+
+let currentView        = 'table';
+let activeStateFilter  = 'all';
+let activeStatusFilter = 'all';
+let sortField          = 'state';
+let sortDir            = 1;
+let pendingAction      = null; // { type: 'visit'|'clinic', id }
+
+// ══════════════════════════════════════════════
+//  FILTERS & SORT
+// ══════════════════════════════════════════════
+
+function getFilteredClinics() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  return clinics
+    .filter(c => {
+      if (activeStateFilter !== 'all' && c.state !== activeStateFilter) return false;
+      if (activeStatusFilter !== 'all' && getStatus(c.id) !== activeStatusFilter) return false;
+      if (q && !c.fullName.toLowerCase().includes(q) && !c.name.toLowerCase().includes(q)) return false;
+      return true;
+    })
+    .sort((a,b) => {
+      let va, vb;
+      if      (sortField === 'state')       { va = a.state + a.name; vb = b.state + b.name; }
+      else if (sortField === 'location')    { va = a.fullName; vb = b.fullName; }
+      else if (sortField === 'lastVisit')   {
+        const la = getLastVisit(a.id), lb = getLastVisit(b.id);
+        va = la ? la.date : '0000'; vb = lb ? lb.date : '0000';
+      }
+      else if (sortField === 'totalVisits') { va = getClinicVisits(a.id).length; vb = getClinicVisits(b.id).length; }
+      else if (sortField === 'status')      { va = getStatus(a.id); vb = getStatus(b.id); }
+      else { va = a.fullName; vb = b.fullName; }
+      return va < vb ? -sortDir : va > vb ? sortDir : 0;
+    });
+}
+
+function sortBy(field) {
+  sortDir = sortField === field ? sortDir * -1 : 1;
+  sortField = field;
+  render();
+}
+function setStateFilter(state, el) {
+  activeStateFilter = state;
+  document.querySelectorAll('[data-state]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function setStatusFilter(status, el) {
+  activeStatusFilter = status;
+  document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function applyFilters() { render(); }
+
+// ══════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════
+
+function renderStats() {
+  const total  = clinics.length;
+  const tvs    = visits.length;
+  const ok      = clinics.filter(c => getStatus(c.id) === 'ok').length;
+  const due     = clinics.filter(c => getStatus(c.id) === 'due').length;
+  const overdue = clinics.filter(c => getStatus(c.id) === 'overdue').length;
+  const noV     = clinics.filter(c => getStatus(c.id) === 'none').length;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><strong>${total}</strong> Locations</div>
+    <div class="stat"><strong>${tvs}</strong> Total Visits</div>
+    <div class="stat green"><strong>${ok}</strong> Up to Date</div>
+    <div class="stat yellow"><strong>${due}</strong> Due Soon</div>
+    <div class="stat red"><strong>${overdue}</strong> Overdue</div>
+    <div class="stat"><strong>${noV}</strong> No Visits Yet</div>`;
+}
+
+function renderStateFilters() {
+  const states = [...new Set(clinics.map(c => c.state))].sort();
+  const c = document.getElementById('stateFilters');
+  c.innerHTML = `<button class="filter-btn active" data-state="all" onclick="setStateFilter('all',this)">All States</button>`;
+  states.forEach(s => {
+    c.innerHTML += `<button class="filter-btn" data-state="${s}" onclick="setStateFilter('${s}',this)">${s}</button>`;
+  });
+  // Refresh datalist
+  const dl = document.getElementById('stateDatalist');
+  if (dl) dl.innerHTML = states.map(s => `<option value="${s}">`).join('');
+}
+
+function renderTable(filtered) {
+  const tbody = document.getElementById('tableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="emoji">🔍</div>No locations match</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(c => {
+    const cvs    = getClinicVisits(c.id);
+    const last   = getLastVisit(c.id);
+    const status = getStatus(c.id);
+    const days   = last ? daysSince(last.date) : Infinity;
+
+    const visitsHtml = cvs.length
+      ? cvs.map(v => {
+          const cls   = v.note ? 'note' : chipClass(v.date);
+          const label = fmtDate(v.date) + (v.note ? ' ★' : '');
+          return `<span class="visit-chip ${cls}" title="${v.note || ''}">
+            ${label}
+            <button class="chip-del" title="Remove this visit" onclick="askDeleteVisit(${v.id})">✕</button>
+          </span>`;
+        }).join('')
+      : `<span style="color:var(--gray);font-size:0.8rem;font-style:italic">No visits recorded</span>`;
+
+    const lastHtml = last
+      ? `<span class="last-visit ${lastVisitClass(days)}">${fmtDate(last.date)}<br>
+           <small style="font-weight:normal;color:var(--text-muted)">${days} days ago</small></span>`
+      : `<span class="last-visit none">None</span>`;
+
+    return `<tr>
+      <td><span class="location-name">${c.name}</span></td>
+      <td>${stateBadge(c.state)}</td>
+      <td><div class="visits-list">${visitsHtml}</div></td>
+      <td>${lastHtml}</td>
+      <td style="text-align:center;font-weight:600">${cvs.length || '—'}</td>
+      <td><span class="status-badge ${status}">${statusLabel(status)}</span></td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" onclick="openAddVisit(${c.id})">+ Visit</button>
+          <button class="icon-btn del" onclick="askDeleteClinic(${c.id})">🗑 Remove</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCards(filtered) {
+  const grid = document.getElementById('cardsGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="emoji">🔍</div>No locations match</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(c => {
+    const cvs    = getClinicVisits(c.id);
+    const last   = getLastVisit(c.id);
+    const status = getStatus(c.id);
+
+    const timelineHtml = cvs.length
+      ? cvs.map(v => {
+          const cls = v.note ? 'note' : dotClass(v.date);
+          return `<div class="timeline-item">
+            <div class="timeline-dot ${cls}"></div>
+            <span class="timeline-date">${fmtDate(v.date)}</span>
+            ${v.note ? `<span class="timeline-note">${v.note}</span>` : ''}
+            <button class="timeline-del" title="Remove visit" onclick="askDeleteVisit(${v.id})">✕</button>
+          </div>`;
+        }).join('')
+      : `<div style="color:var(--gray);font-size:0.8rem;font-style:italic;padding:8px 0">No visits recorded yet</div>`;
+
+    return `<div class="clinic-card">
+      <div class="card-header">
+        <div>
+          <div class="card-location">${c.name}</div>
+          <div class="card-state">${c.fullName}</div>
+        </div>
+        <div class="card-header-right">
+          <span class="status-badge ${status}">${statusLabel(status)}</span>
+          ${stateBadge(c.state)}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <div class="card-meta-item"><strong>${cvs.length}</strong> visits total</div>
+          <div class="card-meta-item" style="text-align:right"><strong>${last ? fmtDate(last.date) : 'Never'}</strong> last visit</div>
+        </div>
+        <div class="visits-timeline">${timelineHtml}</div>
+        <div class="card-actions">
+          <button class="icon-btn" style="flex:1;justify-content:center" onclick="openAddVisit(${c.id})">+ Log Visit</button>
+          <button class="icon-btn del" onclick="askDeleteClinic(${c.id})">🗑 Remove Office</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function render() {
+  renderStats();
+  renderStateFilters();
+  renderTable(getFilteredClinics());
+  renderCards(getFilteredClinics());
+  document.getElementById('todayMarker').textContent =
+    `Today: ${TODAY.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} · ${clinics.length} locations · ${visits.length} recorded visits`;
+}
+
+// ══════════════════════════════════════════════
+//  VIEW
+// ══════════════════════════════════════════════
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('tableView').classList.toggle('hidden', v !== 'table');
+  document.getElementById('cardsView').classList.toggle('hidden', v !== 'cards');
+  document.getElementById('viewTable').classList.toggle('active', v === 'table');
+  document.getElementById('viewCards').classList.toggle('active', v === 'cards');
+}
+
+// ══════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════
+
+function openAddVisit(clinicId) {
+  const sel = document.getElementById('visitLocation');
+  sel.innerHTML = clinics.map(c =>
+    `<option value="${c.id}" ${c.id === clinicId ? 'selected' : ''}>${c.fullName}</option>`
+  ).join('');
+  document.getElementById('visitDate').value  = TODAY.toISOString().split('T')[0];
+  document.getElementById('visitNotes').value = '';
+  document.getElementById('visitModal').classList.add('open');
+}
+
+function openAddLocation() {
+  document.getElementById('newLocState').value = '';
+  document.getElementById('newLocName').value  = '';
+  document.getElementById('locationModal').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ── Save visit ──
+function saveVisit() {
+  const clinicId = parseInt(document.getElementById('visitLocation').value);
+  const date     = document.getElementById('visitDate').value;
+  const note     = document.getElementById('visitNotes').value.trim();
+  if (!date) { alert('Please select a date.'); return; }
+  visits.push({ id: nextVisitId++, clinicId, date, note });
+  closeModal('visitModal');
+  render();
+}
+
+// ── Save location ──
+function saveLocation() {
+  const state = document.getElementById('newLocState').value.trim().toUpperCase();
+  const name  = document.getElementById('newLocName').value.trim();
+  if (!state) { alert('Please enter a state or region.'); return; }
+  if (!name)  { alert('Please enter a location name.'); return; }
+  const fullName = `${state} – ${name}`;
+  clinics.push({ id: nextClinicId++, state, name, fullName });
+  clinics.sort((a,b) => (a.state + a.name).localeCompare(b.state + b.name));
+  closeModal('locationModal');
+  render();
+}
+
+// ══════════════════════════════════════════════
+//  DELETE — confirm dialog
+// ══════════════════════════════════════════════
+
+function askDeleteVisit(visitId) {
+  const v = visits.find(x => x.id === visitId);
+  if (!v) return;
+  const c = clinics.find(x => x.id === v.clinicId);
+  document.getElementById('confirmIcon').textContent  = '🗓️';
+  document.getElementById('confirmTitle').textContent = 'Remove this visit?';
+  document.getElementById('confirmMsg').textContent   =
+    `${fmtDate(v.date)} — ${c ? c.fullName : 'Unknown location'}${v.note ? '\n"' + v.note + '"' : ''}`;
+  document.getElementById('confirmOkBtn').textContent = 'Yes, remove visit';
+  pendingAction = { type: 'visit', id: visitId };
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function askDeleteClinic(clinicId) {
+  const c = clinics.find(x => x.id === clinicId);
+  if (!c) return;
+  const count = getClinicVisits(clinicId).length;
+  document.getElementById('confirmIcon').textContent  = '🏥';
+  document.getElementById('confirmTitle').textContent = `Remove ${c.fullName}?`;
+  document.getElementById('confirmMsg').textContent   =
+    `This will permanently delete this office and all ${count} visit record${count !== 1 ? 's' : ''} for it.`;
+  document.getElementById('confirmOkBtn').textContent = 'Yes, remove office';
+  pendingAction = { type: 'clinic', id: clinicId };
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function confirmAction() {
+  if (!pendingAction) return;
+  if (pendingAction.type === 'visit') {
+    visits = visits.filter(v => v.id !== pendingAction.id);
+  } else if (pendingAction.type === 'clinic') {
+    visits  = visits.filter(v => v.clinicId !== pendingAction.id);
+    clinics = clinics.filter(c => c.id !== pendingAction.id);
+  }
+  pendingAction = null;
+  closeModal('confirmModal');
+  render();
+}
+
+// close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>
