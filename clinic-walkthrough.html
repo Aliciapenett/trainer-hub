@@ -111,17 +111,23 @@ textarea.form-control{resize:vertical;min-height:90px}
 <body>
 
 <header class="hdr">
-  <div class="hdr-logo" onclick="showScreen('dashboard')">
+  <div class="hdr-logo" onclick="switchTab('walkthroughs')">
     <div class="hdr-logo-icon"><i class="fa-solid fa-clipboard-check" style="color:#fff"></i></div>
     <div>
-      <div class="hdr-title">VIP Clinic Walkthrough Tracker</div>
+      <div class="hdr-title">VIP Clinic Quality Tracker</div>
       <div class="hdr-sub">Clinical Quality &amp; Compliance</div>
     </div>
   </div>
-  <button class="btn btn-primary" onclick="startNew()"><i class="fa-solid fa-plus"></i> New Walkthrough</button>
+  <div style="display:flex;align-items:center;gap:1rem">
+    <nav style="display:flex;gap:.15rem">
+      <button id="tab-btn-walkthroughs" onclick="switchTab('walkthroughs')" style="background:rgba(255,255,255,.18);border:none;color:#fff;padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.35rem"><i class="fa-solid fa-clipboard-check"></i> Walkthroughs</button>
+      <button id="tab-btn-visits" onclick="switchTab('visits')" style="background:none;border:none;color:rgba(255,255,255,.65);padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;display:flex;align-items:center;gap:.35rem"><i class="fa-solid fa-calendar-check"></i> Visit History</button>
+    </nav>
+    <button class="btn btn-primary" id="new-wt-btn" onclick="startNew()"><i class="fa-solid fa-plus"></i> New Walkthrough</button>
+  </div>
 </header>
 
-<main class="main">
+<main class="main" id="tab-walkthroughs">
 
   <!-- DASHBOARD -->
   <div class="screen active" id="screen-dashboard">
@@ -214,6 +220,11 @@ textarea.form-control{resize:vertical;min-height:90px}
   </div>
 
 </main>
+
+<!-- VISIT HISTORY TAB -->
+<div id="tab-visits" style="display:none;height:calc(100vh - 62px)">
+  <iframe src="clinic-tracker/index.html" style="width:100%;height:100%;border:none" title="Visit History"></iframe>
+</div>
 
 <div id="pdf-template"></div>
 
@@ -724,6 +735,20 @@ function downloadPDF(){
     tmpl.style.display='none';
     tmpl.innerHTML='';
   });
+}
+
+// ══════════════════════════════════════
+//  TAB SWITCHING
+// ══════════════════════════════════════
+function switchTab(name){
+  const isWt = name==='walkthroughs';
+  document.getElementById('tab-walkthroughs').style.display = isWt ? 'block' : 'none';
+  document.getElementById('tab-visits').style.display      = isWt ? 'none'  : 'block';
+  document.getElementById('new-wt-btn').style.display      = isWt ? ''      : 'none';
+  const active  = 'background:rgba(255,255,255,.18);border:none;color:#fff;padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.35rem';
+  const inactive= 'background:none;border:none;color:rgba(255,255,255,.65);padding:.4rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:500;display:flex;align-items:center;gap:.35rem';
+  document.getElementById('tab-btn-walkthroughs').style.cssText = isWt ? active : inactive;
+  document.getElementById('tab-btn-visits').style.cssText        = isWt ? inactive : active;
 }
 
 // ══════════════════════════════════════
