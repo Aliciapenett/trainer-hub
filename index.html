@@ -266,35 +266,6 @@ const db = firebase.firestore();
 const SETUP_CODE = 'VIPMED2024';
 const COLORS = ['#0f3460','#0d9488','#7c3aed','#be185d','#b45309','#065f46','#1d4ed8','#9f1239'];
 const PROTOCOLS = ['Sonographer/MA Training','MA Training Only','FD/MA Training','Sonography Training Only'];
-const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-
-// ── HELPER: Build state <option> tags ──
-function buildStateOptions(selected) {
-  var opts = '<option value="">-- State --</option>';
-  US_STATES.forEach(function(s) {
-    opts += '<option' + (selected === s ? ' selected' : '') + '>' + s + '</option>';
-  });
-  return opts;
-}
-
-// ── HELPER: Build assessment dot HTML ──
-function buildAsmtDots(asmts) {
-  return [30,60,90].map(function(d) {
-    var s = asmts[d];
-    var cls = s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future';
-    return '<div class="a-dot ' + cls + '" title="' + d + '-day: ' + s + '">' + d + '</div>';
-  }).join('');
-}
-
-// ── FEATURE 4: Low score flag ──
-function getLowScoreFlag(trainee, assessments) {
-  var mine = assessments.filter(function(a) { return a.traineeId === trainee.id; });
-  for (var i = 0; i < mine.length; i++) {
-    var ov = mine[i].overall;
-    if (ov !== '' && ov !== undefined && ov !== null && Number(ov) <= 5) return true;
-  }
-  return false;
-}
 // Grading options used across all assessments
 const GRADES = ['O','S','P','N','N/A'];
 const GRADE_LABELS = {O:'Outstanding',S:'Satisfactory',P:'Progressing',N:'Needs Improvement','N/A':'Not Applicable'};
@@ -349,14 +320,6 @@ const SONO_SKILLS = [
   {id:'sono_10', label:'Ability to identify after effects of vein treatment: hyperpigmentation, thrombophlebitis, etc.'},
   {id:'sono_11', label:'Identify issues that still need to be addressed — open segments of veins, residual refluxing varicosities? Predict how the Doctor will treat them and submit to insurance accordingly'},
   {id:'sono_12', label:'Know most insurance diameter and reflux requirements'},
-];
-
-const MA_ULTRASOUND_SKILLS = [
-  {id:'ma_us_1', label:'Input patient information and select correct settings on u/s'},
-  {id:'ma_us_2', label:'Ability to predict the physician\'s treatment plan based on the ultrasound data in chart'},
-  {id:'ma_us_3', label:'Ability to identify after effects of vein treatment: hyperpigmentation, thrombophlebitis, etc.'},
-  {id:'ma_us_4', label:'Know most insurance diameter and reflux requirements'},
-  {id:'ma_us_5', label:'Confidently measure catheter tip to SFJ during RFA procedure'},
 ];
 
 // Legacy comp arrays (kept for backward compat)
@@ -518,7 +481,6 @@ function clearListeners() { activeListeners.forEach(u => u()); activeListeners =
 // ═══════════════════════════════════════
 async function renderHub() {
   setNavActive('nav-hub');
-  window._currentPage = 'hub';
   const el = document.getElementById('main-content');
   el.innerHTML = `<div style="margin-bottom:1.75rem"><h1 style="font-size:1.45rem;font-weight:800">Training Dashboard</h1><p style="color:var(--text-light);font-size:.86rem;margin-top:.22rem">Superficial Venous Disease Sonographer Training Program</p></div>
     <div class="stats-grid" id="hub-stats"><div class="stat-card"><div style="color:var(--text-light);font-size:.8rem">Loading stats...</div></div></div>
@@ -541,7 +503,6 @@ async function renderHub() {
     const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
     const active = trainees.filter(t=>t.status==='active').length;
     const due = getDueCount(trainees, assessments);
-    const flaggedCount = trainees.filter(function(t){ return getLowScoreFlag(t, assessments); }).length;
     const statsEl = document.getElementById('hub-stats');
     if(statsEl) statsEl.innerHTML = `
       <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-user-nurse"></i></div><div><div class="stat-value">${trainers.length}</div><div class="stat-label">Preceptors</div></div></div>
@@ -549,8 +510,7 @@ async function renderHub() {
       <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${active}</div><div class="stat-label">Active Trainees</div></div></div>
       <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value">${due}</div><div class="stat-label">Assessments Due</div></div></div>
       <div class="stat-card"><div class="stat-icon si-teal"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${assessments.length}</div><div class="stat-label">Assessments Done</div></div></div>
-      <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.length}</div><div class="stat-label">Weekly Check-ins</div></div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#fee2e2;color:#dc2626"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value" style="color:#dc2626">${flaggedCount}</div><div class="stat-label">Low Score Flags</div></div></div>`;
+      <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.length}</div><div class="stat-label">Weekly Check-ins</div></div></div>`;
     const cardsEl = document.getElementById('hub-trainer-cards');
     if(cardsEl) cardsEl.innerHTML = trainers.length ? trainers.map(t=>trainerCardHTML(t,trainees,assessments)).join('') : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
   }, e=>console.error(e));
@@ -593,73 +553,17 @@ function trainerCardHTML(t, trainees, assessments) {
 // ═══════════════════════════════════════
 //  TRAINERS PAGE (ADMIN)
 // ═══════════════════════════════════════
-function getPreceptorStatus(trainer, trainees, assessments, checkins) {
-  var mine = trainees.filter(function(t){ return t.trainerId === trainer.id && t.status === 'active'; });
-  var hasAsmtDue = mine.some(function(t){ return getAssessmentsDue(t, assessments).length > 0; });
-  var hasCheckinDue = mine.some(function(t){ return isCheckinDue(t, checkins); });
-  if (!mine.length) return {color:'#94a3b8', icon:'fa-circle-minus', label:'No Active Trainees', level:0};
-  if (hasAsmtDue) return {color:'#dc2626', icon:'fa-circle-exclamation', label:'Assessment Overdue', level:3};
-  if (hasCheckinDue) return {color:'#d97706', icon:'fa-circle-exclamation', label:'Check-in Due', level:2};
-  return {color:'#16a34a', icon:'fa-circle-check', label:'All Caught Up', level:1};
-}
-
 async function renderTrainersPage() {
   setNavActive('nav-trainers');
-  window._currentPage = 'trainers';
-  var el = document.getElementById('main-content');
-  el.innerHTML = '<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">Preceptors</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Manage preceptor profiles and logins</p></div><button class="btn btn-primary" onclick="openTrainerModal(null)"><i class="fa-solid fa-plus"></i> Add Preceptor</button></div>'
-    + '<div class="card"><div class="card-hdr"><span class="card-hdr-title">All Preceptors</span></div>'
-    + '<div class="tbl-wrap"><table class="tbl" id="trainers-table"><tbody><tr><td colspan="7" style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</td></tr></tbody></table></div></div>';
-
-  var snap = await db.collection('trainers').orderBy('name').get();
-  var trainers = snap.docs.map(function(d){ return {id:d.id,...d.data()}; });
-  var results = await Promise.all([db.collection('trainees').get(), db.collection('assessments').get(), db.collection('checkins').get()]);
-  var trainees = results[0].docs.map(function(d){ return {id:d.id,...d.data()}; });
-  var assessments = results[1].docs.map(function(d){ return {id:d.id,...d.data()}; });
-  var checkins = results[2].docs.map(function(d){ return {id:d.id,...d.data()}; });
-
-  var tbl = document.getElementById('trainers-table');
-  if (!tbl) return;
-
-  if (!trainers.length) {
-    tbl.innerHTML = '<tbody><tr><td colspan="7"><div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div></td></tr></tbody>';
-    return;
-  }
-
-  var thead = '<thead><tr>'
-    + '<th style="width:32px"></th>'
-    + '<th>Preceptor</th>'
-    + '<th>Credential</th>'
-    + '<th style="text-align:center">Active</th>'
-    + '<th style="text-align:center">Assessments</th>'
-    + '<th style="text-align:center">Certified</th>'
-    + '<th style="text-align:center">Status</th>'
-    + '<th style="text-align:center">Account</th>'
-    + '<th></th>'
-    + '</tr></thead>';
-
-  var rows = trainers.map(function(t) {
-    var mine = trainees.filter(function(tr){ return tr.trainerId === t.id; });
-    var active = mine.filter(function(tr){ return tr.status === 'active'; }).length;
-    var certified = mine.filter(function(tr){ return tr.status === 'certified'; }).length;
-    var asmts = assessments.filter(function(a){ return mine.find(function(tr){ return tr.id === a.traineeId; }); }).length;
-    var status = getPreceptorStatus(t, trainees, assessments, checkins);
-    var hasAccount = !!t.userId;
-    var tid = t.id;
-    return '<tr onclick="renderTrainerDetail(\'' + tid + '\')" style="cursor:pointer">'
-      + '<td><div style="width:36px;height:36px;border-radius:50%;background:' + (t.color||'#0f3460') + ';display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:800">' + (t.initials||t.name[0]) + '</div></td>'
-      + '<td><div style="font-weight:600;font-size:.9rem">' + t.name + '</div>' + (t.notes ? '<div style="font-size:.72rem;color:var(--text-light);margin-top:.08rem">' + t.notes.substring(0,60) + (t.notes.length>60?'…':'') + '</div>' : '') + '</td>'
-      + '<td style="font-size:.82rem;color:var(--text-light)">' + (t.credential||'—') + '</td>'
-      + '<td style="text-align:center;font-weight:700;font-size:.95rem">' + active + '</td>'
-      + '<td style="text-align:center;font-size:.88rem">' + asmts + '</td>'
-      + '<td style="text-align:center;font-size:.88rem">' + certified + '</td>'
-      + '<td style="text-align:center"><span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.76rem;font-weight:600;color:' + status.color + '"><i class="fa-solid ' + status.icon + '"></i>' + status.label + '</span></td>'
-      + '<td style="text-align:center"><span class="account-status ' + (hasAccount?'account-active':'account-pending') + '" style="font-size:.7rem"><i class="fa-solid ' + (hasAccount?'fa-circle-check':'fa-circle-exclamation') + '"></i>' + (hasAccount?'Active':'No Login') + '</span></td>'
-      + '<td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTrainerModal(\'' + tid + '\')"><i class="fa-solid fa-pen"></i></button></td>'
-      + '</tr>';
-  }).join('');
-
-  tbl.innerHTML = thead + '<tbody>' + rows + '</tbody>';
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">Preceptors</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Manage preceptor profiles and logins</p></div><button class="btn btn-primary" onclick="openTrainerModal(null)"><i class="fa-solid fa-plus"></i> Add Preceptor</button></div>
+    <div class="trainers-grid" id="trainers-grid-page"></div>`;
+  const snap = await db.collection('trainers').orderBy('name').get();
+  const trainers = snap.docs.map(d=>({id:d.id,...d.data()}));
+  const [tSnap, aSnap] = await Promise.all([db.collection('trainees').get(), db.collection('assessments').get()]);
+  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  document.getElementById('trainers-grid-page').innerHTML = trainers.length ? trainers.map(t=>trainerCardHTML(t,trainees,assessments)).join('') : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
 }
 
 // ═══════════════════════════════════════
@@ -678,12 +582,7 @@ async function renderTrainerDetail(tid) {
   ]);
   if(!tDoc.exists){document.getElementById('trainer-detail-body').innerHTML='<p>Trainer not found.</p>';return;}
   const trainer = {id:tDoc.id,...tDoc.data()};
-  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
-    if(!a.startDate && !b.startDate) return 0;
-    if(!a.startDate) return 1;
-    if(!b.startDate) return -1;
-    return b.startDate.localeCompare(a.startDate);
-  });
+  const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
   const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
   const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
   const checkinsDue = trainees.filter(t=>isCheckinDue(t,checkins));
@@ -730,7 +629,6 @@ async function renderTrainerDetail(tid) {
 function isCheckinDue(trainee, checkins) {
   if(trainee.status !== 'active') return false;
   const mine = checkins.filter(c=>c.traineeId===trainee.id);
-  if(mine.length >= 4) return false; // stop reminding after 4 weeks
   if(!mine.length) return true; // never had one
   const latest = mine.reduce((a,b)=>(a.date||'') > (b.date||'') ? a : b);
   const daysSince = Math.floor((new Date() - new Date(latest.date+'T12:00:00')) / (1000*60*60*24));
@@ -853,105 +751,53 @@ async function renderTrainerDashboard(tid) {
 // ═══════════════════════════════════════
 async function renderTraineesPage() {
   setNavActive('nav-trainees');
-  window._currentPage = 'trainees';
-  var el = document.getElementById('main-content');
-  var stateOpts = buildStateOptions('');
-  el.innerHTML = '<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">All Trainees</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">All trainees across the program</p></div>'
-    + '<button class="btn btn-primary" onclick="openTraineeModal(null,null)"><i class="fa-solid fa-plus"></i> Add Trainee</button></div>'
-    + '<div class="card" style="margin-bottom:1.5rem"><div class="card-hdr" style="flex-wrap:wrap;gap:.5rem"><span class="card-hdr-title">Active Trainees</span>'
-    + '<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">'
-    + '<input class="form-control" style="width:180px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()">'
-    + '<select class="form-control" style="width:110px;padding:.32rem .55rem;font-size:.78rem" id="trainee-state-filter" onchange="filterTraineesTable()">' + stateOpts + '</select>'
-    + '</div></div>'
-    + '<div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>'
-    + '<div id="archived-trainees-section"></div>';
-  var snaps = await Promise.all([
-    db.collection('trainees').get(),
+  const el = document.getElementById('main-content');
+  el.innerHTML = `<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">All Trainees</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">All trainees across the program</p></div>
+    <button class="btn btn-primary" onclick="openTraineeModal(null,null)"><i class="fa-solid fa-plus"></i> Add Trainee</button></div>
+    <div class="card"><div class="card-hdr"><span class="card-hdr-title">All Trainees</span>
+    <input class="form-control" style="width:200px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()"></div>
+    <div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>`;
+  const [tSnap, aSnap, trainerSnap] = await Promise.all([
+    db.collection('trainees').orderBy('name').get(),
     db.collection('assessments').get(),
     db.collection('trainers').get()
   ]);
-  window._allTrainees = snaps[0].docs.map(function(d){return {id:d.id,...d.data()};}).sort(function(a,b){
-    if(!a.startDate && !b.startDate) return 0;
-    if(!a.startDate) return 1;
-    if(!b.startDate) return -1;
-    return b.startDate.localeCompare(a.startDate);
-  });
-  window._allAssessments = snaps[1].docs.map(function(d){return {id:d.id,...d.data()};});
-  window._allTrainers = snaps[2].docs.map(function(d){return {id:d.id,...d.data()};});
-  filterTraineesTable();
+  window._allTrainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._allAssessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._allTrainers = trainerSnap.docs.map(d=>({id:d.id,...d.data()}));
+  renderTraineesTable(window._allTrainees);
 }
 
 function filterTraineesTable() {
-  var q = ((document.getElementById('trainee-search')||{}).value||'').toLowerCase();
-  var stateFilter = (document.getElementById('trainee-state-filter')||{}).value||'';
-  var all = window._allTrainees||[];
-  // Active section: exclude archived
-  var active = all.filter(function(t) {
-    if (t.status === 'archived') return false;
-    if (q && !t.name.toLowerCase().includes(q)) return false;
-    if (stateFilter && t.state !== stateFilter) return false;
-    return true;
-  });
-  // Archived section: only archived, also respect search/state filter
-  var archived = all.filter(function(t) {
-    if (t.status !== 'archived') return false;
-    if (q && !t.name.toLowerCase().includes(q)) return false;
-    if (stateFilter && t.state !== stateFilter) return false;
-    return true;
-  });
-  renderTraineesTable(active);
-  renderArchivedSection(archived);
+  const q = (document.getElementById('trainee-search')||{}).value||'';
+  const filtered = (window._allTrainees||[]).filter(t=>!q||t.name.toLowerCase().includes(q.toLowerCase()));
+  renderTraineesTable(filtered);
 }
 
 function renderTraineesTable(trainees) {
-  var el = document.getElementById('trainees-tbl-wrap');
+  const el = document.getElementById('trainees-tbl-wrap');
   if(!el) return;
   el.innerHTML = traineeTableHTML(trainees, window._allAssessments||[], null, false);
 }
 
-function renderArchivedSection(trainees) {
-  var el = document.getElementById('archived-trainees-section');
-  if(!el) return;
-  if(!trainees.length) { el.innerHTML = ''; return; }
-  var html = '<div class="card">';
-  html += '<div class="card-hdr" style="background:#f8fafd">';
-  html += '<span class="card-hdr-title" style="color:var(--text-light)"><i class="fa-solid fa-box-archive" style="margin-right:.4rem;opacity:.6"></i>Archived Trainees (' + trainees.length + ')</span>';
-  html += '</div>';
-  html += '<div class="tbl-wrap">' + traineeTableHTML(trainees, window._allAssessments||[], null, false) + '</div>';
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, checkins) {
-  checkins = checkins || [];
+function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, checkins=[]) {
   if(!trainees.length) return '<div class="empty"><i class="fa-solid fa-user-plus"></i><p>No trainees assigned yet</p></div>';
-  var rows = trainees.map(function(tr) {
-    var trainer = (window._allTrainers||[]).find(function(t){return t.id===tr.trainerId;});
-    var asmts = getAsmtStatus(tr, assessments);
-    var ciDue = isCheckinDue(tr, checkins);
-    var aDue = getAssessmentsDue(tr, assessments);
-    var lowFlag = getLowScoreFlag(tr, assessments);
-    var isArchived = tr.status === 'archived';
-    var rowStyle = isArchived ? ' style="opacity:.45"' : '';
-    var nameBadges = '';
-    if (aDue.length) nameBadges += ' <span style="font-size:.63rem;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">' + aDue.map(function(d){return d+'-DAY';}).join(' ') + '</span>';
-    if (ciDue) nameBadges += ' <span style="font-size:.63rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">CHECK-IN DUE</span>';
-    if (lowFlag) nameBadges += ' <span style="font-size:.63rem;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">⚠ Low Scores</span>';
-    var statusClass = tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':tr.status==='archived'?'badge-gray':'badge-gray';
-    return '<tr onclick="renderTraineeDetail(\'' + tr.id + '\',\'' + (fromTrainerId||'') + '\')"' + rowStyle + '>'
-      + '<td><div style="display:flex;align-items:center;gap:.6rem"><div class="av-sm" style="background:' + (trainer?trainer.color:'#888') + '">' + (tr.initials||tr.name[0]) + '</div>'
-      + '<div><div style="font-weight:600">' + tr.name + nameBadges + '</div>'
-      + '<div style="font-size:.71rem;color:var(--text-light)">' + (tr.email||'') + '</div></div></div></td>'
-      + (!hideTrainerCol ? '<td>' + (trainer ? '<span class="badge badge-gray">' + trainer.name + '</span>' : '—') + '</td>' : '')
-      + '<td>' + (tr.protocol ? '<span class="protocol-pill">' + tr.protocol + '</span>' : '<span style="color:var(--text-light);font-size:.78rem">None</span>') + '</td>'
-      + '<td style="font-size:.78rem;color:var(--text-light)">' + (tr.startDate?fmtDate(tr.startDate):'—') + '</td>'
-      + '<td style="font-size:.78rem;color:var(--text-light)">' + (tr.state||'—') + '</td>'
-      + '<td><div class="a-dots">' + buildAsmtDots(asmts) + '</div></td>'
-      + '<td><span class="badge ' + statusClass + '">' + (tr.status||'active') + '</span></td>'
-      + '<td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTraineeModal(\'' + tr.id + '\',\'' + (tr.trainerId||'') + '\')"><i class="fa-solid fa-pen"></i></button></td>'
-      + '</tr>';
+  const rows = trainees.map(tr=>{
+    const trainer = (window._allTrainers||[]).find(t=>t.id===tr.trainerId);
+    const asmts = getAsmtStatus(tr, assessments);
+    const ciDue = isCheckinDue(tr, checkins);
+    const aDue = getAssessmentsDue(tr, assessments);
+    return `<tr onclick="renderTraineeDetail('${tr.id}','${fromTrainerId||''}')">
+      <td><div style="display:flex;align-items:center;gap:.6rem"><div class="av-sm" style="background:${trainer?trainer.color:'#888'}">${tr.initials||tr.name[0]}</div><div><div style="font-weight:600">${tr.name}${aDue.length?` <span style="font-size:.63rem;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">${aDue.map(d=>d+'-DAY').join(' ')}</span>`:''}${ciDue?` <span style="font-size:.63rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;padding:.08rem .35rem;font-weight:700;margin-left:.2rem">CHECK-IN DUE</span>`:''}</div><div style="font-size:.71rem;color:var(--text-light)">${tr.email||''}</div></div></div></td>
+      ${!hideTrainerCol?`<td>${trainer?`<span class="badge badge-gray">${trainer.name}</span>`:'—'}</td>`:''}
+      <td>${tr.protocol?`<span class="protocol-pill">${tr.protocol}</span>`:'<span style="color:var(--text-light);font-size:.78rem">None</span>'}</td>
+      <td style="font-size:.78rem;color:var(--text-light)">${tr.startDate?fmtDate(tr.startDate):'—'}</td>
+      <td><div class="a-dots">${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}" title="${d}-day: ${s}">${d}</div>`}).join('')}</div></td>
+      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTraineeModal('${tr.id}','${tr.trainerId||''}')"><i class="fa-solid fa-pen"></i></button></td>
+    </tr>`;
   }).join('');
-  return '<table class="tbl"><thead><tr><th>Name</th>' + (!hideTrainerCol?'<th>Preceptor</th>':'') + '<th>Protocol</th><th>Start Date</th><th>State</th><th>Assessments</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+  return `<table class="tbl"><thead><tr><th>Name</th>${!hideTrainerCol?'<th>Preceptor</th>':''}<th>Protocol</th><th>Start Date</th><th>Assessments</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 // ═══════════════════════════════════════
@@ -1001,13 +847,21 @@ async function renderTraineeDetail(tid, fromTid) {
             <span class="badge ${trainee.status==='active'?'badge-success':trainee.status==='certified'?'badge-teal':trainee.status==='completed'?'badge-info':'badge-gray'}">${trainee.status||'active'}</span>
             <button class="btn btn-outline btn-sm" onclick="openTraineeModal('${trainee.id}','${trainee.trainerId||''}')"><i class="fa-solid fa-pen"></i> Edit</button>
             <button class="btn btn-outline btn-sm" style="color:#7c3aed;border-color:#7c3aed" onclick="openTransferModal('${trainee.id}','${trainee.trainerId||''}','${trainee.name.replace(/'/g,"\\'")}')"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer</button>
-            <button class="btn btn-outline btn-sm" style="color:#0f3460;border-color:#0f3460" onclick="downloadFullTraineeReport('${trainee.id}')"><i class="fa-solid fa-file-pdf"></i> Full Report</button>
           </div>
         </div>
         ${trainee.startDate?`<div style="margin-top:.7rem"><div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--text-light);margin-bottom:.28rem"><span>90-Day Training Progress</span><span>${pct}%</span></div><div style="height:7px;background:var(--border);border-radius:100px;overflow:hidden"><div style="height:100%;width:${pct}%;border-radius:100px;background:linear-gradient(90deg,var(--accent),#0284c7)"></div></div></div>`:''}
         ${trainee.goals?`<div style="font-size:.79rem;margin-top:.55rem;padding:.48rem .72rem;border-radius:var(--r-sm);background:#f0f9ff;border-left:3px solid var(--accent)"><i class="fa-solid fa-bullseye" style="color:var(--accent)"></i> <strong>Goals:</strong> ${trainee.goals}</div>`:''}
         ${trainee.notes?`<div style="font-size:.78rem;margin-top:.4rem;padding:.45rem .7rem;border-radius:var(--r-sm);background:#f8fafd;border-left:3px solid #cbd5e1">${trainee.notes}</div>`:''}
       </div>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+        <span style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)"><i class="fa-solid fa-note-sticky" style="margin-right:.35rem;color:#d97706"></i>Admin Notes</span>
+        <button class="btn btn-ghost btn-sm" onclick="openAdminNoteModal('${trainee.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+      </div>
+      ${trainee.adminNotes ?
+        `<div style="font-size:.83rem;padding:.75rem .95rem;border-radius:var(--r-sm);background:#fef3c7;border-left:3px solid #d97706;color:#92400e;white-space:pre-line">${trainee.adminNotes}${trainee.adminNotesUpdated?`<div style="font-size:.7rem;opacity:.75;margin-top:.35rem">Updated ${fmtDate(trainee.adminNotesUpdated)}</div>`:''}</div>` :
+        `<div style="font-size:.8rem;padding:.6rem .9rem;border-radius:var(--r-sm);background:#f8fafd;border:1px dashed var(--border);color:var(--text-light);cursor:pointer" onclick="openAdminNoteModal('${trainee.id}')"><i class="fa-solid fa-plus" style="margin-right:.3rem"></i>Add a note (e.g. terminated, on leave…)</div>`}
     </div>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>
@@ -1050,31 +904,6 @@ async function renderTraineeDetail(tid, fromTid) {
     <div id="tab-notes" style="display:none">
       <div class="sec-hdr"><span class="sec-title">Clinical Notes</span><button class="btn btn-primary btn-sm" onclick="openNoteModal('${trainee.id}')"><i class="fa-solid fa-plus"></i> Add Note</button></div>
       ${(trainee.progressNotes&&trainee.progressNotes.length)?[...trainee.progressNotes].reverse().map(n=>`<div class="card" style="margin-bottom:.7rem"><div class="card-body" style="padding:.95rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem"><span style="font-size:.79rem;font-weight:600">${fmtDate(n.date)}</span><span class="badge badge-info">${n.category||'General'}</span></div><p style="font-size:.83rem">${n.text}</p></div></div>`).join(''):'<div class="empty"><i class="fa-solid fa-note-sticky"></i><p>No clinical notes yet</p></div>'}
-    </div>
-    <div id="tab-history" style="display:none">
-      ${(()=>{
-        const hist = trainee.preceptorHistory || [];
-        const currentEntry = trainer ? `
-          <div style="display:flex;align-items:flex-start;gap:.9rem;padding:1rem 0;border-bottom:1px solid var(--border)">
-            <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:${trainer.color||'#0f3460'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:800">${trainer.initials||trainer.name[0]}</div>
-            <div style="flex:1">
-              <div style="font-weight:700;font-size:.9rem">${trainer.name} <span style="background:#dcfce7;color:#15803d;font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:100px;margin-left:.3rem">Current</span></div>
-              <div style="font-size:.75rem;color:var(--text-light);margin-top:.15rem">${trainer.credential||'Preceptor'}</div>
-              <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem"><i class="fa-solid fa-calendar" style="margin-right:.25rem"></i>${hist.length>0?'Since '+fmtDate(hist[hist.length-1].transferredAt):(trainee.startDate?'Since '+fmtDate(trainee.startDate):'Start date unknown')}</div>
-            </div>
-          </div>` : '';
-        const histRows = [...hist].reverse().map((h,i,arr)=>`
-          <div style="display:flex;align-items:flex-start;gap:.9rem;padding:1rem 0;border-bottom:1px solid var(--border);opacity:.85">
-            <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#94a3b8;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:800">${(h.fromName||'?')[0]}</div>
-            <div style="flex:1">
-              <div style="font-weight:700;font-size:.9rem">${h.fromName||'Unknown'}</div>
-              <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem"><i class="fa-solid fa-arrow-right" style="color:#7c3aed;margin-right:.25rem"></i>Transferred to <strong>${h.toName||'?'}</strong> on ${fmtDate(h.transferredAt)}${h.transferredBy?' · by '+h.transferredBy:''}</div>
-              ${h.reason?`<div style="font-size:.72rem;margin-top:.22rem;padding:.3rem .55rem;background:#f8fafd;border-radius:5px;border-left:2px solid #cbd5e1;color:var(--text-light)">${h.reason}</div>`:''}
-            </div>
-          </div>`).join('');
-        if(!currentEntry && hist.length===0) return '<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>No preceptor history yet — transfers will appear here.</p></div>';
-        return `<div style="padding:.25rem 0">${currentEntry}${histRows}</div>`;
-      })()}
     </div>`;
 }
 
@@ -1222,12 +1051,6 @@ async function openTraineeModal(tid, defaultTrainerId) {
           </select>
         </div>
       </div>
-      <div class="form-grid">
-        <div class="form-group"><label class="form-label">State</label>
-          <select class="form-control" id="fn-state">${buildStateOptions(trainee?trainee.state||'':'')}</select>
-        </div>
-        <div></div>
-      </div>
       <div class="form-section">Training Assignment</div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Assigned Preceptor</label>
@@ -1276,7 +1099,6 @@ async function openTransferModal(traineeId, currentTrainerId, traineeName) {
   const otherTrainers = trainers.filter(t=>t.id!==currentTrainerId);
   const current = trainers.find(t=>t.id===currentTrainerId);
   showModal(`
-    <div class="modal" onclick="event.stopPropagation()">
     <div style="padding:1.5rem">
       <div style="margin-bottom:1.25rem">
         <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.25rem"><i class="fa-solid fa-arrow-right-arrow-left" style="color:#7c3aed;margin-right:.4rem"></i>Transfer Preceptor</h3>
@@ -1330,6 +1152,7 @@ async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
       preceptorHistory: [...existingHistory, historyEntry]
     });
     await logActivity(`Transferred ${trainee.name} from ${fromTrainerName||'unassigned'} to ${newTrainer.name}`,'fa-arrow-right-arrow-left');
+    sendNewTraineeEmail(traineeId, trainee.name, newTrainerId, trainee.startDate, trainee.protocol);
     forceClose();
     renderTraineeDetail(traineeId, traineeBackContext);
   } catch(e) { alert('Error: '+e.message); setBtn('tr-save-btn', false, 'Confirm Transfer'); }
@@ -1338,17 +1161,19 @@ async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
 async function saveTrainee(id) {
   const name = v('fn-name');
   if(!name) return alert('Name is required');
+  await logActivity('DEBUG: saveTrainee called — id: "' + (id||'NEW') + '" | trainerId: "' + (v('fn-trainer')||'none') + '"', 'fa-bug');
   const initials = name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
-  const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), state:v('fn-state'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes')};
+  const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes')};
   setBtn('trainee-save-btn',true,'Saving...');
   try {
     if(id) {
       await db.collection('trainees').doc(id).update(obj);
       await logActivity(`Updated trainee ${name}`,'fa-pen');
     } else {
-      await db.collection('trainees').add({...obj, progressNotes:[], createdAt:ts()});
+      const newDoc = await db.collection('trainees').add({...obj, progressNotes:[], createdAt:ts()});
       const trainer = obj.trainerId ? (await db.collection('trainers').doc(obj.trainerId).get()).data() : null;
       await logActivity(`Assigned new trainee ${name} to ${trainer?trainer.name:'no preceptor'}`,'fa-user-graduate');
+      if (obj.trainerId) sendNewTraineeEmail(newDoc.id, name, obj.trainerId, obj.startDate, obj.protocol);
     }
     forceClose(); refreshCurrentPage();
   } catch(e){ alert('Error: '+e.message); setBtn('trainee-save-btn',false,'Save'); }
@@ -1402,38 +1227,6 @@ function skillRow(item, savedVal, prevVal) {
   </div>`;
 }
 
-function buildAsmtSkills(trainee, done, prev) {
-  const isMA = isMaProtocol(trainee.protocol);
-  const thirdSection = isMA ? MA_ULTRASOUND_SKILLS : SONO_SKILLS;
-  const thirdLabel = isMA ? 'MA Ultrasound Knowledge' : 'Ultrasonographer Skills';
-  const signoffLabel = isMA ? 'Senior Medical Staff Sign-off' : 'Senior Medical Staff (Ultrasonographer Sign-off)';
-  let h = '';
-  h += '<div class="form-section">Program Knowledge</div>';
-  PROGRAM_KNOWLEDGE.forEach(function(sec){
-    h += '<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">'+sec.section+'</div>';
-    sec.items.forEach(function(item){ h += skillRow(item, done?done['sk_'+item.id]||'':'', prev?prev['sk_'+item.id]||'':''); });
-    h += '</div>';
-  });
-  h += '<div class="form-section">Clinical Knowledge</div>';
-  CLINICAL_KNOWLEDGE.forEach(function(sec){
-    h += '<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">'+sec.section+'</div>';
-    sec.items.forEach(function(item){ h += skillRow(item, done?done['sk_'+item.id]||'':'', prev?prev['sk_'+item.id]||'':''); });
-    h += '</div>';
-  });
-  h += '<div class="form-group" style="margin-top:.75rem"><label class="form-label">Clinical Knowledge — Preceptor Sign-off Name</label>';
-  h += '<input class="form-control" id="a-clinical-signoff" value="'+(done?done.clinicalSignoff||'':'')+'" placeholder="Senior Medical Staff name"></div>';
-  h += '<div class="form-section">'+thirdLabel+'</div>';
-  thirdSection.forEach(function(item){ h += skillRow(item, done?done['sk_'+item.id]||'':'', prev?prev['sk_'+item.id]||'':''); });
-  h += '<div class="form-section">Additional Comments &amp; Sign-Off</div>';
-  h += '<div class="form-group"><label class="form-label">Additional Comments</label>';
-  h += '<textarea class="form-control" id="a-comments" placeholder="Any additional observations, strengths, concerns...">'+(done?done.comments||'':'')+'</textarea></div>';
-  h += '<div class="form-group"><label class="form-label">'+signoffLabel+'</label>';
-  h += '<input class="form-control" id="a-sono-signoff" value="'+(done?done.sonoSignoff||'':'')+'" placeholder="Senior Medical Staff name"></div>';
-  h += '<div class="form-group"><label class="form-label">Date of Sign-Off</label>';
-  h += '<input class="form-control" id="a-signoff-date" type="date" value="'+(done?done.signoffDate||todayStr():todayStr())+'"></div>';
-  return h;
-}
-
 async function openAssessmentModal(traineeId, day) {
   // Load this assessment and all previous ones for comparison
   const aSnap = await db.collection('assessments').where('traineeId','==',traineeId).get();
@@ -1459,7 +1252,41 @@ async function openAssessmentModal(traineeId, day) {
       ${done?`<div class="alert alert-success"><i class="fa-solid fa-circle-check" style="flex-shrink:0"></i><span>Completed ${fmtDate(done.completedDate)} · <a href="#" onclick="event.preventDefault();deleteAssessment('${done.id}','${traineeId}',${day})" style="color:var(--danger)">Delete & redo</a></span></div>`:''}
       ${compNote}
 
-      ${buildAsmtSkills(trainee, done, prev)}
+      <!-- PROGRAM KNOWLEDGE -->
+      <div class="form-section">Program Knowledge</div>
+      ${PROGRAM_KNOWLEDGE.map(sec=>`
+        <div style="margin-bottom:1rem">
+          <div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">${sec.section}</div>
+          ${sec.items.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
+        </div>`).join('')}
+
+      <!-- CLINICAL KNOWLEDGE -->
+      <div class="form-section">Clinical Knowledge</div>
+      ${CLINICAL_KNOWLEDGE.map(sec=>`
+        <div style="margin-bottom:1rem">
+          <div style="font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:.3rem;padding:.3rem .6rem;background:#f0f9ff;border-radius:var(--r-sm)">${sec.section}</div>
+          ${sec.items.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
+        </div>`).join('')}
+      <div class="form-group" style="margin-top:.75rem">
+        <label class="form-label">Clinical Knowledge — Preceptor Sign-off Name</label>
+        <input class="form-control" id="a-clinical-signoff" value="${done?done.clinicalSignoff||'':''}" placeholder="Senior Medical Staff name">
+      </div>
+
+      <!-- ULTRASONOGRAPHER SKILLS -->
+      <div class="form-section">Ultrasonographer Skills</div>
+      ${SONO_SKILLS.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
+
+      <!-- COMMENTS & SIGN-OFF -->
+      <div class="form-section">Additional Comments & Sign-Off</div>
+      <div class="form-group"><label class="form-label">Additional Comments</label>
+        <textarea class="form-control" id="a-comments" placeholder="Any additional observations, strengths, concerns...">${done?done.comments||'':''}</textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Senior Medical Staff (Ultrasonographer Sign-off)</label>
+        <input class="form-control" id="a-sono-signoff" value="${done?done.sonoSignoff||'':''}" placeholder="Senior Medical Staff name">
+      </div>
+      <div class="form-group"><label class="form-label">Date of Sign-Off</label>
+        <input class="form-control" id="a-signoff-date" type="date" value="${done?done.signoffDate||todayStr():todayStr()}">
+      </div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
@@ -1476,12 +1303,10 @@ function setRating(el,hid,val){
 }
 
 async function saveAssessment(traineeId, day, existingId) {
-  const traineeForSave = await db.collection('trainees').doc(traineeId).get();
-  const isMAAsmt = traineeForSave.exists && isMaProtocol(traineeForSave.data().protocol);
   const allItems = [
     ...PROGRAM_KNOWLEDGE.flatMap(s=>s.items),
     ...CLINICAL_KNOWLEDGE.flatMap(s=>s.items),
-    ...(isMAAsmt ? MA_ULTRASOUND_SKILLS : SONO_SKILLS)
+    ...SONO_SKILLS
   ];
   const obj = {traineeId, day, completedDate:todayStr(),
     comments: v('a-comments'),
@@ -1500,22 +1325,7 @@ async function saveAssessment(traineeId, day, existingId) {
     if(existingId) await db.collection('assessments').doc(existingId).delete();
     await db.collection('assessments').add({...obj, createdAt:ts()});
     const trDoc = await db.collection('trainees').doc(traineeId).get();
-    const traineeName = trDoc.data().name;
-    await logActivity(`${day}-day assessment completed for ${traineeName}`,'fa-clipboard-check');
-    // Notify admin if a preceptor (non-admin) submitted the assessment
-    if(currentUser && currentUser.role !== 'admin') {
-      try {
-        const adminEmail = 'alicia.penett@vipmedicalgroup.com';
-        if(adminEmail) {
-          const labels = {30:'30-Day',60:'60-Day',90:'90-Day'};
-          await emailjs.send('service_zbd6z5n', 'template_51iol4q', {
-            to_name: 'Alicia',
-            to_email: adminEmail,
-            trainee_list: `${labels[day]} assessment completed for ${traineeName}\n\nCompleted by: ${currentUser.name}\nDate: ${todayStr()}${obj.sonoSignoff ? '\nSign-off: '+obj.sonoSignoff : ''}${obj.overall ? '\nOverall score: '+obj.overall+'0%' : ''}`
-          });
-        }
-      } catch(emailErr) { console.warn('Assessment notification email failed:', emailErr); }
-    }
+    await logActivity(`${day}-day assessment completed for ${trDoc.data().name}`,'fa-clipboard-check');
     forceClose();
     renderTraineeDetail(traineeId, traineeBackContext);
   } catch(e){ alert('Error: '+e.message); setBtn('asmt-save-btn',false,'Save'); }
@@ -1780,6 +1590,38 @@ async function saveNote(traineeId) {
   } catch(e){ alert('Error: '+e.message); setBtn('note-save-btn',false,'Save'); }
 }
 
+async function openAdminNoteModal(traineeId) {
+  const doc = await db.collection('trainees').doc(traineeId).get();
+  const currentNote = doc.exists ? (doc.data().adminNotes || '') : '';
+  showModal(`<div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span class="modal-title"><i class="fa-solid fa-note-sticky" style="color:#d97706;margin-right:.4rem"></i>Admin Notes</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="alert alert-warning" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Use this for admin notes — status changes, termination, leave, or anything to record before archiving a trainee.</span></div>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <textarea class="form-control" id="admin-note-text" style="min-height:130px" placeholder="e.g. Terminated 8/15/2026 — voluntary resignation. Do not rehire.">${currentNote}</textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="admin-note-save-btn" onclick="saveAdminNote('${traineeId}')"><i class="fa-solid fa-check"></i> Save Note</button>
+    </div>
+  </div>`);
+}
+
+async function saveAdminNote(traineeId) {
+  const text = v('admin-note-text');
+  setBtn('admin-note-save-btn', true, 'Saving...');
+  try {
+    await db.collection('trainees').doc(traineeId).update({adminNotes: text, adminNotesUpdated: todayStr()});
+    forceClose();
+    renderTraineeDetail(traineeId, traineeBackContext);
+  } catch(e) {
+    alert('Error: ' + e.message);
+    setBtn('admin-note-save-btn', false, '<i class="fa-solid fa-check"></i> Save Note');
+  }
+}
+
 // ═══════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════
@@ -1981,7 +1823,7 @@ function buildAssessmentPDFContent(trainee, day, done, prev) {
     ${done&&done.comments?`<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;margin-bottom:.3rem;color:#0f3460">Additional Comments</div><div style="background:#f8fafd;border:1px solid #e2e8f0;border-radius:6px;padding:.65rem;font-size:.8rem">${done.comments}</div></div>`:''}
     <div style="border-top:2px solid #e2e8f0;padding-top:1rem;margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
       <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Ultrasonographer Sign-off</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${done&&done.sonoSignoff||''}</div></div>
-      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${done&&done.sonoSignoff||''}</div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor Sign-off</div><div style="border-bottom:1px solid #1e293b;min-height:28px"></div></div>
       <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Date</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${done&&done.signoffDate?fmtDate(done.signoffDate):''}</div></div>
     </div>
     <div style="margin-top:1.25rem;font-size:.65rem;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:.6rem">Generated by VIP Training Progress Tracker · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
@@ -2033,7 +1875,7 @@ async function downloadCheckinPDF(checkinId, traineeName) {
     ${ci.improvements?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#dc2626;margin-bottom:.3rem">Areas Needing Improvement</div><div style="background:#fee2e2;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #fca5a5">${ci.improvements}</div></div>`:''}
     ${ci.additional?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#1e293b;margin-bottom:.3rem">Additional Comments</div><div style="background:#f1f5f9;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #e2e8f0">${ci.additional}</div></div>`:''}
     <div style="border-top:2px solid #e2e8f0;padding-top:1rem;margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${ci.sonoSignoff||''}</div></div>
+      <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor Signature</div><div style="border-bottom:1px solid #1e293b;min-height:28px"></div></div>
       <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Date</div><div style="border-bottom:1px solid #1e293b;min-height:28px;font-size:.82rem">${fmtDate(ci.date)}</div></div>
     </div>
     <div style="margin-top:1.25rem;font-size:.65rem;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:.6rem">Generated by VIP Training Progress Tracker · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
@@ -2046,141 +1888,33 @@ async function downloadCheckinPDF(checkinId, traineeName) {
 }
 
 // ═══════════════════════════════════════
-//  FEATURE 5: FULL TRAINEE PDF REPORT
-// ═══════════════════════════════════════
-async function downloadFullTraineeReport(traineeId) {
-  var trDoc = await db.collection('trainees').doc(traineeId).get();
-  if (!trDoc.exists) { alert('Trainee not found.'); return; }
-  var trainee = {id: trDoc.id, ...trDoc.data()};
-  var results = await Promise.all([
-    db.collection('assessments').where('traineeId','==',traineeId).get(),
-    db.collection('checkins').where('traineeId','==',traineeId).get(),
-    db.collection('trainers').get()
-  ]);
-  var assessments = results[0].docs.map(function(d){return {id:d.id,...d.data()};}).sort(function(a,b){return a.day-b.day;});
-  var checkins = results[1].docs.map(function(d){return {id:d.id,...d.data()};}).sort(function(a,b){return a.week-b.week;});
-  var trainers = results[2].docs.map(function(d){return {id:d.id,...d.data()};});
-  var trainer = trainers.find(function(t){return t.id===trainee.trainerId;});
-  var daysIn = trainee.startDate ? Math.floor((new Date()-new Date(trainee.startDate))/(1000*60*60*24)) : 0;
-  var pct = Math.min(100, Math.round((daysIn/90)*100));
-  var lowFlag = getLowScoreFlag(trainee, assessments);
-
-  function gradeCell(g) {
-    var colors = {O:'#15803d',S:'#1d4ed8',P:'#d97706',N:'#dc2626','N/A':'#64748b'};
-    if (!g) return '<span style="color:#94a3b8">—</span>';
-    return '<span style="display:inline-block;padding:.1rem .4rem;border-radius:4px;background:' + (colors[g]||'#64748b') + ';color:#fff;font-size:.72rem;font-weight:700">' + g + '</span>';
-  }
-
-  function buildAsmtSection(asmt) {
-    if (!asmt) return '<p style="color:#94a3b8;font-size:.82rem">Not completed.</p>';
-    var isMA = isMaProtocol(trainee.protocol);
-    var thirdSection = isMA ? MA_ULTRASOUND_SKILLS : SONO_SKILLS;
-    var thirdLabel = isMA ? 'MA Ultrasound Knowledge' : 'Ultrasonographer Skills';
-    var html = '';
-    function secTable(title, items) {
-      var rows = items.map(function(item) {
-        var g = asmt['sk_'+item.id]||'';
-        return '<tr><td style="padding:.35rem .6rem;font-size:.77rem;border-bottom:1px solid #f1f5f9">' + item.label + '</td>'
-          + '<td style="padding:.35rem .6rem;text-align:center;border-bottom:1px solid #f1f5f9">' + gradeCell(g) + '</td></tr>';
-      }).join('');
-      return '<div style="margin-bottom:.75rem">'
-        + '<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:#0369a1;background:#f0f9ff;padding:.25rem .6rem;border-radius:4px;margin-bottom:.2rem">' + title + '</div>'
-        + '<table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0"><tbody>' + rows + '</tbody></table></div>';
-    }
-    PROGRAM_KNOWLEDGE.forEach(function(sec){ html += secTable(sec.section, sec.items); });
-    CLINICAL_KNOWLEDGE.forEach(function(sec){ html += secTable(sec.section, sec.items); });
-    html += secTable(thirdLabel, thirdSection);
-    if (asmt.comments) html += '<div style="margin-top:.5rem;font-size:.78rem"><strong>Comments:</strong> ' + asmt.comments + '</div>';
-    if (asmt.sonoSignoff) html += '<div style="font-size:.77rem;color:#64748b;margin-top:.25rem"><strong>Sign-off:</strong> ' + asmt.sonoSignoff + '</div>';
-    if (asmt.overall !== undefined && asmt.overall !== '') html += '<div style="font-size:.77rem;color:#15803d;font-weight:700;margin-top:.25rem">Overall score: ' + (asmt.overall*10) + '%</div>';
-    return html;
-  }
-
-  function buildCheckinRows() {
-    if (!checkins.length) return '<p style="color:#94a3b8;font-size:.82rem">No check-ins recorded.</p>';
-    return checkins.map(function(ci) {
-      var isMA = ci.formType === 'ma';
-      return '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:.6rem .9rem;margin-bottom:.5rem">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">'
-        + '<strong style="font-size:.85rem">Week ' + ci.week + '</strong>'
-        + '<span style="font-size:.73rem;color:#64748b">' + fmtDate(ci.date) + ' &nbsp;·&nbsp; ' + (ci.cases||'0') + ' ' + (isMA?'procedures':'cases') + ' &nbsp;·&nbsp; ' + (ci.supervision||'—') + '</span></div>'
-        + (ci.strengths ? '<div style="font-size:.77rem;color:#15803d;margin-bottom:.2rem"><strong>Strengths:</strong> ' + ci.strengths + '</div>' : '')
-        + (ci.improvements ? '<div style="font-size:.77rem;color:#dc2626"><strong>Improvements:</strong> ' + ci.improvements + '</div>' : '')
-        + '</div>';
-    }).join('');
-  }
-
-  var hist = trainee.preceptorHistory || [];
-  var histHTML = hist.length ? hist.map(function(h) {
-    return '<div style="font-size:.77rem;padding:.35rem 0;border-bottom:1px solid #f1f5f9">'
-      + fmtDate(h.transferredAt) + ': <strong>' + (h.fromName||'?') + '</strong> → <strong>' + (h.toName||'?') + '</strong>'
-      + (h.reason ? ' — ' + h.reason : '') + '</div>';
-  }).join('') : '<p style="color:#94a3b8;font-size:.82rem">No transfers recorded.</p>';
-
-  var progressBar = '<div style="height:9px;background:#e2e8f0;border-radius:100px;overflow:hidden;margin-top:.35rem"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#0ea5e9,#0284c7);border-radius:100px"></div></div>';
-
-  var html = '<div style="font-family:Arial,sans-serif;color:#1e293b;max-width:760px;margin:0 auto;padding:1.5rem">'
-    + '<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:3px solid #0f3460">'
-    + '<div style="background:#0ea5e9;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;font-weight:800">V</div>'
-    + '<div><div style="font-size:1.15rem;font-weight:800;color:#0f3460">VIP Training Progress Tracker</div><div style="font-size:.7rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Full Trainee Report</div></div>'
-    + '<div style="margin-left:auto;text-align:right"><div style="font-size:.78rem;color:#64748b">Generated: ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) + '</div></div></div>'
-
-    + '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.25rem">'
-    + '<div style="font-size:1.2rem;font-weight:800;color:#0f3460;margin-bottom:.5rem">' + trainee.name
-    + (lowFlag ? ' <span style="font-size:.72rem;background:#fee2e2;color:#dc2626;border-radius:4px;padding:.1rem .4rem;font-weight:700">⚠ Low Scores</span>' : '') + '</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;font-size:.82rem">'
-    + '<div><strong>Preceptor:</strong><br>' + (trainer?trainer.name:'—') + '</div>'
-    + '<div><strong>Start Date:</strong><br>' + (trainee.startDate?fmtDate(trainee.startDate):'—') + '</div>'
-    + '<div><strong>Status:</strong><br>' + (trainee.status||'active') + '</div>'
-    + '<div><strong>Protocol:</strong><br>' + (trainee.protocol||'—') + '</div>'
-    + '<div><strong>State:</strong><br>' + (trainee.state||'—') + '</div>'
-    + '<div><strong>Training Tier:</strong><br>' + (trainee.experience||'—') + '</div>'
-    + '</div>'
-    + '<div style="margin-top:.75rem"><div style="display:flex;justify-content:space-between;font-size:.73rem;color:#64748b;margin-bottom:.2rem"><span>90-Day Progress</span><span>' + pct + '% (Day ' + daysIn + ' of 90)</span></div>'
-    + progressBar + '</div></div>'
-
-    + '<div style="font-size:.9rem;font-weight:800;color:#0f3460;margin:1rem 0 .5rem;padding-bottom:.3rem;border-bottom:2px solid #0f3460">Assessments</div>';
-
-  [30,60,90].map(function(day) {
-    var asmt = assessments.find(function(a){return a.day===day;});
-    html += '<div style="margin-bottom:1.25rem"><div style="background:#0f3460;color:#fff;padding:.4rem .8rem;border-radius:6px 6px 0 0;font-size:.78rem;font-weight:700">'
-      + day + '-Day Assessment' + (asmt ? ' — Completed ' + fmtDate(asmt.completedDate) : ' — Not completed') + '</div>'
-      + '<div style="border:1px solid #e2e8f0;border-top:none;border-radius:0 0 6px 6px;padding:.75rem">'
-      + buildAsmtSection(asmt) + '</div></div>';
-  });
-
-  html += '<div style="font-size:.9rem;font-weight:800;color:#0f3460;margin:1rem 0 .5rem;padding-bottom:.3rem;border-bottom:2px solid #0f3460">Weekly Check-ins</div>'
-    + buildCheckinRows()
-    + '<div style="font-size:.9rem;font-weight:800;color:#0f3460;margin:1rem 0 .5rem;padding-bottom:.3rem;border-bottom:2px solid #0f3460">Clinical Notes</div>';
-
-  var notes = trainee.progressNotes || [];
-  if (notes.length) {
-    html += notes.map(function(n) {
-      return '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:.55rem .85rem;margin-bottom:.4rem">'
-        + '<div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.2rem">'
-        + '<strong>' + fmtDate(n.date) + '</strong><span style="color:#64748b">' + (n.category||'General') + '</span></div>'
-        + '<div style="font-size:.8rem">' + n.text + '</div></div>';
-    }).join('');
-  } else {
-    html += '<p style="color:#94a3b8;font-size:.82rem">No clinical notes recorded.</p>';
-  }
-
-  html += '<div style="font-size:.9rem;font-weight:800;color:#0f3460;margin:1rem 0 .5rem;padding-bottom:.3rem;border-bottom:2px solid #0f3460">Preceptor History</div>'
-    + histHTML
-    + '<div style="margin-top:1.5rem;font-size:.65rem;color:#94a3b8;text-align:center;border-top:1px solid #f1f5f9;padding-top:.6rem">Generated by VIP Training Progress Tracker · Confidential</div></div>';
-
-  var el = document.createElement('div');
-  el.innerHTML = html;
-  document.body.appendChild(el);
-  var safeName = trainee.name.replace(/\s+/g,'-');
-  await html2pdf().set({margin:.4, filename: safeName + '_Full_Report.pdf', image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'in',format:'letter',orientation:'portrait'}}).from(el).save();
-  document.body.removeChild(el);
-}
-
-// ═══════════════════════════════════════
 //  EMAILJS — REMINDERS
 // ═══════════════════════════════════════
 emailjs.init('JeI4EaHZq9fT_iwQi');
+const EJ_SERVICE   = 'service_zbd6z5n';
+const EJ_REMINDER  = 'template_51iol4q';   // existing assessment/check-in reminder
+const EJ_ASSIGNED  = 'template_new_trainee';   // ← create this in EmailJS dashboard
+
+// Sends a welcome/assignment email to the trainer when a trainee is newly assigned or transferred
+async function sendNewTraineeEmail(traineeId, traineeName, trainerId, startDate, protocol) {
+  await logActivity('DEBUG: sendNewTraineeEmail called for ' + traineeName + ' — trainerId: ' + trainerId, 'fa-bug');
+  try {
+    const trDoc = await db.collection('trainers').doc(trainerId).get();
+    if (!trDoc.exists) { await logActivity('DEBUG: trainer doc not found — id: ' + trainerId, 'fa-bug'); return; }
+    const trainer = trDoc.data();
+    if (!trainer.email) { await logActivity('DEBUG: trainer has no email — ' + trainer.name, 'fa-bug'); return; }
+    await logActivity('DEBUG: attempting emailjs.send to ' + trainer.email, 'fa-bug');
+    await emailjs.send(EJ_SERVICE, EJ_ASSIGNED, {
+      to_name:      trainer.name,
+      to_email:     trainer.email,
+      trainee_name: traineeName,
+      start_date:   startDate ? fmtDate(startDate) : 'TBD',
+      protocol:     protocol || 'Not specified',
+      tracker_url:  window.location.href,
+    });
+    await logActivity(`Assignment email → ${trainer.name} for ${traineeName}`,'fa-envelope');
+  } catch(e) { await logActivity('DEBUG: email error — ' + (e.text || e.message || JSON.stringify(e)), 'fa-bug'); }
+}
 
 async function sendAssessmentReminder(trainerId, btnEl) {
   const origHTML = btnEl.innerHTML;
@@ -2229,7 +1963,7 @@ async function sendAssessmentReminder(trainerId, btnEl) {
     if (assessmentLines.length) traineeList += 'MILESTONE ASSESSMENTS DUE:\n' + assessmentLines.join('\n');
     if (checkinLines.length) { if (traineeList) traineeList += '\n\n'; traineeList += 'WEEKLY CHECK-INS DUE:\n' + checkinLines.join('\n'); }
 
-    await emailjs.send('service_zbd6z5n', 'template_51iol4q', {
+    await emailjs.send(EJ_SERVICE, EJ_REMINDER, {
       to_name: trainer.name,
       to_email: trainer.email,
       trainee_list: traineeList,
