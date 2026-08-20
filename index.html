@@ -755,11 +755,25 @@ async function renderTrainerDashboard(tid) {
 async function renderTraineesPage() {
   setNavActive('nav-trainees');
   const el = document.getElementById('main-content');
-  el.innerHTML = `<div class="sec-hdr"><div><h1 style="font-size:1.3rem;font-weight:800">All Trainees</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">All trainees across the program</p></div>
-    <button class="btn btn-primary" onclick="openTraineeModal(null,null)"><i class="fa-solid fa-plus"></i> Add Trainee</button></div>
-    <div class="card"><div class="card-hdr"><span class="card-hdr-title">All Trainees</span>
-    <input class="form-control" style="width:200px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()"></div>
-    <div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div></div>`;
+  el.innerHTML = `
+    <div class="sec-hdr">
+      <div><h1 style="font-size:1.3rem;font-weight:800">All Trainees</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">All trainees across the program</p></div>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <input class="form-control" style="width:200px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="trainee-search" oninput="filterTraineesTable()">
+        <button class="btn btn-primary" onclick="openTraineeModal(null,null)"><i class="fa-solid fa-plus"></i> Add Trainee</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-hdr"><span class="card-hdr-title" id="current-count-label">Current Employees</span></div>
+      <div class="tbl-wrap" id="trainees-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" style="cursor:pointer;user-select:none" onclick="toggleArchivedSection()">
+        <span class="card-hdr-title"><i class="fa-solid fa-box-archive" style="color:var(--text-light);margin-right:.4rem"></i>Archived <span id="archived-count-badge"></span></span>
+        <i class="fa-solid fa-chevron-down" id="archived-chevron" style="color:var(--text-light);font-size:.8rem;transition:transform .2s"></i>
+      </div>
+      <div id="archived-section" class="tbl-wrap" style="display:none"></div>
+    </div>`;
   const [tSnap, aSnap, trainerSnap] = await Promise.all([
     db.collection('trainees').orderBy('createdAt','desc').get(),
     db.collection('assessments').get(),
@@ -778,9 +792,32 @@ function filterTraineesTable() {
 }
 
 function renderTraineesTable(trainees) {
+  const current = trainees.filter(t => t.status !== 'archived');
+  const archived = trainees.filter(t => t.status === 'archived');
+
   const el = document.getElementById('trainees-tbl-wrap');
-  if(!el) return;
-  el.innerHTML = traineeTableHTML(trainees, window._allAssessments||[], null, false);
+  if(el) el.innerHTML = current.length
+    ? traineeTableHTML(current, window._allAssessments||[], null, false)
+    : '<div class="empty" style="padding:1.75rem"><i class="fa-solid fa-user-graduate"></i><p>No current trainees</p></div>';
+
+  const countLabel = document.getElementById('current-count-label');
+  if(countLabel) countLabel.textContent = `Current Employees (${current.length})`;
+
+  const archEl = document.getElementById('archived-section');
+  const badgeEl = document.getElementById('archived-count-badge');
+  if(badgeEl) badgeEl.innerHTML = archived.length ? `<span class="badge badge-gray" style="margin-left:.2rem">${archived.length}</span>` : '';
+  if(archEl) archEl.innerHTML = archived.length
+    ? traineeTableHTML(archived, window._allAssessments||[], null, false)
+    : '<div class="empty" style="padding:1.5rem"><i class="fa-solid fa-box-archive"></i><p>No archived trainees</p></div>';
+}
+
+function toggleArchivedSection() {
+  const section = document.getElementById('archived-section');
+  const chevron = document.getElementById('archived-chevron');
+  if(!section) return;
+  const isHidden = section.style.display === 'none';
+  section.style.display = isHidden ? 'block' : 'none';
+  if(chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
 }
 
 function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, checkins=[]) {
