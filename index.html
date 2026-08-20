@@ -775,7 +775,7 @@ async function renderTraineesPage() {
       <div id="archived-section" class="tbl-wrap" style="display:none"></div>
     </div>`;
   const [tSnap, aSnap, trainerSnap] = await Promise.all([
-    db.collection('trainees').orderBy('createdAt','desc').get(),
+    db.collection('trainees').get(),
     db.collection('assessments').get(),
     db.collection('trainers').get()
   ]);
