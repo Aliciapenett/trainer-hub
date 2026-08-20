@@ -793,8 +793,13 @@ function filterTraineesTable() {
 
 function renderTraineesTable(trainees) {
   const byNewest = (a, b) => {
-    const ta = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)) : new Date(0);
-    const tb = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)) : new Date(0);
+    const getTime = t => {
+      if (!t) return 0;
+      if (t.toDate) return t.toDate().getTime();
+      return new Date(t).getTime();
+    };
+    const ta = getTime(a.createdAt) || (a.startDate ? new Date(a.startDate).getTime() : 0);
+    const tb = getTime(b.createdAt) || (b.startDate ? new Date(b.startDate).getTime() : 0);
     return tb - ta;
   };
   const current = trainees.filter(t => t.status !== 'archived').sort(byNewest);
