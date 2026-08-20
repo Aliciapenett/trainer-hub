@@ -792,8 +792,13 @@ function filterTraineesTable() {
 }
 
 function renderTraineesTable(trainees) {
-  const current = trainees.filter(t => t.status !== 'archived');
-  const archived = trainees.filter(t => t.status === 'archived');
+  const byNewest = (a, b) => {
+    const ta = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)) : new Date(0);
+    const tb = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)) : new Date(0);
+    return tb - ta;
+  };
+  const current = trainees.filter(t => t.status !== 'archived').sort(byNewest);
+  const archived = trainees.filter(t => t.status === 'archived').sort(byNewest);
 
   const el = document.getElementById('trainees-tbl-wrap');
   if(el) el.innerHTML = current.length
