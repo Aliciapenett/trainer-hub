@@ -1138,6 +1138,7 @@ async function openTransferModal(traineeId, currentTrainerId, traineeName) {
   const otherTrainers = trainers.filter(t=>t.id!==currentTrainerId);
   const current = trainers.find(t=>t.id===currentTrainerId);
   showModal(`
+    <div class="modal" onclick="event.stopPropagation()">
     <div style="padding:1.5rem">
       <div style="margin-bottom:1.25rem">
         <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.25rem"><i class="fa-solid fa-arrow-right-arrow-left" style="color:#7c3aed;margin-right:.4rem"></i>Transfer Preceptor</h3>
@@ -1160,6 +1161,7 @@ async function openTransferModal(traineeId, currentTrainerId, traineeName) {
         <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
         <button class="btn btn-primary" id="tr-save-btn" style="background:#7c3aed" onclick="saveTransfer('${traineeId}','${currentTrainerId}','${current?current.name:''}')"><i class="fa-solid fa-check"></i> Confirm Transfer</button>
       </div>
+    </div>
     </div>
   `);
 }
