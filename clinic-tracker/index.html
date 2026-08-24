@@ -527,7 +527,7 @@
 //  DATA
 // ══════════════════════════════════════════════
 
-let clinics = [
+const SEED_CLINICS = [
   { id: 1,  state: 'NY', name: 'Midtown',          fullName: 'NY – Midtown' },
   { id: 2,  state: 'NY', name: 'FiDi',             fullName: 'NY – FiDi' },
   { id: 3,  state: 'NY', name: 'Downtown Brooklyn', fullName: 'NY – Downtown Brooklyn' },
@@ -563,7 +563,7 @@ let clinics = [
   { id: 33, state: 'CT', name: 'Hamden',            fullName: 'CT – Hamden' },
 ];
 
-let visits = [
+const SEED_VISITS = [
   { id:1,  clinicId:1,  date:'2023-11-10', note:'' },
   { id:2,  clinicId:1,  date:'2024-04-10', note:'' },
   { id:3,  clinicId:1,  date:'2024-09-11', note:'' },
@@ -634,8 +634,16 @@ let visits = [
   { id:68, clinicId:33, date:'2026-01-14', note:'' },
 ];
 
-let nextClinicId = Math.max(...clinics.map(c => c.id)) + 1;
-let nextVisitId  = Math.max(...visits.map(v => v.id)) + 1;
+let clinics = JSON.parse(localStorage.getItem('ct_clinics') || 'null') || SEED_CLINICS;
+let visits  = JSON.parse(localStorage.getItem('ct_visits')  || 'null') || SEED_VISITS;
+
+let nextClinicId = Math.max(...clinics.map(c => c.id), 0) + 1;
+let nextVisitId  = Math.max(...visits.map(v => v.id),  0) + 1;
+
+function persist() {
+  localStorage.setItem('ct_clinics', JSON.stringify(clinics));
+  localStorage.setItem('ct_visits',  JSON.stringify(visits));
+}
 
 // ══════════════════════════════════════════════
 //  HELPERS
@@ -951,6 +959,7 @@ function saveVisit() {
   const note     = document.getElementById('visitNotes').value.trim();
   if (!date) { alert('Please select a date.'); return; }
   visits.push({ id: nextVisitId++, clinicId, date, note });
+  persist();
   closeModal('visitModal');
   render();
 }
@@ -964,6 +973,7 @@ function saveLocation() {
   const fullName = `${state} – ${name}`;
   clinics.push({ id: nextClinicId++, state, name, fullName });
   clinics.sort((a,b) => (a.state + a.name).localeCompare(b.state + b.name));
+  persist();
   closeModal('locationModal');
   render();
 }
@@ -1006,6 +1016,7 @@ function confirmAction() {
     visits  = visits.filter(v => v.clinicId !== pendingAction.id);
     clinics = clinics.filter(c => c.id !== pendingAction.id);
   }
+  persist();
   pendingAction = null;
   closeModal('confirmModal');
   render();
