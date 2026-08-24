@@ -322,6 +322,15 @@ const SONO_SKILLS = [
   {id:'sono_12', label:'Know most insurance diameter and reflux requirements'},
 ];
 
+// MA-specific ultrasound knowledge — used for MA Training Only & FD/MA Training protocols
+const MA_SONO_SKILLS = [
+  {id:'ma_sono_1', label:'Input patient information'},
+  {id:'ma_sono_2', label:'Ability to predict the physician\'s treatment plan based on the ultrasound data in chart'},
+  {id:'ma_sono_3', label:'Ability to identify after effects of vein treatment: hyperpigmentation, thrombophlebitis, etc.'},
+  {id:'ma_sono_4', label:'Know most insurance diameter and reflux requirements'},
+  {id:'ma_sono_5', label:'Confidently can measure catheter tip to SFJ during RFA procedure'},
+];
+
 // Legacy comp arrays (kept for backward compat)
 const COMP_30=[],COMP_60=[],COMP_90=[];
 const INITIAL_TRAINERS = [
@@ -1146,6 +1155,7 @@ async function openTransferModal(traineeId, currentTrainerId, traineeName) {
   const otherTrainers = trainers.filter(t=>t.id!==currentTrainerId);
   const current = trainers.find(t=>t.id===currentTrainerId);
   showModal(`
+    <div class="modal" onclick="event.stopPropagation()">
     <div style="padding:1.5rem">
       <div style="margin-bottom:1.25rem">
         <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.25rem"><i class="fa-solid fa-arrow-right-arrow-left" style="color:#7c3aed;margin-right:.4rem"></i>Transfer Preceptor</h3>
@@ -1168,6 +1178,7 @@ async function openTransferModal(traineeId, currentTrainerId, traineeName) {
         <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
         <button class="btn btn-primary" id="tr-save-btn" style="background:#7c3aed" onclick="saveTransfer('${traineeId}','${currentTrainerId}','${current?current.name:''}')"><i class="fa-solid fa-check"></i> Confirm Transfer</button>
       </div>
+    </div>
     </div>
   `);
 }
@@ -1296,6 +1307,10 @@ async function openAssessmentModal(traineeId, day) {
   const prev = day===60 ? allAsmts.find(a=>a.day===30) : day===90 ? allAsmts.find(a=>a.day===60) : null;
   const traineeDoc = await db.collection('trainees').doc(traineeId).get();
   const trainee = {id:traineeDoc.id,...traineeDoc.data()};
+  const protocol = trainee.protocol || '';
+  const isMA = ['MA Training Only','FD/MA Training'].includes(protocol);
+  const sonoItems = isMA ? MA_SONO_SKILLS : SONO_SKILLS;
+  const sonoSectionTitle = isMA ? 'MA Ultrasound Knowledge' : 'Ultrasonographer Skills';
   const titles = {30:'30-Day Assessment',60:'60-Day Assessment',90:'90-Day Assessment'};
   const compNote = prev ? `<div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Scores from the previous assessment are shown as colored badges next to each item for comparison.</span></div>` : '';
 
@@ -1333,9 +1348,9 @@ async function openAssessmentModal(traineeId, day) {
         <input class="form-control" id="a-clinical-signoff" value="${done?done.clinicalSignoff||'':''}" placeholder="Senior Medical Staff name">
       </div>
 
-      <!-- ULTRASONOGRAPHER SKILLS -->
-      <div class="form-section">Ultrasonographer Skills</div>
-      ${SONO_SKILLS.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
+      <!-- SONO / MA SKILLS -->
+      <div class="form-section">${sonoSectionTitle}</div>
+      ${sonoItems.map(item=>skillRow(item, done?done['sk_'+item.id]:'', prev?prev['sk_'+item.id]:'')).join('')}
 
       <!-- COMMENTS & SIGN-OFF -->
       <div class="form-section">Additional Comments & Sign-Off</div>
@@ -1352,7 +1367,7 @@ async function openAssessmentModal(traineeId, day) {
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
       <button class="btn btn-outline btn-sm" onclick="downloadAssessmentPDF('${traineeId}',${day})" style="color:#0f3460;border-color:#0f3460"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
-      <button class="btn btn-primary" id="asmt-save-btn" onclick="saveAssessment('${traineeId}',${day},'${done?done.id:''}')"><i class="fa-solid fa-check"></i> Save Assessment</button>
+      <button class="btn btn-primary" id="asmt-save-btn" onclick="saveAssessment('${traineeId}',${day},'${done?done.id:''}','${protocol}')"><i class="fa-solid fa-check"></i> Save Assessment</button>
     </div>
   </div>`);
 }
@@ -1363,11 +1378,13 @@ function setRating(el,hid,val){
   document.getElementById(hid).value=val;
 }
 
-async function saveAssessment(traineeId, day, existingId) {
+async function saveAssessment(traineeId, day, existingId, protocol='') {
+  const isMA = ['MA Training Only','FD/MA Training'].includes(protocol);
+  const sonoItems = isMA ? MA_SONO_SKILLS : SONO_SKILLS;
   const allItems = [
     ...PROGRAM_KNOWLEDGE.flatMap(s=>s.items),
     ...CLINICAL_KNOWLEDGE.flatMap(s=>s.items),
-    ...SONO_SKILLS
+    ...sonoItems
   ];
   const obj = {traineeId, day, completedDate:todayStr(),
     comments: v('a-comments'),
