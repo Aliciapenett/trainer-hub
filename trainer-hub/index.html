@@ -789,8 +789,8 @@ function filterTraineesTable() {
 }
 
 function renderTraineesTable(trainees) {
-  const current = trainees.filter(t => t.status !== 'archived');
-  const archived = trainees.filter(t => t.status === 'archived');
+  const current = trainees.filter(t => t.status !== 'archived').sort((a,b) => (b.startDate||'') < (a.startDate||'') ? -1 : 1);
+  const archived = trainees.filter(t => t.status === 'archived').sort((a,b) => (b.startDate||'') < (a.startDate||'') ? -1 : 1);
 
   // Current employees section
   const el = document.getElementById('trainees-tbl-wrap');
