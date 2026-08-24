@@ -1297,7 +1297,7 @@ async function openAssessmentModal(traineeId, day) {
       <div>
         <div class="modal-title"><i class="fa-solid fa-clipboard-list" style="color:var(--accent)"></i> ${titles[day]} — ${trainee.name}</div>
         <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem">
-          Grading: <strong>O</strong> Outstanding &nbsp;·&nbsp; <strong>S</strong> Satisfactory &nbsp;·&nbsp; <strong>P</strong> Progressing &nbsp;·&nbsp; <strong>N</strong> Needs Improvement &nbsp;·&nbsp; <strong>N/A</strong> Not Applicable
+          Protocol: <strong>${protocol||'(none)'}</strong> · isMA: <strong>${isMA}</strong> &nbsp;·&nbsp; Grading: <strong>O</strong> Outstanding &nbsp;·&nbsp; <strong>S</strong> Satisfactory &nbsp;·&nbsp; <strong>P</strong> Progressing &nbsp;·&nbsp; <strong>N</strong> Needs Improvement &nbsp;·&nbsp; <strong>N/A</strong> Not Applicable
         </div>
       </div>
       <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
