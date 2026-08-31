@@ -323,6 +323,7 @@ const DEFAULT_PROCS={
   ultrasound:{label:'Ultrasound Review',icon:'fa-wave-square',color:'#0f3460',items:['Correct probe and preset settings selected','Complete bilateral lower extremity scan performed','Deep venous system evaluated for DVT','GSV and SSV reflux accurately measured and documented','Perforators and accessory veins identified','CEAP classification documented correctly','Treatment plan correlates with ultrasound findings','Prior treatment effects assessed appropriately','Scan report written clearly and accurately','Documentation completed accurately and in timely manner']},
   consult:{label:'Initial Consultation with Ultrasound',icon:'fa-user-doctor',color:'#16a34a',items:['Chief complaint and symptom history documented','Relevant medical and family history reviewed','Physical examination performed and documented','Patient symptoms and risk factors thoroughly assessed','Ultrasound performed with correct technique','Findings explained clearly to patient in understandable terms','CEAP classification discussed with patient','Treatment options clearly presented with risks/benefits','Patient questions answered appropriately','Documentation completed accurately and in timely manner']},
   frontdesk:{label:'Front Desk',icon:'fa-building-user',color:'#0f766e',items:['Front desk area is clean, organized, and looks presentable','Waiting area TVs work and can play marketing slideshow','Computers, printers, and other essential IT equipment are functional','Staff has G-Reviews QR Badges on them and/or QR codes posted throughout clinic'],ratingItems:[{label:'The check-in process is smooth and efficient',scale:5},{label:'There is a supportive work environment (Team work / Good interactions with colleagues)',scale:5},{label:'Front desks are welcoming and treat patients with professionalism and respect',scale:5}]},
+  clinicoverview:{label:'Clinic Overview',icon:'fa-hospital',color:'#7c3aed',noStaff:true,clinicFields:[{id:'patients',label:'# Patients for the Day'},{id:'scans',label:'# Scans'},{id:'sonographers',label:'# Sonographers Scheduled'},{id:'mas',label:'# MAs Scheduled'}],items:['Any medications in patient rooms that have been drawn up/opened are labeled with date','Patient rooms are overall clean, organized, and countertops are neat','Storage room is organized and neat (no packaging laying around, boxes are being disposed of, etc.)','Storage room items that expire are being marked and organized in a way that allows oldest to newest use','Marketing materials are organized and bags/folders are premade','Leg photo signs are in place','Personal protective equipment (PPE) is used appropriately and disposed of properly','Required equipment and supplies for procedures (e.g., needles, catheters, ultrasound gel) are readily available and properly organized','Proper instructions for post-procedure care and follow-up appointments are provided to patients']},
 };
 
 // ═══════════════════════════════════════════
@@ -488,6 +489,7 @@ function editWalkthrough(id){
     // Staff
     const staff=wt.staff&&wt.staff[key]||{};
     ['sono','provider','ma'].forEach(f=>{const el=document.getElementById(`staff-${key}-${f}`);if(el)el.value=staff[f]||'';});
+    if(staff.clinicFields){PROCS[key].clinicFields?.forEach(f=>{const el=document.getElementById(`cf-${key}-${f.id}`);if(el)el.value=staff.clinicFields[f.id]||'';});}
     items.filter(i=>!i.type).forEach((item,i)=>{
       const el=document.getElementById(`ci-${key}-${i}`);
       if(el){el.checked=item.ok;if(!item.ok){const nw=document.getElementById(`note-${key}-${i}`);if(nw){nw.parentElement.style.display='block';nw.value=item.note||'';}}};
@@ -526,11 +528,14 @@ function startNew(resetEdit=true){
         <i class="fa-solid fa-chevron-down" id="chev-${key}" style="color:var(--text-light);font-size:.72rem;transition:.2s"></i>
       </div>
       <div class="proc-checklist">
-        <div class="staff-row">
+        ${!p.noStaff?`<div class="staff-row">
           <div class="staff-field"><label>Sonographer</label><input class="staff-input" id="staff-${key}-sono" placeholder="Name..."></div>
           <div class="staff-field"><label>Provider</label><input class="staff-input" id="staff-${key}-provider" placeholder="Name..."></div>
           <div class="staff-field"><label>MA</label><input class="staff-input" id="staff-${key}-ma" placeholder="Name..."></div>
-        </div>
+        </div>`:''}
+        ${p.clinicFields?`<div class="staff-row" style="grid-template-columns:repeat(${p.clinicFields.length},1fr)">
+          ${p.clinicFields.map(f=>`<div class="staff-field"><label>${f.label}</label><input class="staff-input" type="number" id="cf-${key}-${f.id}" placeholder="0" min="0" style="width:100%"></div>`).join('')}
+        </div>`:''}
         ${p.items.map((item,i)=>`
           <div class="check-item">
             <div class="check-item-row">
@@ -606,6 +611,7 @@ function generateReport(){
       procs[key]=p.items.map((label,i)=>({label,ok:document.getElementById(`ci-${key}-${i}`)?.checked||false,note:(document.getElementById(`ci-${key}-${i}`)?.checked?'':(document.getElementById(`note-${key}-${i}`)?.value||''))}));
       (p.ratingItems||[]).forEach((ri,i)=>{const sel=document.querySelector(`input[name="ri-${key}-${i}"]:checked`);const rating=sel?parseInt(sel.value):null;const note=document.getElementById(`ri-note-${key}-${i}`)?.value||'';procs[key].push({label:ri.label,type:'rating',rating,ok:rating!==null&&rating>=4,note});});
       staff[key]={sono:document.getElementById(`staff-${key}-sono`)?.value||'',provider:document.getElementById(`staff-${key}-provider`)?.value||'',ma:document.getElementById(`staff-${key}-ma`)?.value||''};
+      if(p.clinicFields){const cf={};p.clinicFields.forEach(f=>{cf[f.id]=document.getElementById(`cf-${key}-${f.id}`)?.value||'';});staff[key].clinicFields=cf;}
     }
   });
   if(!Object.keys(procs).length){alert('Please select at least one procedure.');return;}
@@ -639,7 +645,8 @@ function renderReport(wt){
     const p=PROCS[key];const passed=items.filter(i=>i.ok).length;
     const pct=Math.round(passed/items.length*100);const pg=grade(pct);
     const staff=wt.staff&&wt.staff[key]||{};
-    const staffStr=[staff.sono&&`Sono: ${staff.sono}`,staff.provider&&`Provider: ${staff.provider}`,staff.ma&&`MA: ${staff.ma}`].filter(Boolean).join(' · ');
+    const cfData=staff.clinicFields;
+    const staffStr=cfData?Object.entries(cfData).filter(([k,v])=>v).map(([k,v])=>`${PROCS[key].clinicFields?.find(f=>f.id===k)?.label||k}: ${v}`).join(' · '):[staff.sono&&`Sono: ${staff.sono}`,staff.provider&&`Provider: ${staff.provider}`,staff.ma&&`MA: ${staff.ma}`].filter(Boolean).join(' · ');
     return`<div>
       <div class="report-proc-row">
         <div style="display:flex;align-items:center;gap:.55rem;min-width:200px">
@@ -878,7 +885,8 @@ function downloadPDF(){
   const procRows=Object.entries(wt.procs).map(([key,items])=>{
     const p=PROCS[key];const passed=items.filter(i=>i.ok).length;const pct=Math.round(passed/items.length*100);const pg=grade(pct);
     const staff=wt.staff&&wt.staff[key]||{};
-    const staffStr=[staff.sono&&`Sono: ${staff.sono}`,staff.provider&&`Provider: ${staff.provider}`,staff.ma&&`MA: ${staff.ma}`].filter(Boolean).join(' · ');
+    const cfDataPdf=staff.clinicFields;
+    const staffStr=cfDataPdf?Object.entries(cfDataPdf).filter(([k,v])=>v).map(([k,v])=>`${PROCS[key].clinicFields?.find(f=>f.id===k)?.label||k}: ${v}`).join(' · '):[staff.sono&&`Sono: ${staff.sono}`,staff.provider&&`Provider: ${staff.provider}`,staff.ma&&`MA: ${staff.ma}`].filter(Boolean).join(' · ');
     return`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:11px">
       <div><div style="min-width:185px;font-weight:700;color:#1e293b">${p.label}</div>${staffStr?`<div style="font-size:9px;color:#64748b">${staffStr}</div>`:''}</div>
       <div style="flex:1;height:6px;background:#e2e8f0;border-radius:10px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${pg.color};border-radius:10px"></div></div>
