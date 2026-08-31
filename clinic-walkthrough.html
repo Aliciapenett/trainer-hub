@@ -763,6 +763,22 @@ function saveActionItem(wtId,clinicId,procKey){
   // Refresh the button label
   const wt=data.find(w=>w.id===parseInt(wtId));if(wt)viewReport(wt.id);
 }
+function deleteAction(id){
+  if(!confirm('Delete this action item?'))return;
+  actions=actions.filter(a=>a.id!==id);
+  saveActions();renderActionItems();
+}
+function toggleEditAction(id){
+  const row=document.getElementById('edit-row-'+id);
+  if(row)row.style.display=row.style.display==='none'?'table-row':'none';
+}
+function saveEditedAction(id){
+  const a=actions.find(x=>x.id===id);if(!a)return;
+  a.assignee=document.getElementById('ea-assignee-'+id)?.value||'';
+  a.dueDate=document.getElementById('ea-due-'+id)?.value||'';
+  a.notes=document.getElementById('ea-notes-'+id)?.value||'';
+  saveActions();renderActionItems();
+}
 function resolveAction(id){
   const a=actions.find(x=>x.id===id);if(a){a.resolved=true;a.resolvedAt=today();}
   saveActions();renderActionItems();
