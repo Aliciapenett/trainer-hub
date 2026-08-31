@@ -791,8 +791,23 @@ function renderActionItems(){
         <td style="font-size:.75rem;color:${a.dueDate&&a.dueDate<today()&&!a.resolved?'#dc2626':'var(--text-light)'}">${a.dueDate?fmt(a.dueDate):'—'}</td>
         <td style="font-size:.75rem;max-width:160px;color:var(--text-light)">${a.notes||'—'}</td>
         <td><span class="badge ${a.resolved?'badge-A':'badge-C'}">${a.resolved?'Resolved':'Open'}</span></td>
-        <td>${!a.resolved?`<button class="btn btn-sm btn-success" onclick="resolveAction(${a.id})"><i class="fa-solid fa-check"></i> Resolve</button>`:''}</td>
-      </tr>`;
+        <td style="white-space:nowrap">
+          <button class="btn btn-sm btn-outline" onclick="toggleEditAction(${a.id})" style="margin-right:.25rem"><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="btn btn-sm" style="background:transparent;border:1.5px solid #fca5a5;color:#dc2626;margin-right:.25rem" onclick="deleteAction(${a.id})"><i class="fa-solid fa-trash"></i></button>
+          ${!a.resolved?`<button class="btn btn-sm btn-success" onclick="resolveAction(${a.id})"><i class="fa-solid fa-check"></i> Resolve</button>`:''}
+        </td>
+      </tr>
+      <tr id="edit-row-${a.id}" style="display:none"><td colspan="8" style="padding:.75rem 1rem;background:#f0f9ff;border-bottom:1px solid var(--border)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.55rem">
+          <div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Assignee</label><input class="form-control" id="ea-assignee-${a.id}" value="${(a.assignee||'').replace(/"/g,'&quot;')}" style="padding:.38rem .6rem;font-size:.78rem"></div>
+          <div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Due Date</label><input class="form-control" type="date" id="ea-due-${a.id}" value="${a.dueDate||''}" style="padding:.38rem .6rem;font-size:.78rem"></div>
+        </div>
+        <div style="margin-bottom:.55rem"><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Notes</label><textarea class="form-control" id="ea-notes-${a.id}" style="min-height:60px;padding:.38rem .6rem;font-size:.78rem">${a.notes||''}</textarea></div>
+        <div style="display:flex;gap:.4rem;justify-content:flex-end">
+          <button class="btn btn-sm btn-outline" onclick="toggleEditAction(${a.id})">Cancel</button>
+          <button class="btn btn-sm btn-primary" onclick="saveEditedAction(${a.id})"><i class="fa-solid fa-check"></i> Save Changes</button>
+        </div>
+      </td></tr>`;
     }).join('')}
   </tbody></table>`;
 }
