@@ -322,7 +322,7 @@ const DEFAULT_PROCS={
   venaseal:{label:'VenaSeal',icon:'fa-droplet',color:'#0891b2',items:['Patient identity and consent verified','Proper skin preparation and sterile technique maintained','Catheter positioned correctly via ultrasound guidance','Correct adhesive volume delivered per treatment segment','Compression applied at each adhesive injection point','Catheter withdrawal technique appropriate','Post-procedure ultrasound assessment performed','Patient monitored for adverse reactions post-procedure','Post-procedure instructions provided to patient','Procedure documentation completed accurately']},
   ultrasound:{label:'Ultrasound Review',icon:'fa-wave-square',color:'#0f3460',items:['Correct probe and preset settings selected','Complete bilateral lower extremity scan performed','Deep venous system evaluated for DVT','GSV and SSV reflux accurately measured and documented','Perforators and accessory veins identified','CEAP classification documented correctly','Treatment plan correlates with ultrasound findings','Prior treatment effects assessed appropriately','Scan report written clearly and accurately','Documentation completed accurately and in timely manner']},
   consult:{label:'Initial Consultation with Ultrasound',icon:'fa-user-doctor',color:'#16a34a',items:['Chief complaint and symptom history documented','Relevant medical and family history reviewed','Physical examination performed and documented','Patient symptoms and risk factors thoroughly assessed','Ultrasound performed with correct technique','Findings explained clearly to patient in understandable terms','CEAP classification discussed with patient','Treatment options clearly presented with risks/benefits','Patient questions answered appropriately','Documentation completed accurately and in timely manner']},
-  frontdesk:{label:'Front Desk',icon:'fa-building-user',color:'#0f766e',items:['Front desk area is clean, organized, and looks presentable','Waiting area TVs work and can play marketing slideshow','Computers, printers, and other essential IT equipment are functional','Staff has G-Reviews QR Badges on them and/or QR codes posted throughout clinic']},
+  frontdesk:{label:'Front Desk',icon:'fa-building-user',color:'#0f766e',items:['Front desk area is clean, organized, and looks presentable','Waiting area TVs work and can play marketing slideshow','Computers, printers, and other essential IT equipment are functional','Staff has G-Reviews QR Badges on them and/or QR codes posted throughout clinic'],ratingItems:[{label:'The check-in process is smooth and efficient',scale:5}]},
 };
 
 // ═══════════════════════════════════════════
@@ -345,6 +345,7 @@ function loadProcs(){
   Object.entries(DEFAULT_PROCS).forEach(([k,p])=>{
     const items=customChecklists[k]||p.items;
     PROCS[k]={...p,items:[...items]};
+    if(p.ratingItems)PROCS[k].ratingItems=[...p.ratingItems];
   });
 }
 
@@ -487,9 +488,13 @@ function editWalkthrough(id){
     // Staff
     const staff=wt.staff&&wt.staff[key]||{};
     ['sono','provider','ma'].forEach(f=>{const el=document.getElementById(`staff-${key}-${f}`);if(el)el.value=staff[f]||'';});
-    items.forEach((item,i)=>{
+    items.filter(i=>!i.type).forEach((item,i)=>{
       const el=document.getElementById(`ci-${key}-${i}`);
       if(el){el.checked=item.ok;if(!item.ok){const nw=document.getElementById(`note-${key}-${i}`);if(nw){nw.parentElement.style.display='block';nw.value=item.note||'';}}};
+    });
+    items.filter(i=>i.type==='rating').forEach((rItem,ri_i)=>{
+      if(rItem.rating!=null){const radio=document.querySelector(`input[name="ri-${key}-${ri_i}"][value="${rItem.rating}"]`);if(radio)radio.checked=true;}
+      const noteEl=document.getElementById(`ri-note-${key}-${ri_i}`);if(noteEl)noteEl.value=rItem.note||'';
     });
     updateScore(key);
   });
@@ -517,7 +522,7 @@ function startNew(resetEdit=true){
       <div class="proc-hdr" onclick="hdrClick('${key}')">
         <input type="checkbox" id="cb-${key}" onchange="cbChange('${key}')" onclick="event.stopPropagation()" style="width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
         <div class="proc-icon" style="background:${p.color}"><i class="fa-solid ${p.icon}"></i></div>
-        <div style="flex:1"><div class="proc-label">${p.label}</div><div class="proc-sublabel">${p.items.length} compliance items · pass/fail</div></div>
+        <div style="flex:1"><div class="proc-label">${p.label}</div><div class="proc-sublabel">${p.items.length+(p.ratingItems||[]).length} compliance items · pass/fail</div></div>
         <i class="fa-solid fa-chevron-down" id="chev-${key}" style="color:var(--text-light);font-size:.72rem;transition:.2s"></i>
       </div>
       <div class="proc-checklist">
@@ -537,10 +542,21 @@ function startNew(resetEdit=true){
             </div>
           </div>
         `).join('')}
+        ${(p.ratingItems||[]).map((ri,i)=>`
+          <div class="check-item" style="padding:.75rem 0">
+            <div style="font-size:.8rem;font-weight:600;margin-bottom:.55rem">${ri.label}</div>
+            <div style="display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;margin-bottom:.5rem">
+              <span style="font-size:.72rem;color:var(--text-light);white-space:nowrap">Strongly disagree</span>
+              ${[1,2,3,4,5].map(n=>`<label style="display:flex;flex-direction:column;align-items:center;gap:.18rem;cursor:pointer"><span style="font-size:.7rem;font-weight:600;color:var(--text-light)">${n}</span><input type="radio" name="ri-${key}-${i}" value="${n}" onchange="updateScore('${key}')" style="cursor:pointer;accent-color:var(--accent);width:16px;height:16px"></label>`).join('')}
+              <span style="font-size:.72rem;color:var(--text-light);white-space:nowrap">Completely agree</span>
+            </div>
+            <input class="item-note-input" id="ri-note-${key}-${i}" placeholder="Notes..." style="width:100%;padding:.32rem .55rem;border:1.5px solid var(--border);border-radius:6px;font-family:inherit;font-size:.76rem;background:#f8fafd;outline:none;color:var(--text)">
+          </div>
+        `).join('')}
         <div class="proc-score-bar">
           <span style="font-size:.73rem;font-weight:600;color:var(--text-light);white-space:nowrap">Procedure score</span>
           <div class="prog-bar"><div class="prog-fill" id="pb-${key}" style="width:0%;background:var(--text-light)"></div></div>
-          <span id="ps-${key}" style="font-size:.8rem;font-weight:700;color:var(--text-light);min-width:58px;text-align:right">0 / ${p.items.length}</span>
+          <span id="ps-${key}" style="font-size:.8rem;font-weight:700;color:var(--text-light);min-width:58px;text-align:right">0 / ${p.items.length+(p.ratingItems||[]).length}</span>
         </div>
       </div>
     </div>
@@ -564,12 +580,15 @@ function onItemChange(key,i,forceHide=false){
 }
 function updateScore(key){
   const p=PROCS[key];
-  const passed=p.items.filter((_,i)=>document.getElementById(`ci-${key}-${i}`)?.checked).length;
-  const pct=passed===0?0:Math.round(passed/p.items.length*100);
+  const checkPassed=p.items.filter((_,i)=>document.getElementById(`ci-${key}-${i}`)?.checked).length;
+  const ratingPassed=(p.ratingItems||[]).filter((_,i)=>{const sel=document.querySelector(`input[name="ri-${key}-${i}"]:checked`);return sel&&parseInt(sel.value)>=4;}).length;
+  const totalItems=p.items.length+(p.ratingItems||[]).length;
+  const passed=checkPassed+ratingPassed;
+  const pct=totalItems===0?0:Math.round(passed/totalItems*100);
   const g=grade(pct);
   const pb=document.getElementById('pb-'+key);const ps=document.getElementById('ps-'+key);
   if(pb){pb.style.width=pct+'%';pb.style.background=passed>0?g.color:'var(--text-light)';}
-  if(ps){ps.textContent=`${passed} / ${p.items.length}`;ps.style.color=passed>0?g.color:'var(--text-light)';}
+  if(ps){ps.textContent=`${passed} / ${totalItems}`;ps.style.color=passed>0?g.color:'var(--text-light)';}
 }
 
 // ═══════════════════════════════════════════
@@ -585,6 +604,7 @@ function generateReport(){
   Object.entries(PROCS).forEach(([key,p])=>{
     if(document.getElementById('cb-'+key)?.checked){
       procs[key]=p.items.map((label,i)=>({label,ok:document.getElementById(`ci-${key}-${i}`)?.checked||false,note:(document.getElementById(`ci-${key}-${i}`)?.checked?'':(document.getElementById(`note-${key}-${i}`)?.value||''))}));
+      (p.ratingItems||[]).forEach((ri,i)=>{const sel=document.querySelector(`input[name="ri-${key}-${i}"]:checked`);const rating=sel?parseInt(sel.value):null;const note=document.getElementById(`ri-note-${key}-${i}`)?.value||'';procs[key].push({label:ri.label,type:'rating',rating,ok:rating!==null&&rating>=4,note});});
       staff[key]={sono:document.getElementById(`staff-${key}-sono`)?.value||'',provider:document.getElementById(`staff-${key}-provider`)?.value||'',ma:document.getElementById(`staff-${key}-ma`)?.value||''};
     }
   });
@@ -666,7 +686,7 @@ function renderReport(wt){
         <div style="display:flex;align-items:flex-start;gap:.45rem">
           <i class="fa-solid fa-circle-xmark" style="color:#fca5a5;flex-shrink:0;margin-top:.15rem"></i>
           <div style="flex:1">
-            ${i.label}
+            ${i.label}${i.type==='rating'?`<span style="font-size:.7rem;background:#e0f2fe;color:#0369a1;padding:.1rem .4rem;border-radius:100px;margin-left:.4rem;font-weight:700">Rated ${i.rating||'—'}/5</span>`:''}
             ${isRecurring(i.label)?'<span class="badge badge-recurring" style="margin-left:.4rem">⚠ Recurring</span>':''}
             ${i.note?`<div style="font-size:.74rem;font-style:italic;color:#d97706;margin-top:.18rem;padding:.2rem .45rem;background:#fefce8;border-radius:4px;border-left:2px solid #fcd34d">"${i.note}"</div>`:''}
           </div>
