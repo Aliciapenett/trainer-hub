@@ -131,6 +131,7 @@ textarea.form-control{resize:vertical;min-height:85px}
   <nav class="hdr-nav">
     <button id="tnb-wt" class="tab-nav-btn active" onclick="switchTab('walkthroughs')"><i class="fa-solid fa-clipboard-check"></i> Walkthroughs</button>
     <button id="tnb-vi" class="tab-nav-btn" onclick="switchTab('visits')"><i class="fa-solid fa-calendar-check"></i> Visit History</button>
+    <button id="tnb-st" class="tab-nav-btn" onclick="switchTab('staff')"><i class="fa-solid fa-user-nurse"></i> Staff</button>
   </nav>
   <div class="hdr-actions">
     <button class="btn-hdr" onclick="showScreen('actions')"><i class="fa-solid fa-bolt"></i> Actions <span id="actions-badge" style="background:#dc2626;color:#fff;border-radius:100px;padding:.05rem .42rem;font-size:.68rem;margin-left:.2rem;display:none"></span></button>
@@ -151,6 +152,13 @@ textarea.form-control{resize:vertical;min-height:85px}
     <div class="stats-grid" id="dash-stats"></div>
     <div style="margin-bottom:.6rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light)" id="region-hdr" style="display:none">Regional Overview</div>
     <div class="region-grid" id="region-grid"></div>
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="card-hdr">
+        <span class="card-hdr-title"><i class="fa-solid fa-ranking-star"></i> Clinic Rankings</span>
+        <span style="font-size:.75rem;color:var(--text-light)">By average compliance score · click to filter</span>
+      </div>
+      <div id="rankings-body"></div>
+    </div>
     <div class="card">
       <div class="card-hdr">
         <span class="card-hdr-title"><i class="fa-solid fa-list-check"></i> All Walkthroughs</span>
@@ -253,6 +261,25 @@ textarea.form-control{resize:vertical;min-height:85px}
 
 </main>
 
+<!-- STAFF PERFORMANCE TAB -->
+<div id="tab-staff" style="display:none">
+  <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem">
+    <div style="margin-bottom:1.25rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:.65rem">
+      <div><h1 style="font-size:1.4rem;font-weight:800">Staff Performance</h1><p style="color:var(--text-light);font-size:.84rem;margin-top:.2rem">Individual performance across all walkthroughs</p></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <select class="form-control" id="staff-role-filter" onchange="renderStaffPerformance()" style="width:155px;padding:.38rem .65rem;font-size:.8rem">
+          <option value="">All Roles</option>
+          <option value="sono">Sonographer</option>
+          <option value="provider">Provider</option>
+          <option value="ma">MA</option>
+        </select>
+        <input class="form-control" id="staff-search" placeholder="Search name..." oninput="renderStaffPerformance()" style="width:180px;padding:.38rem .65rem;font-size:.8rem">
+      </div>
+    </div>
+    <div id="staff-grid"></div>
+  </div>
+</div>
+
 <!-- VISIT HISTORY TAB -->
 <div id="tab-visits" style="display:none;height:calc(100vh - 62px)">
   <iframe src="clinic-tracker/index.html" style="width:100%;height:100%;border:none" title="Visit History"></iframe>
@@ -354,6 +381,7 @@ function loadProcs(){
 function today(){return new Date().toISOString().split('T')[0];}
 function fmt(s){if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 function clinic(id){return CLINICS.find(c=>c.id===id)||{full:'Unknown',name:'?',state:'?'};}
+function priorityColor(p){return{Low:'#16a34a',Medium:'#d97706',High:'#dc2626',Critical:'#7c3aed'}[p]||'#d97706';}
 function grade(pct){
   if(pct>=90)return{g:'A',color:'#16a34a',label:'Excellent'};
   if(pct>=80)return{g:'B',color:'#0891b2',label:'Good'};
@@ -404,7 +432,34 @@ function hasRecurringFails(wt){
   });
 }
 
+function renderRankings(){
+  const el=document.getElementById('rankings-body');if(!el)return;
+  const clinicMap={};
+  data.forEach(wt=>{
+    const sc=score(wt);
+    if(!clinicMap[wt.clinicId]){clinicMap[wt.clinicId]={scores:[],latest:'',visits:0};}
+    clinicMap[wt.clinicId].scores.push(sc);
+    clinicMap[wt.clinicId].visits++;
+    if(wt.date>clinicMap[wt.clinicId].latest)clinicMap[wt.clinicId].latest=wt.date;
+  });
+  const ranked=Object.entries(clinicMap).map(([id,d])=>{
+    const avg=Math.round(d.scores.reduce((a,b)=>a+b,0)/d.scores.length);
+    return{clinicId:parseInt(id),avg,latest:d.latest,visits:d.visits,g:grade(avg)};
+  }).sort((a,b)=>b.avg-a.avg);
+  if(!ranked.length){el.innerHTML='<div class="empty" style="padding:1.5rem"><p>No walkthroughs yet</p></div>';return;}
+  el.innerHTML=ranked.map((r,i)=>{
+    const cl=clinic(r.clinicId);
+    return`<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem 1.1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:.15s" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background=''" onclick="document.getElementById('search-box').value='${cl.name}';switchTab('walkthroughs');renderDashboard()">
+      <span style="font-size:.88rem;font-weight:800;color:var(--text-light);min-width:26px;text-align:center">#${i+1}</span>
+      <div style="flex:1"><div style="font-weight:700;font-size:.83rem">${cl.full}</div><div style="font-size:.7rem;color:var(--text-light)">${r.visits} visit${r.visits>1?'s':''} · Last: ${fmt(r.latest)}</div></div>
+      <div style="width:90px;height:6px;background:var(--border);border-radius:100px;overflow:hidden"><div style="width:${r.avg}%;height:100%;background:${r.g.color};border-radius:100px"></div></div>
+      <span style="font-weight:800;color:${r.g.color};min-width:38px;text-align:right;font-size:.88rem">${r.avg}%</span>
+      <span class="badge badge-${r.g.g}">${r.g.g}</span>
+    </div>`;
+  }).join('');
+}
 function renderDashboard(){
+  renderRankings();
   const q=(document.getElementById('search-box')||{}).value||'';
   const list=[...data].filter(w=>!q||clinic(w.clinicId).full.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>b.date>a.date?1:-1);
   const scores=data.map(w=>score(w));
@@ -683,6 +738,7 @@ function renderReport(wt){
             <option value="General">General — applies to all failed items</option>
           </select>
         </div>
+        <div style="margin-bottom:.55rem"><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Priority</label><select class="form-control" id="af-priority-${wt.id}-${key}" style="padding:.38rem .6rem;font-size:.78rem"><option value="Low">🟢 Low</option><option value="Medium" selected>🟡 Medium</option><option value="High">🔴 High</option><option value="Critical">🚨 Critical</option></select></div>
         <div style="margin-bottom:.55rem"><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Notes</label><textarea class="form-control" id="af-notes-${wt.id}-${key}" placeholder="Action to take..." style="min-height:60px;padding:.38rem .6rem;font-size:.78rem"></textarea></div>
         <div style="display:flex;gap:.4rem;justify-content:flex-end">
           <button class="btn btn-sm btn-outline" onclick="toggleActionForm('${wt.id}','${key}')">Cancel</button>
@@ -757,7 +813,8 @@ function saveActionItem(wtId,clinicId,procKey){
   const itemLabel=document.getElementById(`af-item-${wtId}-${procKey}`)?.value||'';
   const notes=document.getElementById(`af-notes-${wtId}-${procKey}`)?.value||'';
   if(!assignee&&!notes){alert('Please enter at least an assignee or notes.');return;}
-  actions.push({id:Date.now(),walkthroughId:parseInt(wtId),clinicId,procKey,itemLabel,assignee,dueDate,notes,resolved:false,createdAt:today()});
+  const priority=document.getElementById(`af-priority-${wtId}-${procKey}`)?.value||'Medium';
+  actions.push({id:Date.now(),walkthroughId:parseInt(wtId),clinicId,procKey,itemLabel,assignee,dueDate,notes,priority,resolved:false,createdAt:today()});
   saveActions();
   toggleActionForm(wtId,procKey);
   // Refresh the button label
@@ -777,6 +834,7 @@ function saveEditedAction(id){
   a.assignee=document.getElementById('ea-assignee-'+id)?.value||'';
   a.dueDate=document.getElementById('ea-due-'+id)?.value||'';
   a.notes=document.getElementById('ea-notes-'+id)?.value||'';
+  a.priority=document.getElementById('ea-priority-'+id)?.value||a.priority||'Medium';
   saveActions();renderActionItems();
 }
 function resolveAction(id){
@@ -796,7 +854,7 @@ function renderActionItems(){
   const tbl=document.getElementById('actions-table');
   if(!tbl)return;
   if(!list.length){tbl.innerHTML='<div class="empty"><i class="fa-solid fa-bolt"></i><p>No action items yet — they appear when you add them from a report card</p></div>';return;}
-  tbl.innerHTML=`<table class="tbl"><thead><tr><th>Clinic</th><th>Procedure</th><th>Checklist Item</th><th>Assignee</th><th>Due</th><th>Notes</th><th>Status</th><th></th></tr></thead><tbody>
+  tbl.innerHTML=`<table class="tbl"><thead><tr><th>Clinic</th><th>Procedure</th><th>Checklist Item</th><th>Assignee</th><th>Due</th><th>Priority</th><th>Notes</th><th>Status</th><th></th></tr></thead><tbody>
     ${list.map(a=>{
       const cl=clinic(a.clinicId);const p=PROCS[a.procKey];
       return`<tr style="${a.resolved?'opacity:.55':''}">
@@ -805,6 +863,7 @@ function renderActionItems(){
         <td style="font-size:.75rem;max-width:180px">${a.itemLabel}</td>
         <td style="font-size:.78rem">${a.assignee||'—'}</td>
         <td style="font-size:.75rem;color:${a.dueDate&&a.dueDate<today()&&!a.resolved?'#dc2626':'var(--text-light)'}">${a.dueDate?fmt(a.dueDate):'—'}</td>
+        <td><span style="display:inline-block;padding:.18rem .5rem;border-radius:100px;font-size:.68rem;font-weight:700;color:#fff;background:${priorityColor(a.priority||'Medium')}">${a.priority||'Medium'}</span></td>
         <td style="font-size:.75rem;max-width:160px;color:var(--text-light)">${a.notes||'—'}</td>
         <td><span class="badge ${a.resolved?'badge-A':'badge-C'}">${a.resolved?'Resolved':'Open'}</span></td>
         <td style="white-space:nowrap">
@@ -813,8 +872,9 @@ function renderActionItems(){
           ${!a.resolved?`<button class="btn btn-sm btn-success" onclick="resolveAction(${a.id})"><i class="fa-solid fa-check"></i> Resolve</button>`:''}
         </td>
       </tr>
-      <tr id="edit-row-${a.id}" style="display:none"><td colspan="8" style="padding:.75rem 1rem;background:#f0f9ff;border-bottom:1px solid var(--border)">
+      <tr id="edit-row-${a.id}" style="display:none"><td colspan="9" style="padding:.75rem 1rem;background:#f0f9ff;border-bottom:1px solid var(--border)">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.55rem">
+          <div style="margin-bottom:.6rem;grid-column:1/-1"><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Priority</label><select class="form-control" id="ea-priority-${a.id}" style="padding:.38rem .6rem;font-size:.78rem"><option value="Low" ${(a.priority||'Medium')==='Low'?'selected':''}>🟢 Low</option><option value="Medium" ${(a.priority||'Medium')==='Medium'?'selected':''}>🟡 Medium</option><option value="High" ${(a.priority||'Medium')==='High'?'selected':''}>🔴 High</option><option value="Critical" ${(a.priority||'Medium')==='Critical'?'selected':''}>🚨 Critical</option></select></div>
           <div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Assignee</label><input class="form-control" id="ea-assignee-${a.id}" value="${(a.assignee||'').replace(/"/g,'&quot;')}" style="padding:.38rem .6rem;font-size:.78rem"></div>
           <div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.2rem">Due Date</label><input class="form-control" type="date" id="ea-due-${a.id}" value="${a.dueDate||''}" style="padding:.38rem .6rem;font-size:.78rem"></div>
         </div>
@@ -978,15 +1038,76 @@ function downloadPDF(){
 }
 
 // ═══════════════════════════════════════════
+//  STAFF PERFORMANCE
+// ═══════════════════════════════════════════
+function renderStaffPerformance(){
+  const roleFilter=document.getElementById('staff-role-filter')?.value||'';
+  const nameFilter=(document.getElementById('staff-search')?.value||'').toLowerCase();
+  const roleLabels={sono:'Sonographer',provider:'Provider',ma:'MA'};
+  const staffMap={};
+  data.forEach(wt=>{
+    Object.entries(wt.procs).forEach(([key,items])=>{
+      const s=wt.staff&&wt.staff[key]||{};
+      const procPassed=items.filter(i=>i.ok).length;
+      const procTotal=items.length;
+      const procPct=procTotal?Math.round(procPassed/procTotal*100):null;
+      ['sono','provider','ma'].forEach(role=>{
+        const name=(s[role]||'').trim();
+        if(!name)return;
+        if(roleFilter&&role!==roleFilter)return;
+        if(!staffMap[name])staffMap[name]={name,roles:new Set(),procs:[],clinics:new Set()};
+        staffMap[name].roles.add(role);
+        staffMap[name].clinics.add(wt.clinicId);
+        if(procPct!==null)staffMap[name].procs.push({key,pct:procPct,date:wt.date,clinicId:wt.clinicId});
+      });
+    });
+  });
+  const list=Object.values(staffMap)
+    .filter(s=>!nameFilter||s.name.toLowerCase().includes(nameFilter))
+    .sort((a,b)=>{
+      const avgA=a.procs.length?Math.round(a.procs.reduce((x,p)=>x+p.pct,0)/a.procs.length):0;
+      const avgB=b.procs.length?Math.round(b.procs.reduce((x,p)=>x+p.pct,0)/b.procs.length):0;
+      return avgB-avgA;
+    });
+  const el=document.getElementById('staff-grid');if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No staff data yet — add staff names when completing walkthroughs</p></div>';return;}
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem">${list.map(s=>{
+    const avg=s.procs.length?Math.round(s.procs.reduce((x,p)=>x+p.pct,0)/s.procs.length):null;
+    const g=avg!==null?grade(avg):{g:'—',color:'#94a3b8',label:'No data'};
+    const roles=[...s.roles].map(r=>roleLabels[r]||r).join(', ');
+    const recent=[...s.procs].sort((a,b)=>b.date>a.date?1:-1).slice(0,3);
+    return`<div class="card" style="padding:1rem">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+        <div style="width:42px;height:42px;border-radius:50%;background:${g.color};display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0">${s.name.charAt(0).toUpperCase()}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</div><div style="font-size:.7rem;color:var(--text-light)">${roles}</div></div>
+        <div style="text-align:right"><div style="font-size:1.25rem;font-weight:800;color:${g.color}">${avg!==null?avg+'%':'—'}</div><span class="badge badge-${g.g}" style="font-size:.62rem">${g.g}</span></div>
+      </div>
+      <div style="height:5px;background:var(--border);border-radius:100px;overflow:hidden;margin-bottom:.65rem">${avg!==null?`<div style="width:${avg}%;height:100%;background:${g.color};border-radius:100px"></div>`:''}</div>
+      <div style="display:flex;gap:1rem;font-size:.72rem;color:var(--text-light);margin-bottom:.65rem">
+        <span><i class="fa-solid fa-clipboard-check"></i> ${s.procs.length} proc${s.procs.length!==1?'s':''}</span>
+        <span><i class="fa-solid fa-hospital"></i> ${s.clinics.size} clinic${s.clinics.size!==1?'s':''}</span>
+      </div>
+      <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:.35rem">Recent</div>
+      ${recent.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:.76rem;padding:.2rem 0;border-bottom:1px solid #f1f5f9">
+        <span>${PROCS[p.key]?.label||p.key} · ${clinic(p.clinicId).name}</span>
+        <span style="font-weight:700;color:${grade(p.pct).color}">${p.pct}%</span>
+      </div>`).join('')}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════
 //  TAB SWITCHING
 // ═══════════════════════════════════════════
 function switchTab(name){
-  const isWt=name==='walkthroughs';
-  document.getElementById('tab-walkthroughs').style.display=isWt?'block':'none';
-  document.getElementById('tab-visits').style.display=isWt?'none':'block';
-  document.getElementById('new-wt-btn').style.display=isWt?'':'none';
-  document.getElementById('tnb-wt').classList.toggle('active',isWt);
-  document.getElementById('tnb-vi').classList.toggle('active',!isWt);
+  document.getElementById('tab-walkthroughs').style.display=name==='walkthroughs'?'block':'none';
+  document.getElementById('tab-visits').style.display=name==='visits'?'block':'none';
+  document.getElementById('tab-staff').style.display=name==='staff'?'block':'none';
+  document.getElementById('new-wt-btn').style.display=name==='walkthroughs'?'':'none';
+  document.getElementById('tnb-wt').classList.toggle('active',name==='walkthroughs');
+  document.getElementById('tnb-vi').classList.toggle('active',name==='visits');
+  document.getElementById('tnb-st').classList.toggle('active',name==='staff');
+  if(name==='staff')renderStaffPerformance();
 }
 
 // ═══════════════════════════════════════════
