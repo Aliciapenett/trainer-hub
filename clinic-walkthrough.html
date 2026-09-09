@@ -290,10 +290,14 @@ textarea.form-control{resize:vertical;min-height:85px}
   <div class="settings-overlay">
     <div class="settings-panel">
       <div class="settings-hdr">
-        <span style="font-size:1rem;font-weight:800"><i class="fa-solid fa-gear" style="color:var(--accent);margin-right:.4rem"></i>Checklist Editor</span>
+        <div style="display:flex;gap:.3rem">
+          <button id="stab-checklists" onclick="switchSettingsTab('checklists')" style="background:var(--accent);color:#fff;border:none;padding:.32rem .75rem;border-radius:6px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer"><i class="fa-solid fa-list-check" style="margin-right:.3rem"></i>Checklists</button>
+          <button id="stab-locations" onclick="switchSettingsTab('locations')" style="background:transparent;color:var(--text-light);border:1.5px solid var(--border);padding:.32rem .75rem;border-radius:6px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer"><i class="fa-solid fa-location-dot" style="margin-right:.3rem"></i>Locations</button>
+        </div>
         <button class="btn btn-ghost btn-sm" onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="settings-body" id="settings-body"></div>
+      <div class="settings-body" id="settings-body-locations" style="display:none"></div>
     </div>
   </div>
 </div>
@@ -359,6 +363,7 @@ const DEFAULT_PROCS={
 let data=JSON.parse(localStorage.getItem('vip_wt')||'[]');
 let actions=JSON.parse(localStorage.getItem('vip_actions')||'[]');
 let customChecklists=JSON.parse(localStorage.getItem('vip_checklists')||'{}');
+let customClinics=JSON.parse(localStorage.getItem('vip_clinics')||'[]');
 let PROCS={};
 let activeReport=null;
 let editingId=null;
@@ -367,6 +372,7 @@ let trendChart=null;
 function save(){localStorage.setItem('vip_wt',JSON.stringify(data));}
 function saveActions(){localStorage.setItem('vip_actions',JSON.stringify(actions));updateActionsBadge();}
 function saveChecklists(){localStorage.setItem('vip_checklists',JSON.stringify(customChecklists));}
+function saveCustomClinics(){localStorage.setItem('vip_clinics',JSON.stringify(customClinics));}
 
 function loadProcs(){
   PROCS={};
@@ -380,7 +386,7 @@ function loadProcs(){
 
 function today(){return new Date().toISOString().split('T')[0];}
 function fmt(s){if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function clinic(id){return CLINICS.find(c=>c.id===id)||{full:'Unknown',name:'?',state:'?'};}
+function clinic(id){return [...CLINICS,...customClinics].find(c=>c.id===id)||{full:'Unknown',name:'?',state:'?'};}
 function priorityColor(p){return{Low:'#16a34a',Medium:'#d97706',High:'#dc2626',Critical:'#7c3aed'}[p]||'#d97706';}
 function grade(pct){
   if(pct>=90)return{g:'A',color:'#16a34a',label:'Excellent'};
@@ -567,8 +573,8 @@ function startNew(resetEdit=true){
   if(resetEdit)editingId=null;
   const sel=document.getElementById('f-clinic');
   const byState={};
-  CLINICS.forEach(c=>{(byState[c.state]=byState[c.state]||[]).push(c);});
-  sel.innerHTML='<option value="">— Select a clinic —</option>'+Object.entries(byState).map(([st,cs])=>`<optgroup label="${st}">${cs.map(c=>`<option value="${c.id}">${c.full}</option>`).join('')}</optgroup>`).join('');
+  [...CLINICS,...customClinics].sort((a,b)=>a.state>b.state?1:a.state<b.state?-1:a.name.localeCompare(b.name)).forEach(c=>{(byState[c.state]=byState[c.state]||[]).push(c);});
+  sel.innerHTML='<option value="">— Select a clinic —</option>'+Object.entries(byState).sort((a,b)=>a[0]>b[0]?1:-1).map(([st,cs])=>`<optgroup label="${st}">${cs.map(c=>`<option value="${c.id}">${c.full}</option>`).join('')}</optgroup>`).join('');
   document.getElementById('f-date').value=today();
   document.getElementById('f-positives').value='';
   document.getElementById('f-concerns').value='';
@@ -893,7 +899,43 @@ function renderActionItems(){
 // ═══════════════════════════════════════════
 function openSettings(){
   document.getElementById('settings-overlay').style.display='flex';
-  renderSettings();
+  switchSettingsTab('checklists');
+}
+function switchSettingsTab(tab){
+  const isCL=tab==='checklists';
+  document.getElementById('settings-body').style.display=isCL?'block':'none';
+  document.getElementById('settings-body-locations').style.display=isCL?'none':'block';
+  const clBtn=document.getElementById('stab-checklists');
+  const locBtn=document.getElementById('stab-locations');
+  if(clBtn){clBtn.style.background=isCL?'var(--accent)':'transparent';clBtn.style.color=isCL?'#fff':'var(--text-light)';clBtn.style.border=isCL?'none':'1.5px solid var(--border)';}
+  if(locBtn){locBtn.style.background=isCL?'transparent':'var(--accent)';locBtn.style.color=isCL?'var(--text-light)':'#fff';locBtn.style.border=isCL?'1.5px solid var(--border)':'none';}
+  if(isCL)renderSettings();else renderLocations();
+}
+function renderLocations(){
+  const el=document.getElementById('settings-body-locations');if(!el)return;
+  const allClinics=[...CLINICS,...customClinics];
+  const byState={};
+  allClinics.forEach(c=>{(byState[c.state]=byState[c.state]||[]).push(c);});
+  el.innerHTML=`<div style="margin-bottom:1.25rem"><div style="font-size:.85rem;font-weight:700;margin-bottom:.65rem">Add New Location</div><div style="display:grid;grid-template-columns:1fr 2fr auto;gap:.5rem;align-items:end"><div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.22rem;color:var(--text-light)">STATE</label><input class="form-control" id="new-loc-state" placeholder="e.g. TX" maxlength="5" style="padding:.42rem .65rem;font-size:.81rem;text-transform:uppercase"></div><div><label style="font-size:.72rem;font-weight:600;display:block;margin-bottom:.22rem;color:var(--text-light)">CLINIC NAME</label><input class="form-control" id="new-loc-name" placeholder="e.g. Austin" style="padding:.42rem .65rem;font-size:.81rem" onkeydown="if(event.key==='Enter')addCustomClinic()"></div><button class="btn btn-primary btn-sm" onclick="addCustomClinic()" style="white-space:nowrap"><i class="fa-solid fa-plus"></i> Add</button></div></div><div style="font-size:.72rem;font-weight:700;margin-bottom:.55rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em">${allClinics.length} Total Locations</div>${Object.entries(byState).sort((a,b)=>a[0]>b[0]?1:-1).map(([state,clinics])=>`<div style="margin-bottom:.9rem"><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);border-bottom:2px solid #e0f2fe;padding-bottom:.3rem;margin-bottom:.4rem">${state}</div>${clinics.map(c=>`<div style="display:flex;align-items:center;padding:.35rem 0;border-bottom:1px solid #f1f5f9"><span style="flex:1;font-size:.82rem">${c.name}</span><span style="font-size:.69rem;color:var(--text-light);margin-right:.5rem">${c.full}</span>${customClinics.find(cc=>cc.id===c.id)?`<button class="btn btn-ghost btn-sm" onclick="deleteCustomClinic(${c.id})" style="padding:.22rem .5rem;color:#dc2626" title="Remove"><i class="fa-solid fa-trash" style="font-size:.7rem"></i></button>`:'<span style="font-size:.64rem;background:#f1f5f9;color:#94a3b8;padding:.1rem .38rem;border-radius:4px;font-weight:600">built-in</span>'}</div>`).join('')}</div>`).join('')}`;
+}
+function addCustomClinic(){
+  const stateEl=document.getElementById('new-loc-state');
+  const nameEl=document.getElementById('new-loc-name');
+  const state=(stateEl?.value||'').trim().toUpperCase();
+  const name=(nameEl?.value||'').trim();
+  if(!state||!name){alert('Please enter both a state and clinic name.');return;}
+  const all=[...CLINICS,...customClinics];
+  if(all.find(c=>c.state===state&&c.name.toLowerCase()===name.toLowerCase())){alert('A clinic with this name already exists in this state.');return;}
+  customClinics.push({id:Date.now(),state,name,full:`${state} \u2013 ${name}`});
+  saveCustomClinics();
+  stateEl.value='';nameEl.value='';
+  renderLocations();
+}
+function deleteCustomClinic(id){
+  if(!confirm('Remove this location?'))return;
+  customClinics=customClinics.filter(c=>c.id!==id);
+  saveCustomClinics();
+  renderLocations();
 }
 function closeSettings(){document.getElementById('settings-overlay').style.display='none';}
 function closeSettingsIfBg(e){if(e.target===document.getElementById('settings-overlay'))closeSettings();}
