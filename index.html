@@ -643,7 +643,7 @@ function isCheckinDue(trainee, checkins) {
   if(trainee.status !== 'active') return false;
   if(!trainee.startDate) return false;
   const daysIn = Math.floor((new Date() - new Date(trainee.startDate+'T12:00:00')) / (1000*60*60*24));
-  if(daysIn > 30) return false; // only remind during first month
+  if(trainee.category !== 'student' && daysIn > 30) return false; // trainees: only first 4 weeks; students: every week
   const mine = checkins.filter(c=>c.traineeId===trainee.id);
   if(!mine.length) return true; // never had one
   const latest = mine.reduce((a,b)=>(a.date||'') > (b.date||'') ? a : b);
