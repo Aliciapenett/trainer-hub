@@ -931,7 +931,7 @@ function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, 
       <td>${tr.protocol?`<span class="protocol-pill">${tr.protocol}</span>`:'<span style="color:var(--text-light);font-size:.78rem">None</span>'}</td>
       <td style="font-size:.78rem;color:var(--text-light)">${tr.startDate?fmtDate(tr.startDate):'—'}</td>
       <td>${tr.category==='student'?'<span style="font-size:.72rem;color:var(--text-light)">—</span>':`<div class="a-dots">${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}" title="${d}-day: ${s}">${d}</div>`}).join('')}</div>`}</td>
-      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
+      <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':tr.status==='rotation-complete'?'badge-purple':'badge-gray'}">${tr.status==='rotation-complete'?'Rotation Complete':tr.status||'active'}</span></td>
       <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTraineeModal('${tr.id}','${tr.trainerId||''}')"><i class="fa-solid fa-pen"></i></button></td>
     </tr>`;
   }).join('');
@@ -979,10 +979,11 @@ async function renderTraineeDetail(tid, fromTid) {
               ${trainer?`Preceptor: <strong style="color:${trainer.color}">${trainer.name}</strong> · `:''}
               ${trainee.startDate?`Started ${fmtDate(trainee.startDate)} · Day <strong>${daysIn}</strong> of 90`:'No start date set'}
             </div>
+            ${trainee.school?`<div style="font-size:.78rem;color:var(--text-light);margin-top:.18rem"><i class="fa-solid fa-school" style="color:#be185d;margin-right:.3rem"></i>${trainee.school}</div>`:''}
             ${trainee.protocol?`<div style="margin-top:.35rem"><span class="protocol-pill"><i class="fa-solid fa-vial" style="font-size:.62rem"></i>${trainee.protocol}</span></div>`:''}
           </div>
           <div style="display:flex;gap:.45rem;align-items:center;flex-wrap:wrap">
-            <span class="badge ${trainee.status==='active'?'badge-success':trainee.status==='certified'?'badge-teal':trainee.status==='completed'?'badge-info':'badge-gray'}">${trainee.status||'active'}</span>
+            <span class="badge ${trainee.status==='active'?'badge-success':trainee.status==='certified'?'badge-teal':trainee.status==='completed'?'badge-info':trainee.status==='rotation-complete'?'badge-purple':'badge-gray'}">${trainee.status==='rotation-complete'?'Rotation Complete':trainee.status||'active'}</span>
             <button class="btn btn-outline btn-sm" onclick="openTraineeModal('${trainee.id}','${trainee.trainerId||''}')"><i class="fa-solid fa-pen"></i> Edit</button>
             <button class="btn btn-outline btn-sm" style="color:#7c3aed;border-color:#7c3aed" onclick="openTransferModal('${trainee.id}','${trainee.trainerId||''}','${trainee.name.replace(/'/g,"\\'")}')"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer</button>
             <button class="btn btn-outline btn-sm" style="color:#0f3460;border-color:#0f3460" onclick="downloadTraineePDF('${trainee.id}',this)"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
@@ -1002,10 +1003,17 @@ async function renderTraineeDetail(tid, fromTid) {
         `<div style="font-size:.83rem;padding:.75rem .95rem;border-radius:var(--r-sm);background:#fef3c7;border-left:3px solid #d97706;color:#92400e;white-space:pre-line">${trainee.adminNotes}${trainee.adminNotesUpdated?`<div style="font-size:.7rem;opacity:.75;margin-top:.35rem">Updated ${fmtDate(trainee.adminNotesUpdated)}</div>`:''}</div>` :
         `<div style="font-size:.8rem;padding:.6rem .9rem;border-radius:var(--r-sm);background:#f8fafd;border:1px dashed var(--border);color:var(--text-light);cursor:pointer" onclick="openAdminNoteModal('${trainee.id}')"><i class="fa-solid fa-plus" style="margin-right:.3rem"></i>Add a note (e.g. terminated, on leave…)</div>`}
     </div>
+    ${trainee.category==='student'?`
+    <div class="stats-grid" style="margin-bottom:1.25rem">
+      <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#be185d"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.length}</div><div class="stat-label">Check-ins Done</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#be185d"><i class="fa-solid fa-stethoscope"></i></div><div><div class="stat-value">${checkins.reduce((s,c)=>s+(parseInt(c.cases)||0),0)}</div><div class="stat-label">Total Scans</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#be185d"><i class="fa-solid fa-clipboard-check"></i></div><div><div class="stat-value">${trainee.rotationEval?'Done':'—'}</div><div class="stat-label">Final Eval</div></div></div>
+    </div>`:''}
     <div class="tabs">
       ${trainee.category!=='student'?`<button class="tab-btn ${trainee.category!=='student'?'active':''}" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>`:''}
       <button class="tab-btn ${trainee.category==='student'?'active':''}" onclick="switchTab(this,'tab-checkins')"><i class="fa-solid fa-calendar-check"></i> Weekly Check-ins</button>
       <button class="tab-btn" onclick="switchTab(this,'tab-notes')"><i class="fa-solid fa-note-sticky"></i> Clinical Notes</button>
+      ${trainee.category==='student'?`<button class="tab-btn" onclick="switchTab(this,'tab-rotation-eval')"><i class="fa-solid fa-star-half-stroke"></i> Final Evaluation</button>`:''}
       <button class="tab-btn" onclick="switchTab(this,'tab-history')"><i class="fa-solid fa-clock-rotate-left"></i> Preceptor History</button>
     </div>
     <div id="tab-assessments" ${trainee.category==='student'?'style="display:none"':''}>
@@ -1043,14 +1051,122 @@ async function renderTraineeDetail(tid, fromTid) {
     <div id="tab-notes" style="display:none">
       <div class="sec-hdr"><span class="sec-title">Clinical Notes</span><button class="btn btn-primary btn-sm" onclick="openNoteModal('${trainee.id}')"><i class="fa-solid fa-plus"></i> Add Note</button></div>
       ${(trainee.progressNotes&&trainee.progressNotes.length)?[...trainee.progressNotes].reverse().map(n=>`<div class="card" style="margin-bottom:.7rem"><div class="card-body" style="padding:.95rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem"><span style="font-size:.79rem;font-weight:600">${fmtDate(n.date)}</span><span class="badge badge-info">${n.category||'General'}</span></div><p style="font-size:.83rem">${n.text}</p></div></div>`).join(''):'<div class="empty"><i class="fa-solid fa-note-sticky"></i><p>No clinical notes yet</p></div>'}
+    </div>
+    ${trainee.category==='student'?`
+    <div id="tab-rotation-eval" style="display:none">
+      <div class="sec-hdr">
+        <span class="sec-title">Final Rotation Evaluation</span>
+        <button class="btn btn-primary btn-sm" onclick="openRotationEvalModal('${trainee.id}')">
+          <i class="fa-solid fa-${trainee.rotationEval?'pen':'plus'}"></i> ${trainee.rotationEval?'Edit Evaluation':'Start Evaluation'}
+        </button>
+      </div>
+      ${trainee.rotationEval?`
+        <div class="card">
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.1rem">
+              ${[['Overall Performance',trainee.rotationEval.overallPerformance],['Technical Competency',trainee.rotationEval.technicalCompetency],['Professional Behavior',trainee.rotationEval.professionalBehavior]].map(([lbl,val])=>`
+              <div style="background:#f8fafd;border-radius:var(--r-sm);padding:.75rem;border:1px solid var(--border);text-align:center">
+                <div style="font-size:.67rem;font-weight:700;text-transform:uppercase;color:var(--text-light);margin-bottom:.35rem">${lbl}</div>
+                <div style="font-size:1.5rem;font-weight:800;color:${GRADE_COLORS[val]||'#64748b'}">${val||'—'}</div>
+                <div style="font-size:.67rem;color:var(--text-light)">${GRADE_LABELS[val]||''}</div>
+              </div>`).join('')}
+            </div>
+            <div style="margin-bottom:.75rem;padding:.6rem .9rem;border-radius:var(--r-sm);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:.82rem;font-weight:600">Recommendation to School</span>
+              <span style="padding:.22rem .7rem;border-radius:100px;font-size:.75rem;font-weight:700;background:${trainee.rotationEval.recommendation==='Recommend'?'#dcfce7':trainee.rotationEval.recommendation==='Recommend with Reservations'?'#fef3c7':'#fee2e2'};color:${trainee.rotationEval.recommendation==='Recommend'?'#15803d':trainee.rotationEval.recommendation==='Recommend with Reservations'?'#92400e':'#991b1b'}">${trainee.rotationEval.recommendation||'—'}</span>
+            </div>
+            ${trainee.rotationEval.summary?`<div style="margin-bottom:.65rem"><div style="font-size:.75rem;font-weight:700;color:var(--primary);margin-bottom:.3rem">Summary for School</div><div style="background:#f8fafd;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem;border:1px solid var(--border)">${trainee.rotationEval.summary}</div></div>`:''}
+            <div style="font-size:.74rem;color:var(--text-light);margin-top:.4rem">Signed off by <strong>${trainee.rotationEval.preceptorName||'—'}</strong> · ${fmtDate(trainee.rotationEval.signoffDate)}</div>
+          </div>
+        </div>`
+      :`<div class="empty"><i class="fa-solid fa-star-half-stroke"></i><p>No final evaluation yet — click "Start Evaluation" when the rotation is complete.</p></div>`}
+    </div>`:''}
+    `;
+}
+
+// ═══════════════════════════════════════
+//  FINAL ROTATION EVALUATION
+// ═══════════════════════════════════════
+async function openRotationEvalModal(traineeId) {
+  const trDoc = await db.collection('trainees').doc(traineeId).get();
+  const trainee = {id:trDoc.id,...trDoc.data()};
+  const ev = trainee.rotationEval || {};
+  const gradeBtn = (fieldId, val, savedVal) => `<button type="button" onclick="setGrade(this,'${fieldId}','${val}')" class="grade-btn" data-grade="${val}"
+    style="padding:.22rem .55rem;border-radius:5px;border:2px solid ${savedVal===val?GRADE_COLORS[val]:'var(--border)'};
+    background:${savedVal===val?GRADE_COLORS[val]:'#fff'};color:${savedVal===val?'#fff':GRADE_COLORS[val]};
+    font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s" title="${GRADE_LABELS[val]}">${val}</button>`;
+  const gradeRow = (label, fieldId, savedVal) => `
+    <div class="form-group">
+      <label class="form-label">${label}</label>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem">
+        ${GRADES.map(g=>gradeBtn(fieldId,g,savedVal)).join('')}
+        <input type="hidden" id="${fieldId}" value="${savedVal||''}">
+      </div>
     </div>`;
+  showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title"><i class="fa-solid fa-star-half-stroke" style="color:#be185d"></i> Final Rotation Evaluation</div>
+        <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">${trainee.name}${trainee.school?' · '+trainee.school:''}</div>
+      </div>
+      <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Grading: <strong>O</strong> Outstanding · <strong>S</strong> Satisfactory · <strong>P</strong> Progressing · <strong>N</strong> Needs Improvement · <strong>N/A</strong> Not Applicable</span></div>
+      <div class="form-section">Competency Ratings</div>
+      ${gradeRow('Overall Performance','re-overall', ev.overallPerformance||'')}
+      ${gradeRow('Technical Competency','re-technical', ev.technicalCompetency||'')}
+      ${gradeRow('Professional Behavior','re-professional', ev.professionalBehavior||'')}
+      <div class="form-section">Recommendation & Sign-Off</div>
+      <div class="form-group"><label class="form-label">Recommendation to School</label>
+        <select class="form-control" id="re-recommendation">
+          <option value="">Select...</option>
+          ${['Recommend','Recommend with Reservations','Not Recommended'].map(o=>`<option ${ev.recommendation===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Summary for School</label>
+        <textarea class="form-control" id="re-summary" style="min-height:100px" placeholder="Overall summary of the student's rotation performance, strengths, and areas for growth...">${ev.summary||''}</textarea>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Preceptor Name</label><input class="form-control" id="re-preceptor" value="${ev.preceptorName||''}" placeholder="Preceptor full name"></div>
+        <div class="form-group"><label class="form-label">Sign-Off Date</label><input class="form-control" id="re-date" type="date" value="${ev.signoffDate||todayStr()}"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
+      <button class="btn btn-primary" id="re-save-btn" onclick="saveRotationEval('${traineeId}')"><i class="fa-solid fa-check"></i> Save Evaluation</button>
+    </div>
+  </div>`);
+}
+
+async function saveRotationEval(traineeId) {
+  const rec = v('re-recommendation');
+  if(!rec) return alert('Please select a recommendation.');
+  const rotationEval = {
+    overallPerformance:  v('re-overall'),
+    technicalCompetency: v('re-technical'),
+    professionalBehavior:v('re-professional'),
+    recommendation:      rec,
+    summary:             v('re-summary'),
+    preceptorName:       v('re-preceptor'),
+    signoffDate:         v('re-date')||todayStr(),
+    completedDate:       todayStr(),
+  };
+  setBtn('re-save-btn', true, 'Saving...');
+  try {
+    await db.collection('trainees').doc(traineeId).update({rotationEval});
+    const trDoc = await db.collection('trainees').doc(traineeId).get();
+    await logActivity(`Final rotation evaluation completed for ${trDoc.data().name}`, 'fa-star-half-stroke');
+    forceClose();
+    renderTraineeDetail(traineeId, traineeBackContext);
+  } catch(e) { alert('Error: '+e.message); setBtn('re-save-btn',false,'Save Evaluation'); }
 }
 
 function switchTab(btn, tabId) {
   const p = btn.closest('.main') || document.getElementById('trainee-detail-body') || document.getElementById('main-content');
   p.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  ['tab-assessments','tab-checkins','tab-notes','tab-history'].forEach(id=>{
+  ['tab-assessments','tab-checkins','tab-notes','tab-rotation-eval','tab-history'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display=id===tabId?'block':'none';
   });
@@ -1218,9 +1334,11 @@ async function openTraineeModal(tid, defaultTrainerId, category) {
             <option value="completed" ${trainee&&trainee.status==='completed'?'selected':''}>Completed</option>
             <option value="certified" ${trainee&&trainee.status==='certified'?'selected':''}>Certified ✓</option>
             <option value="archived" ${trainee&&trainee.status==='archived'?'selected':''}>Archived</option>
+            ${isStudent?`<option value="rotation-complete" ${trainee&&trainee.status==='rotation-complete'?'selected':''}>Rotation Complete ✓</option>`:''}
           </select>
         </div>
       </div>
+      ${isStudent?`<div class="form-group"><label class="form-label">School / Program</label><input class="form-control" id="fn-school" value="${trainee?trainee.school||'':''}" placeholder="e.g. Miami Dade College Sonography Program"></div>`:''}
       <div class="form-section">Goals & Notes</div>
       <div class="form-group"><label class="form-label">Training Goals</label><textarea class="form-control" id="fn-goals" placeholder="What competencies should this ${isStudent?'student':'trainee'} achieve?">${trainee?trainee.goals||'':''}</textarea></div>
       <div class="form-group"><label class="form-label">Clinical Notes</label><textarea class="form-control" id="fn-notes" placeholder="Learning style, prior knowledge gaps, accommodations...">${trainee?trainee.notes||'':''}</textarea></div>
@@ -1308,7 +1426,7 @@ async function saveTrainee(id, category) {
   if(!name) return alert('Name is required');
   const initials = name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
   const effectiveCat = category || 'trainee';
-  const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes'), category:effectiveCat};
+  const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes'), category:effectiveCat, school:v('fn-school')||null};
   setBtn('trainee-save-btn',true,'Saving...');
   try {
     if(id) {
