@@ -653,6 +653,7 @@ function isCheckinDue(trainee, checkins) {
 
 // Returns array of assessment days that are due but not yet completed
 function getAssessmentsDue(trainee, assessments) {
+  if(trainee.category === 'student') return [];
   if(trainee.status !== 'active' || !trainee.startDate) return [];
   const due = [];
   [30,60,90].forEach(day=>{
@@ -929,7 +930,7 @@ function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, 
       ${!hideTrainerCol?`<td>${trainer?`<span class="badge badge-gray">${trainer.name}</span>`:'—'}</td>`:''}
       <td>${tr.protocol?`<span class="protocol-pill">${tr.protocol}</span>`:'<span style="color:var(--text-light);font-size:.78rem">None</span>'}</td>
       <td style="font-size:.78rem;color:var(--text-light)">${tr.startDate?fmtDate(tr.startDate):'—'}</td>
-      <td><div class="a-dots">${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}" title="${d}-day: ${s}">${d}</div>`}).join('')}</div></td>
+      <td>${tr.category==='student'?'<span style="font-size:.72rem;color:var(--text-light)">—</span>':`<div class="a-dots">${[30,60,90].map(d=>{const s=asmts[d];return`<div class="a-dot ${s==='done'?'a-done':s==='due'?'a-due':s==='soon'?'a-soon':'a-future'}" title="${d}-day: ${s}">${d}</div>`}).join('')}</div>`}</td>
       <td><span class="badge ${tr.status==='active'?'badge-success':tr.status==='certified'?'badge-teal':tr.status==='completed'?'badge-info':'badge-gray'}">${tr.status||'active'}</span></td>
       <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTraineeModal('${tr.id}','${tr.trainerId||''}')"><i class="fa-solid fa-pen"></i></button></td>
     </tr>`;
@@ -1002,12 +1003,12 @@ async function renderTraineeDetail(tid, fromTid) {
         `<div style="font-size:.8rem;padding:.6rem .9rem;border-radius:var(--r-sm);background:#f8fafd;border:1px dashed var(--border);color:var(--text-light);cursor:pointer" onclick="openAdminNoteModal('${trainee.id}')"><i class="fa-solid fa-plus" style="margin-right:.3rem"></i>Add a note (e.g. terminated, on leave…)</div>`}
     </div>
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>
-      <button class="tab-btn" onclick="switchTab(this,'tab-checkins')"><i class="fa-solid fa-calendar-check"></i> Weekly Check-ins</button>
+      ${trainee.category!=='student'?`<button class="tab-btn ${trainee.category!=='student'?'active':''}" onclick="switchTab(this,'tab-assessments')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>`:''}
+      <button class="tab-btn ${trainee.category==='student'?'active':''}" onclick="switchTab(this,'tab-checkins')"><i class="fa-solid fa-calendar-check"></i> Weekly Check-ins</button>
       <button class="tab-btn" onclick="switchTab(this,'tab-notes')"><i class="fa-solid fa-note-sticky"></i> Clinical Notes</button>
       <button class="tab-btn" onclick="switchTab(this,'tab-history')"><i class="fa-solid fa-clock-rotate-left"></i> Preceptor History</button>
     </div>
-    <div id="tab-assessments">
+    <div id="tab-assessments" ${trainee.category==='student'?'style="display:none"':''}>
       <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0;margin-top:.1rem"></i><span>Click a card to complete or view the assessment for that milestone.</span></div>
       <div class="a-grid">
         ${[30,60,90].map(day=>{
@@ -1914,6 +1915,7 @@ function getAsmtStatus(trainee, assessments) {
 function getDueCount(trainees, assessments) {
   let c=0;
   trainees.forEach(tr=>{
+    if(tr.category==='student') return;
     if(tr.status!=='active'||!tr.startDate) return;
     [30,60,90].forEach(day=>{
       if(!assessments.find(a=>a.traineeId===tr.id&&a.day===day)){
