@@ -265,7 +265,7 @@ const db = firebase.firestore();
 // ═══════════════════════════════════════
 const SETUP_CODE = 'VIPMED2024';
 const COLORS = ['#0f3460','#0d9488','#7c3aed','#be185d','#b45309','#065f46','#1d4ed8','#9f1239'];
-const PROTOCOLS = ['Sonographer/MA Training','MA Training Only','FD/MA Training','Sonography Training Only'];
+const PROTOCOLS = ['Sonographer/MA Training','MA Training Only','FD/MA Training','Sonography Training Only','Sonography Student'];
 // Grading options used across all assessments
 const GRADES = ['O','S','P','N','N/A'];
 const GRADE_LABELS = {O:'Outstanding',S:'Satisfactory',P:'Progressing',N:'Needs Improvement','N/A':'Not Applicable'};
@@ -466,6 +466,7 @@ function renderNav() {
       <button class="nav-btn" id="nav-hub" onclick="renderHub()"><i class="fa-solid fa-house"></i> Hub</button>
       <button class="nav-btn" id="nav-trainers" onclick="renderTrainersPage()"><i class="fa-solid fa-user-nurse"></i> Preceptors</button>
       <button class="nav-btn" id="nav-trainees" onclick="renderTraineesPage()"><i class="fa-solid fa-user-graduate"></i> Trainees</button>
+      <button class="nav-btn" id="nav-students" onclick="renderStudentsPage()"><i class="fa-solid fa-graduation-cap"></i> Students</button>
       <button class="nav-btn" id="nav-settings" onclick="renderSettingsPage()"><i class="fa-solid fa-gear"></i> Settings</button>`;
   } else {
     nav.innerHTML = `<button class="nav-btn active" id="nav-dashboard"><i class="fa-solid fa-house"></i> My Dashboard</button>`;
@@ -507,21 +508,24 @@ async function renderHub() {
       db.collection('assessments').get(),
       db.collection('checkins').get()
     ]);
-    const trainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const allPeople = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const trainees = allPeople.filter(t=>t.category!=='student');
+    const students = allPeople.filter(t=>t.category==='student');
     const assessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
     const checkins = cSnap.docs.map(d=>({id:d.id,...d.data()}));
-    const active = trainees.filter(t=>t.status==='active').length;
-    const due = getDueCount(trainees, assessments);
+    const active = allPeople.filter(t=>t.status==='active').length;
+    const due = getDueCount(allPeople, assessments);
     const statsEl = document.getElementById('hub-stats');
     if(statsEl) statsEl.innerHTML = `
       <div class="stat-card"><div class="stat-icon si-blue"><i class="fa-solid fa-user-nurse"></i></div><div><div class="stat-value">${trainers.length}</div><div class="stat-label">Preceptors</div></div></div>
       <div class="stat-card"><div class="stat-icon si-sky"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-value">${trainees.length}</div><div class="stat-label">Total Trainees</div></div></div>
-      <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${active}</div><div class="stat-label">Active Trainees</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#be185d"><i class="fa-solid fa-graduation-cap"></i></div><div><div class="stat-value">${students.length}</div><div class="stat-label">Students</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div><div><div class="stat-value">${active}</div><div class="stat-label">Active</div></div></div>
       <div class="stat-card"><div class="stat-icon si-orange"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="stat-value">${due}</div><div class="stat-label">Assessments Due</div></div></div>
       <div class="stat-card"><div class="stat-icon si-teal"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="stat-value">${assessments.length}</div><div class="stat-label">Assessments Done</div></div></div>
       <div class="stat-card"><div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-value">${checkins.length}</div><div class="stat-label">Weekly Check-ins</div></div></div>`;
     const cardsEl = document.getElementById('hub-trainer-cards');
-    if(cardsEl) cardsEl.innerHTML = trainers.length ? trainers.map(t=>trainerCardHTML(t,trainees,assessments)).join('') : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
+    if(cardsEl) cardsEl.innerHTML = trainers.length ? trainers.map(t=>trainerCardHTML(t,allPeople,assessments)).join('') : '<div class="empty"><i class="fa-solid fa-user-nurse"></i><p>No preceptors yet</p></div>';
   }, e=>console.error(e));
   activeListeners.push(unsub1);
 
@@ -788,7 +792,8 @@ async function renderTraineesPage() {
     db.collection('assessments').get(),
     db.collection('trainers').get()
   ]);
-  window._allTrainees = tSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._currentPage = 'trainees';
+  window._allTrainees = tSnap.docs.map(d=>({id:d.id,...d.data()})).filter(t=>t.category!=='student');
   window._allAssessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
   window._allTrainers = trainerSnap.docs.map(d=>({id:d.id,...d.data()}));
   renderTraineesTable(window._allTrainees);
@@ -836,6 +841,82 @@ function toggleArchivedSection() {
   if(chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
 }
 
+// ═══════════════════════════════════════
+//  ALL STUDENTS PAGE (ADMIN)
+// ═══════════════════════════════════════
+async function renderStudentsPage() {
+  setNavActive('nav-students');
+  window._currentPage = 'students';
+  const el = document.getElementById('main-content');
+  el.innerHTML = `
+    <div class="sec-hdr">
+      <div><h1 style="font-size:1.3rem;font-weight:800">Students</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Sonography students in the program</p></div>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <input class="form-control" style="width:200px;padding:.32rem .65rem;font-size:.78rem" placeholder="Search..." id="student-search" oninput="filterStudentsTable()">
+        <button class="btn btn-primary" onclick="openTraineeModal(null,null,'student')"><i class="fa-solid fa-plus"></i> Add Student</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-hdr"><span class="card-hdr-title" id="student-count-label">Current Students</span></div>
+      <div class="tbl-wrap" id="students-tbl-wrap"><p style="padding:1.2rem;color:var(--text-light);font-size:.83rem">Loading...</p></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" style="cursor:pointer;user-select:none" onclick="toggleArchivedStudentsSection()">
+        <span class="card-hdr-title"><i class="fa-solid fa-box-archive" style="color:var(--text-light);margin-right:.4rem"></i>Archived <span id="archived-students-badge"></span></span>
+        <i class="fa-solid fa-chevron-down" id="archived-students-chevron" style="color:var(--text-light);font-size:.8rem;transition:transform .2s"></i>
+      </div>
+      <div id="archived-students-section" class="tbl-wrap" style="display:none"></div>
+    </div>`;
+  const [tSnap, aSnap, trainerSnap] = await Promise.all([
+    db.collection('trainees').get(),
+    db.collection('assessments').get(),
+    db.collection('trainers').get()
+  ]);
+  window._allStudents = tSnap.docs.map(d=>({id:d.id,...d.data()})).filter(t=>t.category==='student');
+  window._allStudentAssessments = aSnap.docs.map(d=>({id:d.id,...d.data()}));
+  window._allTrainers = trainerSnap.docs.map(d=>({id:d.id,...d.data()}));
+  renderStudentsTable(window._allStudents);
+}
+
+function filterStudentsTable() {
+  const q = (document.getElementById('student-search')||{}).value||'';
+  const filtered = (window._allStudents||[]).filter(t=>!q||t.name.toLowerCase().includes(q.toLowerCase()));
+  renderStudentsTable(filtered);
+}
+
+function renderStudentsTable(students) {
+  const byNewest = (a, b) => {
+    const da = a.startDate || '';
+    const db = b.startDate || '';
+    if (db > da) return 1;
+    if (db < da) return -1;
+    return 0;
+  };
+  const current = students.filter(t => t.status !== 'archived').sort(byNewest);
+  const archived = students.filter(t => t.status === 'archived').sort(byNewest);
+  const el = document.getElementById('students-tbl-wrap');
+  if(el) el.innerHTML = current.length
+    ? traineeTableHTML(current, window._allStudentAssessments||[], 'students', false)
+    : '<div class="empty" style="padding:1.75rem"><i class="fa-solid fa-graduation-cap"></i><p>No current students</p></div>';
+  const countLabel = document.getElementById('student-count-label');
+  if(countLabel) countLabel.textContent = `Current Students (${current.length})`;
+  const archEl = document.getElementById('archived-students-section');
+  const badgeEl = document.getElementById('archived-students-badge');
+  if(badgeEl) badgeEl.innerHTML = archived.length ? `<span class="badge badge-gray" style="margin-left:.2rem">${archived.length}</span>` : '';
+  if(archEl) archEl.innerHTML = archived.length
+    ? traineeTableHTML(archived, window._allStudentAssessments||[], 'students', false)
+    : '<div class="empty" style="padding:1.5rem"><i class="fa-solid fa-box-archive"></i><p>No archived students</p></div>';
+}
+
+function toggleArchivedStudentsSection() {
+  const section = document.getElementById('archived-students-section');
+  const chevron = document.getElementById('archived-students-chevron');
+  if(!section) return;
+  const isHidden = section.style.display === 'none';
+  section.style.display = isHidden ? 'block' : 'none';
+  if(chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+}
+
 function traineeTableHTML(trainees, assessments, fromTrainerId, hideTrainerCol, checkins=[]) {
   if(!trainees.length) return '<div class="empty"><i class="fa-solid fa-user-plus"></i><p>No trainees assigned yet</p></div>';
   const rows = trainees.map(tr=>{
@@ -863,8 +944,8 @@ async function renderTraineeDetail(tid, fromTid) {
   viewTraineeId = tid;
   traineeBackContext = fromTid || '';
   const el = document.getElementById('main-content');
-  const backFn = fromTid ? (currentUser.role==='admin'?`renderTrainerDetail('${fromTid}')`:`renderTrainerDashboard('${fromTid}')`) : `renderTraineesPage()`;
-  const backLabel = fromTid ? 'Back to Preceptor' : 'Back to Trainees';
+  const backFn = fromTid==='students' ? `renderStudentsPage()` : fromTid ? (currentUser.role==='admin'?`renderTrainerDetail('${fromTid}')`:`renderTrainerDashboard('${fromTid}')`) : `renderTraineesPage()`;
+  const backLabel = fromTid==='students' ? 'Back to Students' : fromTid ? 'Back to Preceptor' : 'Back to Trainees';
   el.innerHTML = `<button class="back-btn" onclick="${backFn}"><i class="fa-solid fa-arrow-left"></i> ${backLabel}</button><div id="trainee-detail-body"><p style="color:var(--text-light)">Loading...</p></div>`;
 
   const [trDoc, aSnap, cSnap, trainerSnap] = await Promise.all([
@@ -1085,19 +1166,23 @@ async function createTrainerLogin(tid) {
 // ═══════════════════════════════════════
 //  TRAINEE MODAL (ADD/EDIT)
 // ═══════════════════════════════════════
-async function openTraineeModal(tid, defaultTrainerId) {
+async function openTraineeModal(tid, defaultTrainerId, category) {
   let trainee = null;
   if(tid) { const d = await db.collection('trainees').doc(tid).get(); if(d.exists) trainee={id:d.id,...d.data()}; }
+  const effectiveCategory = category || (trainee ? trainee.category : '') || 'trainee';
+  const isStudent = effectiveCategory === 'student';
   const trainersSnap = await db.collection('trainers').orderBy('name').get();
   const trainers = trainersSnap.docs.map(d=>({id:d.id,...d.data()}));
   const isEdit = !!trainee;
+  const modalTitle = isEdit ? (isStudent ? 'Edit Student' : 'Edit Trainee') : (isStudent ? 'Add New Student' : 'Assign New Trainee');
+  const saveLabel = isEdit ? 'Save Changes' : (isStudent ? 'Add Student' : 'Assign Trainee');
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
-    <div class="modal-hdr"><span class="modal-title">${isEdit?'Edit Trainee':'Assign New Trainee'}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-hdr"><span class="modal-title">${modalTitle}</span><button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="modal-body">
       <div class="form-section">Personal Information</div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control" id="fn-name" value="${trainee?trainee.name:''}" placeholder="First Last"></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="fn-email" value="${trainee?trainee.email||'':''}" placeholder="trainee@email.com"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="fn-email" value="${trainee?trainee.email||'':''}" placeholder="email@vipmedicalgroup.com"></div>
       </div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="fn-phone" value="${trainee?trainee.phone||'':''}" placeholder="(555) 000-0000"></div>
@@ -1122,7 +1207,7 @@ async function openTraineeModal(tid, defaultTrainerId) {
         <div class="form-group"><label class="form-label">Protocol Track</label>
           <select class="form-control" id="fn-protocol">
             <option value="">-- None --</option>
-            ${PROTOCOLS.map(p=>`<option ${trainee&&trainee.protocol===p?'selected':''}>${p}</option>`).join('')}
+            ${PROTOCOLS.map(p=>`<option ${trainee&&trainee.protocol===p?'selected':(!trainee&&isStudent&&p==='Sonography Student'?'selected':'')}>${p}</option>`).join('')}
           </select>
         </div>
         <div class="form-group"><label class="form-label">Status</label>
@@ -1136,13 +1221,13 @@ async function openTraineeModal(tid, defaultTrainerId) {
         </div>
       </div>
       <div class="form-section">Goals & Notes</div>
-      <div class="form-group"><label class="form-label">Training Goals</label><textarea class="form-control" id="fn-goals" placeholder="What competencies should this trainee achieve?">${trainee?trainee.goals||'':''}</textarea></div>
+      <div class="form-group"><label class="form-label">Training Goals</label><textarea class="form-control" id="fn-goals" placeholder="What competencies should this ${isStudent?'student':'trainee'} achieve?">${trainee?trainee.goals||'':''}</textarea></div>
       <div class="form-group"><label class="form-label">Clinical Notes</label><textarea class="form-control" id="fn-notes" placeholder="Learning style, prior knowledge gaps, accommodations...">${trainee?trainee.notes||'':''}</textarea></div>
     </div>
     <div class="modal-foot">
       ${isEdit?`<button class="btn btn-danger btn-sm" onclick="deleteTrainee('${tid}')"><i class="fa-solid fa-trash"></i></button><div style="flex:1"></div>`:''}
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
-      <button class="btn btn-primary" id="trainee-save-btn" onclick="saveTrainee('${tid||''}')"><i class="fa-solid fa-check"></i> ${isEdit?'Save Changes':'Assign Trainee'}</button>
+      <button class="btn btn-primary" id="trainee-save-btn" onclick="saveTrainee('${tid||''}','${effectiveCategory}')"><i class="fa-solid fa-check"></i> ${saveLabel}</button>
     </div>
   </div>`);
 }
@@ -1217,11 +1302,12 @@ async function saveTransfer(traineeId, fromTrainerId, fromTrainerName) {
   } catch(e) { alert('Error: '+e.message); setBtn('tr-save-btn', false, 'Confirm Transfer'); }
 }
 
-async function saveTrainee(id) {
+async function saveTrainee(id, category) {
   const name = v('fn-name');
   if(!name) return alert('Name is required');
   const initials = name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
-  const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes')};
+  const effectiveCat = category || 'trainee';
+  const obj = {name, initials, email:v('fn-email'), phone:v('fn-phone'), experience:v('fn-exp'), trainerId:v('fn-trainer')||null, startDate:v('fn-start'), protocol:v('fn-protocol'), status:v('fn-status')||'active', goals:v('fn-goals'), notes:v('fn-notes'), category:effectiveCat};
   setBtn('trainee-save-btn',true,'Saving...');
   try {
     if(id) {
@@ -1750,6 +1836,7 @@ function refreshCurrentPage() {
   if(path==='hub') renderHub();
   else if(path==='trainers') renderTrainersPage();
   else if(path==='trainees') renderTraineesPage();
+  else if(path==='students') renderStudentsPage();
   else if(path==='trainer-detail') renderTrainerDetail(viewTrainerId);
   else if(path==='trainee-detail') renderTraineeDetail(viewTraineeId, traineeBackContext);
   else if(path==='settings') renderSettingsPage();
