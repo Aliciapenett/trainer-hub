@@ -1509,6 +1509,32 @@ async function deleteAssessment(id, traineeId, day) {
 const CI_RATINGS = ['Needs Improvement','Developing','Competent','Proficient'];
 const CI_RATING_COLORS = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
 
+// ── SONOGRAPHY STUDENT RATING SCALE (3-tier) ──
+const ST_CI_RATINGS = ['Not Applicable','Progressing','Competent'];
+const ST_CI_RATING_COLORS = {'Not Applicable':'#64748b','Progressing':'#d97706','Competent':'#15803d'};
+const ST_CHECKIN_ITEMS = [
+  {id:'st_1',  label:'Demonstrates professional communication with patients'},
+  {id:'st_2',  label:'Maintains patient privacy and professionalism'},
+  {id:'st_3',  label:'Prepares the ultrasound room and equipment appropriately'},
+  {id:'st_4',  label:'Positions patients appropriately for venous examinations'},
+  {id:'st_5',  label:'Demonstrates appropriate ultrasound ergonomics'},
+  {id:'st_6',  label:'Demonstrates appropriate transducer orientation and control'},
+  {id:'st_7',  label:'Optimizes ultrasound images appropriately'},
+  {id:'st_8',  label:'Demonstrates appropriate compression technique'},
+  {id:'st_9',  label:'Demonstrates appropriate use of color and spectral Doppler'},
+  {id:'st_10', label:'Identifies relevant deep venous anatomy'},
+  {id:'st_11', label:'Identifies relevant superficial venous anatomy'},
+  {id:'st_12', label:'Performs reflux evaluation according to clinic protocol'},
+  {id:'st_13', label:'Recognizes normal versus potentially abnormal findings at the expected student level'},
+  {id:'st_14', label:'Obtains required images and measurements'},
+  {id:'st_15', label:'Accurately labels and documents images'},
+  {id:'st_16', label:"Follows the clinic's venous examination protocol in the appropriate sequence"},
+  {id:'st_17', label:"Demonstrates understanding of ultrasound's role in vein treatment procedures"},
+  {id:'st_18', label:'Demonstrates appropriate infection-control and safety practices'},
+  {id:'st_19', label:'Recognizes when assistance or trainer intervention is needed'},
+  {id:'st_20', label:'Demonstrates increasing independence appropriate for their stage of training'},
+];
+
 function ciRatingSelector(fieldId, savedVal) {
   return `<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.35rem">
     ${CI_RATINGS.map(r=>`<button type="button" onclick="setCIRating(this,'${fieldId}','${r.replace(/'/g,"\\'")}')" class="ci-rate-btn" data-rating="${r}" style="padding:.28rem .7rem;border-radius:6px;border:2px solid ${savedVal===r?CI_RATING_COLORS[r]:'var(--border)'};background:${savedVal===r?CI_RATING_COLORS[r]:'#fff'};color:${savedVal===r?'#fff':CI_RATING_COLORS[r]};font-size:.75rem;font-weight:600;cursor:pointer;transition:.12s">${r}</button>`).join('')}
@@ -1520,6 +1546,25 @@ function setCIRating(el, fieldId, rating) {
     const r=b.dataset.rating; b.style.background='#fff'; b.style.color=CI_RATING_COLORS[r]; b.style.borderColor='var(--border)';
   });
   el.style.background=CI_RATING_COLORS[rating]; el.style.color='#fff'; el.style.borderColor=CI_RATING_COLORS[rating];
+  document.getElementById(fieldId).value=rating;
+}
+
+function stCiRatingSelector(fieldId, savedVal) {
+  return `<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.3rem">
+    ${ST_CI_RATINGS.map(r=>`<button type="button" onclick="setSTCIRating(this,'${fieldId}','${r.replace(/'/g,"\\'")}')"
+      class="st-ci-rate-btn" data-rating="${r}"
+      style="padding:.26rem .65rem;border-radius:6px;border:2px solid ${savedVal===r?ST_CI_RATING_COLORS[r]:'var(--border)'};
+             background:${savedVal===r?ST_CI_RATING_COLORS[r]:'#fff'};
+             color:${savedVal===r?'#fff':ST_CI_RATING_COLORS[r]};
+             font-size:.75rem;font-weight:600;cursor:pointer;transition:.12s">${r}</button>`).join('')}
+    <input type="hidden" id="${fieldId}" value="${savedVal||''}">
+  </div>`;
+}
+function setSTCIRating(el, fieldId, rating) {
+  el.parentElement.querySelectorAll('.st-ci-rate-btn').forEach(b=>{
+    const r=b.dataset.rating; b.style.background='#fff'; b.style.color=ST_CI_RATING_COLORS[r]; b.style.borderColor='var(--border)';
+  });
+  el.style.background=ST_CI_RATING_COLORS[rating]; el.style.color='#fff'; el.style.borderColor=ST_CI_RATING_COLORS[rating];
   document.getElementById(fieldId).value=rating;
 }
 
@@ -1535,6 +1580,10 @@ function ciQuestion(num, label, desc, fieldId, savedVal, hasComment, commentId, 
 // Determine if protocol is MA-type
 function isMaProtocol(protocol) {
   return protocol === 'MA Training Only' || protocol === 'FD/MA Training';
+}
+// Determine if protocol is Sonography Student
+function isStudentProtocol(protocol) {
+  return protocol === 'Sonography Student';
 }
 
 // ── SONOGRAPHER CHECK-IN FORM ──
@@ -1589,31 +1638,61 @@ function maCheckinForm() {
     <div class="form-group"><label class="form-label">Additional Comments or Concerns</label><textarea class="form-control" id="ci-additional" placeholder="Anything else to note..."></textarea></div>`;
 }
 
+// ── SONOGRAPHY STUDENT CHECK-IN FORM ──
+function studentCheckinForm(savedVals) {
+  savedVals = savedVals || {};
+  return `
+    <div class="form-grid" style="margin-bottom:.5rem">
+      <div class="form-group"><label class="form-label">Scans Completed This Week</label><input class="form-control" id="ci-cases" type="number" placeholder="e.g. 4" value="${savedVals.cases||''}"></div>
+      <div class="form-group"><label class="form-label">Supervision Level</label>
+        <select class="form-control" id="ci-supervision">
+          <option value="">Select...</option>
+          ${['Fully supervised','Mostly supervised','Mix of both','Mostly independent','Fully independent'].map(o=>`<option ${savedVals.supervision===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-section">Competency Ratings</div>
+    <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Rate each competency: <strong>Not Applicable</strong> · <strong>Progressing</strong> · <strong>Competent</strong></span></div>
+    ${ST_CHECKIN_ITEMS.map((item,i)=>`
+      <div style="padding:.75rem 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:.83rem;font-weight:600;margin-bottom:.35rem">${i+1}. ${item.label}</div>
+        ${stCiRatingSelector('ci-'+item.id, savedVals['ci-'+item.id]||'')}
+      </div>`).join('')}
+    <div class="form-section">Overall Feedback</div>
+    <div class="form-group"><label class="form-label">Key Strengths This Week 🏆</label><textarea class="form-control" id="ci-strengths" placeholder="What did the student do well?">${savedVals.strengths||''}</textarea></div>
+    <div class="form-group"><label class="form-label">Areas to Focus On</label><textarea class="form-control" id="ci-improvements" placeholder="Skills to develop, areas needing more practice...">${savedVals.improvements||''}</textarea></div>
+    <div class="form-group"><label class="form-label">Additional Comments or Concerns</label><textarea class="form-control" id="ci-additional" placeholder="Anything else to note...">${savedVals.additional||''}</textarea></div>`;
+}
+
 async function openCheckinModal(traineeId, week) {
   const trDoc = await db.collection('trainees').doc(traineeId).get();
   const trainee = {id:trDoc.id,...trDoc.data()};
   const isMA = isMaProtocol(trainee.protocol);
-  const formType = isMA ? 'MA / FD·MA' : 'Sonographer';
+  const isSt = isStudentProtocol(trainee.protocol);
+  const formType = isSt ? 'Sonography Student' : isMA ? 'MA / FD·MA' : 'Sonographer';
+  const formTypeKey = isSt ? 'student' : isMA ? 'ma' : 'sono';
+  const formColor = isSt ? '#be185d' : 'var(--accent)';
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr">
       <div>
-        <div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Week ${week} Weekly Check-in</div>
-        <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">${trainee.name} · <span style="font-weight:600;color:var(--accent)">${formType} Form</span></div>
+        <div class="modal-title"><i class="fa-solid fa-calendar-check" style="color:${formColor}"></i> Week ${week} Weekly Check-in</div>
+        <div style="font-size:.73rem;color:var(--text-light);margin-top:.1rem">${trainee.name} · <span style="font-weight:600;color:${formColor}">${formType} Form</span></div>
       </div>
       <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      ${isMA ? maCheckinForm() : sonoCheckinForm()}
+      ${isSt ? studentCheckinForm() : isMA ? maCheckinForm() : sonoCheckinForm()}
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="forceClose()">Cancel</button>
-      <button class="btn btn-primary" id="ci-save-btn" onclick="saveCheckin('${traineeId}',${week},'${isMA?'ma':'sono'}')"><i class="fa-solid fa-check"></i> Save Check-in</button>
+      <button class="btn btn-primary" id="ci-save-btn" onclick="saveCheckin('${traineeId}',${week},'${formTypeKey}')"><i class="fa-solid fa-check"></i> Save Check-in</button>
     </div>
   </div>`);
 }
 
 async function saveCheckin(traineeId, week, formType) {
   const isMA = formType === 'ma';
+  const isSt = formType === 'student';
   const obj = {
     traineeId, week, date:todayStr(), formType,
     cases: v('ci-cases'),
@@ -1622,7 +1701,9 @@ async function saveCheckin(traineeId, week, formType) {
     improvements: v('ci-improvements'),
     additional: v('ci-additional'),
   };
-  if(isMA) {
+  if(isSt) {
+    ST_CHECKIN_ITEMS.forEach(item=>{ obj['ci-'+item.id] = v('ci-'+item.id)||''; });
+  } else if(isMA) {
     Object.assign(obj, {
       maPrep: v('ci-ma-prep'), maMed: v('ci-ma-med'), maConsent: v('ci-ma-consent'),
       maIntake: v('ci-ma-intake'), maDraping: v('ci-ma-draping'), maAseptic: v('ci-ma-aseptic'),
@@ -1654,6 +1735,11 @@ async function viewCheckinModal(id) {
   if(!doc.exists) return;
   const ci = {id:doc.id,...doc.data()};
   const isMA = ci.formType === 'ma';
+  const isSt = ci.formType === 'student';
+  const formLabel = isSt ? 'Sonography Student' : isMA ? 'MA / FD·MA' : 'Sonographer';
+  const formColor = isSt ? '#be185d' : 'var(--accent)';
+
+  // Standard rating badge (4-tier scale for sono/MA)
   const ratingBadge = (label, val, comment) => val ? `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border)">
       <span style="font-size:.82rem;font-weight:500">${label}</span>
@@ -1661,48 +1747,56 @@ async function viewCheckinModal(id) {
     </div>
     ${comment?`<div style="font-size:.77rem;color:var(--text-light);padding:.3rem .6rem;background:#f8fafd;border-radius:var(--r-sm);margin-bottom:.3rem">${comment}</div>`:''}` : '';
 
+  // Student rating badge (3-tier scale)
+  const stRatingBadge = (label, val) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.81rem;font-weight:500">${label}</span>
+      ${val ? `<span style="padding:.18rem .6rem;border-radius:6px;font-size:.73rem;font-weight:700;background:${ST_CI_RATING_COLORS[val]||'#64748b'};color:#fff">${val}</span>`
+             : `<span style="font-size:.73rem;color:var(--text-light)">—</span>`}
+    </div>`;
+
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr">
       <div>
         <span class="modal-title">Week ${ci.week} Check-in — ${fmtDate(ci.date)}</span>
-        <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem"><span style="font-weight:600;color:var(--accent)">${isMA?'MA / FD·MA':'Sonographer'} Form</span></div>
+        <div style="font-size:.72rem;color:var(--text-light);margin-top:.1rem"><span style="font-weight:600;color:${formColor}">${formLabel} Form</span></div>
       </div>
       <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
       <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
-        ${ci.cases?`<span class="badge badge-info"><i class="fa-solid fa-stethoscope"></i> ${ci.cases} ${isMA?'procedures':'cases'}</span>`:''}
+        ${ci.cases?`<span class="badge badge-info"><i class="fa-solid fa-stethoscope"></i> ${ci.cases} ${isSt?'scans':isMA?'procedures':'cases'}</span>`:''}
         ${ci.supervision?`<span class="badge badge-gray"><i class="fa-solid fa-eye"></i> ${ci.supervision}</span>`:''}
       </div>
-
       <div style="margin-bottom:1rem">
-        ${isMA ? `
-          ${ratingBadge('Procedure Preparation', ci.maPrep, '')}
-          ${ratingBadge('Medication Preparation', ci.maMed, '')}
-          ${ratingBadge('Patient Consent Process', ci.maConsent, '')}
-          ${ratingBadge('Patient Intake & Presentation', ci.maIntake, '')}
-          ${ratingBadge('Patient Preparation & Draping', ci.maDraping, '')}
-          ${ratingBadge('Aseptic Technique', ci.maAseptic, '')}
-          ${ratingBadge('Procedure Assistance', ci.maAssist, ci.maAssistComment)}
-          ${ratingBadge('Equipment Handling', ci.maEquipment, ci.maEquipmentComment)}
-          ${ratingBadge('Post-Procedure Duties', ci.maPost, '')}
-          ${ratingBadge('Workflow & Efficiency', ci.maWorkflow, '')}
-          ${ratingBadge('Professionalism & Patient Interaction', ci.maProfessionalism, ci.maProfessionalismComment)}
-        ` : `
-          ${ratingBadge('Technical Scanning Skills', ci.technical, '')}
-          ${ratingBadge('Anatomy & Protocol Knowledge', ci.anatomy, '')}
-          ${ratingBadge('Probe Handling & Technique', ci.probe, '')}
-          ${ratingBadge('Workflow & Efficiency', ci.workflow, '')}
-          ${ratingBadge('Patient Interaction', ci.patient, '')}
-          ${ratingBadge('Clinical Understanding', ci.clinical, '')}
-          ${ratingBadge('Documentation & Reporting', ci.documentation, ci.documentationComment)}
-          ${ratingBadge('Independence & Confidence', ci.independence, ci.independenceComment)}
-          ${ratingBadge('Doctor Presentation', ci.doctor, ci.doctorComment)}
-        `}
+        ${isSt
+          ? ST_CHECKIN_ITEMS.map(item=>stRatingBadge(item.label, ci['ci-'+item.id])).join('')
+          : isMA ? `
+            ${ratingBadge('Procedure Preparation', ci.maPrep, '')}
+            ${ratingBadge('Medication Preparation', ci.maMed, '')}
+            ${ratingBadge('Patient Consent Process', ci.maConsent, '')}
+            ${ratingBadge('Patient Intake & Presentation', ci.maIntake, '')}
+            ${ratingBadge('Patient Preparation & Draping', ci.maDraping, '')}
+            ${ratingBadge('Aseptic Technique', ci.maAseptic, '')}
+            ${ratingBadge('Procedure Assistance', ci.maAssist, ci.maAssistComment)}
+            ${ratingBadge('Equipment Handling', ci.maEquipment, ci.maEquipmentComment)}
+            ${ratingBadge('Post-Procedure Duties', ci.maPost, '')}
+            ${ratingBadge('Workflow & Efficiency', ci.maWorkflow, '')}
+            ${ratingBadge('Professionalism & Patient Interaction', ci.maProfessionalism, ci.maProfessionalismComment)}
+          ` : `
+            ${ratingBadge('Technical Scanning Skills', ci.technical, '')}
+            ${ratingBadge('Anatomy & Protocol Knowledge', ci.anatomy, '')}
+            ${ratingBadge('Probe Handling & Technique', ci.probe, '')}
+            ${ratingBadge('Workflow & Efficiency', ci.workflow, '')}
+            ${ratingBadge('Patient Interaction', ci.patient, '')}
+            ${ratingBadge('Clinical Understanding', ci.clinical, '')}
+            ${ratingBadge('Documentation & Reporting', ci.documentation, ci.documentationComment)}
+            ${ratingBadge('Independence & Confidence', ci.independence, ci.independenceComment)}
+            ${ratingBadge('Doctor Presentation', ci.doctor, ci.doctorComment)}
+          `}
       </div>
-
       ${ci.strengths?`<div class="form-group"><div class="form-label" style="color:var(--success)">🏆 Key Strengths</div><div style="background:#dcfce7;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.strengths}</div></div>`:''}
-      ${ci.improvements?`<div class="form-group"><div class="form-label" style="color:var(--danger)">⚡ Areas Needing Improvement</div><div style="background:#fee2e2;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.improvements}</div></div>`:''}
+      ${ci.improvements?`<div class="form-group"><div class="form-label" style="color:var(--danger)">⚡ Areas to Focus On</div><div style="background:#fee2e2;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.improvements}</div></div>`:''}
       ${ci.additional?`<div class="form-group"><div class="form-label">💬 Additional Comments</div><div style="background:#f1f5f9;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem">${ci.additional}</div></div>`:''}
     </div>
     <div class="modal-foot">
@@ -2022,18 +2116,31 @@ async function downloadTraineePDF(traineeId, btnEl) {
 
     function ciDetailBlock(ci) {
       const ciIsMA = ci.formType==='ma';
-      const sonoF = [['Technical Scanning Skills',ci.technical,''],['Anatomy & Protocol Knowledge',ci.anatomy,''],['Probe Handling & Technique',ci.probe,''],['Workflow & Efficiency',ci.workflow,''],['Patient Interaction',ci.patient,''],['Clinical Understanding',ci.clinical,''],['Documentation & Reporting',ci.documentation,ci.documentationComment],['Independence & Confidence',ci.independence,ci.independenceComment],['Doctor Presentation',ci.doctor,ci.doctorComment]];
-      const maF = [['Procedure Preparation',ci.maPrep,''],['Medication Preparation',ci.maMed,''],['Patient Consent Process',ci.maConsent,''],['Patient Intake & Presentation',ci.maIntake,''],['Patient Preparation & Draping',ci.maDraping,''],['Aseptic Technique',ci.maAseptic,''],['Procedure Assistance',ci.maAssist,ci.maAssistComment],['Equipment Handling',ci.maEquipment,ci.maEquipmentComment],['Post-Procedure Duties',ci.maPost,''],['Workflow & Efficiency',ci.maWorkflow,''],['Professionalism & Patient Interaction',ci.maProfessionalism,ci.maProfessionalismComment]];
-      const fields = (ciIsMA ? maF : sonoF).filter(([,v])=>v);
-      const rows = fields.map(([label,val,comment])=>`<tr><td style="padding:.28rem .5rem;font-size:.73rem;border-bottom:1px solid #f1f5f9">${label}</td><td style="padding:.28rem .5rem;text-align:center;border-bottom:1px solid #f1f5f9">${ratingChip(val)}</td></tr>${comment?`<tr><td colspan="2" style="padding:.18rem .5rem .38rem 1rem;font-size:.68rem;color:#64748b;border-bottom:1px solid #f1f5f9;font-style:italic">${comment}</td></tr>`:''}`).join('');
+      const ciIsSt = ci.formType==='student';
+      const stColors = {'Not Applicable':'#64748b','Progressing':'#d97706','Competent':'#15803d'};
+      let rows = '';
+      if(ciIsSt) {
+        rows = ST_CHECKIN_ITEMS.map(item=>{
+          const val = ci['ci-'+item.id]||'';
+          if(!val) return '';
+          return `<tr><td style="padding:.28rem .5rem;font-size:.73rem;border-bottom:1px solid #f1f5f9">${item.label}</td><td style="padding:.28rem .5rem;text-align:center;border-bottom:1px solid #f1f5f9"><span style="display:inline-block;padding:.08rem .42rem;border-radius:3px;background:${stColors[val]||'#64748b'};color:#fff;font-size:.68rem;font-weight:700">${val}</span></td></tr>`;
+        }).join('');
+      } else {
+        const sonoF = [['Technical Scanning Skills',ci.technical,''],['Anatomy & Protocol Knowledge',ci.anatomy,''],['Probe Handling & Technique',ci.probe,''],['Workflow & Efficiency',ci.workflow,''],['Patient Interaction',ci.patient,''],['Clinical Understanding',ci.clinical,''],['Documentation & Reporting',ci.documentation,ci.documentationComment],['Independence & Confidence',ci.independence,ci.independenceComment],['Doctor Presentation',ci.doctor,ci.doctorComment]];
+        const maF = [['Procedure Preparation',ci.maPrep,''],['Medication Preparation',ci.maMed,''],['Patient Consent Process',ci.maConsent,''],['Patient Intake & Presentation',ci.maIntake,''],['Patient Preparation & Draping',ci.maDraping,''],['Aseptic Technique',ci.maAseptic,''],['Procedure Assistance',ci.maAssist,ci.maAssistComment],['Equipment Handling',ci.maEquipment,ci.maEquipmentComment],['Post-Procedure Duties',ci.maPost,''],['Workflow & Efficiency',ci.maWorkflow,''],['Professionalism & Patient Interaction',ci.maProfessionalism,ci.maProfessionalismComment]];
+        const fields = (ciIsMA ? maF : sonoF).filter(([,v])=>v);
+        rows = fields.map(([label,val,comment])=>`<tr><td style="padding:.28rem .5rem;font-size:.73rem;border-bottom:1px solid #f1f5f9">${label}</td><td style="padding:.28rem .5rem;text-align:center;border-bottom:1px solid #f1f5f9">${ratingChip(val)}</td></tr>${comment?`<tr><td colspan="2" style="padding:.18rem .5rem .38rem 1rem;font-size:.68rem;color:#64748b;border-bottom:1px solid #f1f5f9;font-style:italic">${comment}</td></tr>`:''}`).join('');
+      }
+      const headerBg = ciIsSt ? '#7c2d8a' : '#1a4a7a';
+      const caseLabel = ciIsSt ? 'scans' : ciIsMA ? 'procedures' : 'cases';
       return `<div style="margin-bottom:.7rem;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;page-break-inside:avoid">
-        <div style="background:#1a4a7a;color:#fff;padding:.38rem .75rem;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:.78rem;font-weight:700">Week ${ci.week} Check-in</span>
-          <span style="font-size:.7rem;opacity:.8">${fmtDate(ci.date)} · ${ci.cases||0} ${ciIsMA?'procedures':'cases'} · ${ci.supervision||''}</span>
+        <div style="background:${headerBg};color:#fff;padding:.38rem .75rem;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;font-weight:700">Week ${ci.week} Check-in${ciIsSt?' · Sonography Student':''}</span>
+          <span style="font-size:.7rem;opacity:.8">${fmtDate(ci.date)} · ${ci.cases||0} ${caseLabel} · ${ci.supervision||''}</span>
         </div>
         <table style="width:100%;border-collapse:collapse"><tbody>${rows||'<tr><td colspan="2" style="padding:.5rem;font-size:.75rem;color:#94a3b8">No ratings recorded.</td></tr>'}</tbody></table>
         ${ci.strengths?`<div style="padding:.35rem .65rem;background:#dcfce7;font-size:.73rem;border-top:1px solid #86efac"><strong style="color:#15803d">Strengths:</strong> ${ci.strengths}</div>`:''}
-        ${ci.improvements?`<div style="padding:.35rem .65rem;background:#fee2e2;font-size:.73rem;border-top:1px solid #fca5a5"><strong style="color:#dc2626">Needs Improvement:</strong> ${ci.improvements}</div>`:''}
+        ${ci.improvements?`<div style="padding:.35rem .65rem;background:#fee2e2;font-size:.73rem;border-top:1px solid #fca5a5"><strong style="color:#dc2626">${ciIsSt?'Areas to Focus On':'Needs Improvement'}:</strong> ${ci.improvements}</div>`:''}
         ${ci.additional?`<div style="padding:.35rem .65rem;background:#f1f5f9;font-size:.73rem;border-top:1px solid #e2e8f0"><strong>Additional:</strong> ${ci.additional}</div>`:''}
       </div>`;
     }
@@ -2220,13 +2327,25 @@ async function downloadCheckinPDF(checkinId, traineeName) {
   if(!doc.exists) return;
   const ci = {id:doc.id,...doc.data()};
   const isMA = ci.formType==='ma';
-  const colors = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
+  const isSt = ci.formType==='student';
+  const ciColors = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
+  const stColors = {'Not Applicable':'#64748b','Progressing':'#d97706','Competent':'#15803d'};
   function ratingRow(label, val, comment) {
     if(!val) return '';
-    return `<tr><td style="padding:.4rem .6rem;font-size:.78rem;border-bottom:1px solid #e2e8f0">${label}</td><td style="padding:.4rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0"><span style="display:inline-block;padding:.1rem .5rem;border-radius:4px;background:${colors[val]||'#64748b'};color:#fff;font-size:.72rem;font-weight:700">${val}</span></td></tr>${comment?`<tr><td colspan="2" style="padding:.25rem .6rem .5rem 1.2rem;font-size:.74rem;color:#64748b;border-bottom:1px solid #e2e8f0;font-style:italic">${comment}</td></tr>`:''}`;
+    const bg = ciColors[val]||'#64748b';
+    return `<tr><td style="padding:.4rem .6rem;font-size:.78rem;border-bottom:1px solid #e2e8f0">${label}</td><td style="padding:.4rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0"><span style="display:inline-block;padding:.1rem .5rem;border-radius:4px;background:${bg};color:#fff;font-size:.72rem;font-weight:700">${val}</span></td></tr>${comment?`<tr><td colspan="2" style="padding:.25rem .6rem .5rem 1.2rem;font-size:.74rem;color:#64748b;border-bottom:1px solid #e2e8f0;font-style:italic">${comment}</td></tr>`:''}`;
   }
   const sonoRows = [ratingRow('Technical Scanning Skills',ci.technical,''),ratingRow('Anatomy & Protocol Knowledge',ci.anatomy,''),ratingRow('Probe Handling & Technique',ci.probe,''),ratingRow('Workflow & Efficiency',ci.workflow,''),ratingRow('Patient Interaction',ci.patient,''),ratingRow('Clinical Understanding',ci.clinical,''),ratingRow('Documentation & Reporting',ci.documentation,ci.documentationComment),ratingRow('Independence & Confidence',ci.independence,ci.independenceComment),ratingRow('Doctor Presentation',ci.doctor,ci.doctorComment)].join('');
   const maRows = [ratingRow('Procedure Preparation',ci.maPrep,''),ratingRow('Medication Preparation',ci.maMed,''),ratingRow('Patient Consent Process',ci.maConsent,''),ratingRow('Patient Intake & Presentation',ci.maIntake,''),ratingRow('Patient Preparation & Draping',ci.maDraping,''),ratingRow('Aseptic Technique',ci.maAseptic,''),ratingRow('Procedure Assistance',ci.maAssist,ci.maAssistComment),ratingRow('Equipment Handling',ci.maEquipment,ci.maEquipmentComment),ratingRow('Post-Procedure Duties',ci.maPost,''),ratingRow('Workflow & Efficiency',ci.maWorkflow,''),ratingRow('Professionalism & Patient Interaction',ci.maProfessionalism,ci.maProfessionalismComment)].join('');
+  const studentRows = ST_CHECKIN_ITEMS.map(item=>{
+    const val = ci['ci-'+item.id]||'';
+    if(!val) return '';
+    return `<tr><td style="padding:.4rem .6rem;font-size:.78rem;border-bottom:1px solid #e2e8f0">${item.label}</td><td style="padding:.4rem .6rem;text-align:center;border-bottom:1px solid #e2e8f0"><span style="display:inline-block;padding:.1rem .5rem;border-radius:4px;background:${stColors[val]||'#64748b'};color:#fff;font-size:.72rem;font-weight:700">${val}</span></td></tr>`;
+  }).join('');
+  const formLabel = isSt ? 'Sonography Student' : isMA ? 'MA / FD·MA' : 'Sonographer';
+  const caseLabel = isSt ? 'Scans' : isMA ? 'Procedures' : 'Cases';
+  const headerBg = isSt ? '#7c2d8a' : '#0f3460';
+  const tableRows = isSt ? studentRows : isMA ? maRows : sonoRows;
   const html = `<div style="font-family:Arial,sans-serif;color:#1e293b;max-width:740px;margin:0 auto;padding:1.5rem">
     <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:2px solid #0f3460">
       <div style="background:#0ea5e9;border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:800">V</div>
@@ -2234,14 +2353,15 @@ async function downloadCheckinPDF(checkinId, traineeName) {
       <div style="margin-left:auto;text-align:right"><div style="font-size:1rem;font-weight:800;color:#0f3460">Week ${ci.week} Check-in</div><div style="font-size:.78rem;color:#64748b">${fmtDate(ci.date)}</div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
-      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Trainee</div><div style="font-size:.9rem;font-weight:700">${traineeName}</div></div>
-      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">${isMA?'Procedures':'Cases'}</div><div style="font-size:.9rem;font-weight:700">${ci.cases||'—'}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">${isSt?'Student':'Trainee'}</div><div style="font-size:.9rem;font-weight:700">${traineeName}</div></div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">${caseLabel}</div><div style="font-size:.9rem;font-weight:700">${ci.cases||'—'}</div></div>
       <div style="background:#f0f9ff;border-radius:8px;padding:.75rem 1rem;border:1px solid #bae6fd"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#0369a1;margin-bottom:.25rem">Supervision</div><div style="font-size:.9rem;font-weight:700">${ci.supervision||'—'}</div></div>
     </div>
-    <div style="background:#0f3460;color:#fff;padding:.45rem .8rem;border-radius:6px 6px 0 0;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Weekly Evaluation — ${isMA?'MA / FD·MA':'Sonographer'} Form</div>
-    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-top:none;margin-bottom:1.25rem"><thead><tr style="background:#f8fafd"><th style="padding:.4rem .6rem;text-align:left;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Skill Area</th><th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0;width:140px">Rating</th></tr></thead><tbody>${isMA?maRows:sonoRows}</tbody></table>
+    ${isSt?`<div style="background:#fce7f3;border:1px solid #f9a8d4;border-radius:6px;padding:.45rem .8rem;margin-bottom:.75rem;font-size:.75rem;color:#9d174d"><strong>Protocol:</strong> Sonography Student &nbsp;·&nbsp; <strong>Scale:</strong> Not Applicable · Progressing · Competent</div>`:''}
+    <div style="background:${headerBg};color:#fff;padding:.45rem .8rem;border-radius:6px 6px 0 0;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Weekly Evaluation — ${formLabel} Form</div>
+    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-top:none;margin-bottom:1.25rem"><thead><tr style="background:#f8fafd"><th style="padding:.4rem .6rem;text-align:left;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0">Competency</th><th style="padding:.4rem .6rem;text-align:center;font-size:.7rem;color:#64748b;border-bottom:1px solid #e2e8f0;width:140px">Rating</th></tr></thead><tbody>${tableRows||'<tr><td colspan="2" style="padding:.7rem;font-size:.78rem;color:#94a3b8">No ratings recorded.</td></tr>'}</tbody></table>
     ${ci.strengths?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#15803d;margin-bottom:.3rem">Key Strengths</div><div style="background:#dcfce7;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #86efac">${ci.strengths}</div></div>`:''}
-    ${ci.improvements?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#dc2626;margin-bottom:.3rem">Areas Needing Improvement</div><div style="background:#fee2e2;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #fca5a5">${ci.improvements}</div></div>`:''}
+    ${ci.improvements?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#dc2626;margin-bottom:.3rem">${isSt?'Areas to Focus On':'Areas Needing Improvement'}</div><div style="background:#fee2e2;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #fca5a5">${ci.improvements}</div></div>`:''}
     ${ci.additional?`<div style="margin-bottom:.85rem"><div style="font-size:.75rem;font-weight:700;color:#1e293b;margin-bottom:.3rem">Additional Comments</div><div style="background:#f1f5f9;border-radius:6px;padding:.65rem;font-size:.8rem;border:1px solid #e2e8f0">${ci.additional}</div></div>`:''}
     <div style="border-top:2px solid #e2e8f0;padding-top:1rem;margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
       <div><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.6rem">Preceptor Signature</div><div style="border-bottom:1px solid #1e293b;min-height:28px"></div></div>
