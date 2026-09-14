@@ -1063,20 +1063,24 @@ async function renderTraineeDetail(tid, fromTid) {
       ${trainee.rotationEval?`
         <div class="card">
           <div class="card-body">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.1rem">
-              ${[['Overall Performance',trainee.rotationEval.overallPerformance],['Technical Competency',trainee.rotationEval.technicalCompetency],['Professional Behavior',trainee.rotationEval.professionalBehavior]].map(([lbl,val])=>`
-              <div style="background:#f8fafd;border-radius:var(--r-sm);padding:.75rem;border:1px solid var(--border);text-align:center">
-                <div style="font-size:.67rem;font-weight:700;text-transform:uppercase;color:var(--text-light);margin-bottom:.35rem">${lbl}</div>
-                <div style="font-size:1.5rem;font-weight:800;color:${GRADE_COLORS[val]||'#64748b'}">${val||'—'}</div>
-                <div style="font-size:.67rem;color:var(--text-light)">${GRADE_LABELS[val]||''}</div>
-              </div>`).join('')}
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:1.1rem">
+              <div>
+                <div style="font-size:.68rem;text-transform:uppercase;font-weight:700;color:var(--text-light)">Overall Evaluation</div>
+                <div style="font-size:1.05rem;font-weight:800;color:${RE_EVAL_COLORS[{'Excellent':'5','Above Expectations':'4','Meets Expectations':'3','Needs Improvement':'2','Unsatisfactory':'1'}[trainee.rotationEval.overallEval]]||'#64748b'}">${trainee.rotationEval.overallEval||'—'}</div>
+              </div>
+              ${trainee.rotationEval.overallScore?`<div style="text-align:center;background:#f0f9ff;border-radius:10px;padding:.55rem 1rem;border:1px solid #bae6fd">
+                <div style="font-size:1.6rem;font-weight:800;color:#0369a1;line-height:1">${trainee.rotationEval.overallScore}</div>
+                <div style="font-size:.66rem;color:#0369a1">÷ 5 avg</div>
+              </div>`:''}
             </div>
-            <div style="margin-bottom:.75rem;padding:.6rem .9rem;border-radius:var(--r-sm);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-              <span style="font-size:.82rem;font-weight:600">Recommendation to School</span>
-              <span style="padding:.22rem .7rem;border-radius:100px;font-size:.75rem;font-weight:700;background:${trainee.rotationEval.recommendation==='Recommend'?'#dcfce7':trainee.rotationEval.recommendation==='Recommend with Reservations'?'#fef3c7':'#fee2e2'};color:${trainee.rotationEval.recommendation==='Recommend'?'#15803d':trainee.rotationEval.recommendation==='Recommend with Reservations'?'#92400e':'#991b1b'}">${trainee.rotationEval.recommendation||'—'}</span>
-            </div>
-            ${trainee.rotationEval.summary?`<div style="margin-bottom:.65rem"><div style="font-size:.75rem;font-weight:700;color:var(--primary);margin-bottom:.3rem">Summary for School</div><div style="background:#f8fafd;border-radius:var(--r-sm);padding:.7rem;font-size:.83rem;border:1px solid var(--border)">${trainee.rotationEval.summary}</div></div>`:''}
-            <div style="font-size:.74rem;color:var(--text-light);margin-top:.4rem">Signed off by <strong>${trainee.rotationEval.preceptorName||'—'}</strong> · ${fmtDate(trainee.rotationEval.signoffDate)}</div>
+            <table style="width:100%;border-collapse:collapse;margin-bottom:1rem">
+              <thead><tr><th style="text-align:left;font-size:.69rem;font-weight:700;text-transform:uppercase;color:var(--text-light);padding:.4rem .6rem;border-bottom:1px solid var(--border)">Competency</th><th style="text-align:center;width:80px;font-size:.69rem;font-weight:700;text-transform:uppercase;color:var(--text-light);padding:.4rem .6rem;border-bottom:1px solid var(--border)">Rating</th></tr></thead>
+              <tbody>${RE_EVAL_ITEMS.map(item=>{const val=trainee.rotationEval[item.id]||'';return`<tr><td style="padding:.5rem .6rem;font-size:.82rem;border-bottom:1px solid var(--border)">${item.label}</td><td style="text-align:center;padding:.5rem .6rem;border-bottom:1px solid var(--border)">${val?`<span style="display:inline-block;width:28px;height:28px;border-radius:50%;background:${RE_EVAL_COLORS[val]};color:#fff;font-size:.82rem;font-weight:800;line-height:28px;text-align:center">${val}</span>`:'<span style="color:var(--text-light);font-size:.8rem">—</span>'}</td></tr>`;}).join('')}</tbody>
+            </table>
+            ${trainee.rotationEval.strengths?`<div style="margin-bottom:.65rem"><div style="font-size:.74rem;font-weight:700;color:#15803d;margin-bottom:.28rem">🏆 Strengths</div><div style="background:#dcfce7;border-radius:var(--r-sm);padding:.65rem;font-size:.82rem;border:1px solid #86efac">${trainee.rotationEval.strengths}</div></div>`:''}
+            ${trainee.rotationEval.development?`<div style="margin-bottom:.65rem"><div style="font-size:.74rem;font-weight:700;color:#d97706;margin-bottom:.28rem">⚡ Areas for Continued Development</div><div style="background:#fef3c7;border-radius:var(--r-sm);padding:.65rem;font-size:.82rem;border:1px solid #fcd34d">${trainee.rotationEval.development}</div></div>`:''}
+            ${trainee.rotationEval.finalComments?`<div style="margin-bottom:.65rem"><div style="font-size:.74rem;font-weight:700;color:var(--primary);margin-bottom:.28rem">💬 Final Comments</div><div style="background:#f8fafd;border-radius:var(--r-sm);padding:.65rem;font-size:.82rem;border:1px solid var(--border)">${trainee.rotationEval.finalComments}</div></div>`:''}
+            <div style="font-size:.74rem;color:var(--text-light);margin-top:.4rem;padding-top:.5rem;border-top:1px solid var(--border)">Signed off by <strong>${trainee.rotationEval.preceptorName||'—'}</strong> · ${fmtDate(trainee.rotationEval.signoffDate)}</div>
           </div>
         </div>`
       :`<div class="empty"><i class="fa-solid fa-star-half-stroke"></i><p>No final evaluation yet — click "Start Evaluation" when the rotation is complete.</p></div>`}
@@ -1091,18 +1095,15 @@ async function openRotationEvalModal(traineeId) {
   const trDoc = await db.collection('trainees').doc(traineeId).get();
   const trainee = {id:trDoc.id,...trDoc.data()};
   const ev = trainee.rotationEval || {};
-  const gradeBtn = (fieldId, val, savedVal) => `<button type="button" onclick="setGrade(this,'${fieldId}','${val}')" class="grade-btn" data-grade="${val}"
-    style="padding:.22rem .55rem;border-radius:5px;border:2px solid ${savedVal===val?GRADE_COLORS[val]:'var(--border)'};
-    background:${savedVal===val?GRADE_COLORS[val]:'#fff'};color:${savedVal===val?'#fff':GRADE_COLORS[val]};
-    font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s" title="${GRADE_LABELS[val]}">${val}</button>`;
-  const gradeRow = (label, fieldId, savedVal) => `
-    <div class="form-group">
-      <label class="form-label">${label}</label>
-      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem">
-        ${GRADES.map(g=>gradeBtn(fieldId,g,savedVal)).join('')}
-        <input type="hidden" id="${fieldId}" value="${savedVal||''}">
-      </div>
+  function reRatingSelector(fieldId, savedVal) {
+    return `<div style="display:flex;gap:.28rem;flex-wrap:wrap;margin-top:.32rem">
+      ${RE_EVAL_SCALE.map(s=>`<button type="button" onclick="setRErating(this,'${fieldId}','${s.val}')" class="re-rate-btn" data-rating="${s.val}"
+        style="padding:.24rem .6rem;border-radius:6px;border:2px solid ${savedVal===s.val?RE_EVAL_COLORS[s.val]:'var(--border)'};
+               background:${savedVal===s.val?RE_EVAL_COLORS[s.val]:'#fff'};color:${savedVal===s.val?'#fff':RE_EVAL_COLORS[s.val]};
+               font-size:.74rem;font-weight:700;cursor:pointer;transition:.12s"><strong>${s.val}</strong> — ${s.label}</button>`).join('')}
+      <input type="hidden" id="${fieldId}" value="${savedVal||''}">
     </div>`;
+  }
   showModal(`<div class="modal modal-lg" onclick="event.stopPropagation()">
     <div class="modal-hdr">
       <div>
@@ -1112,20 +1113,32 @@ async function openRotationEvalModal(traineeId) {
       <button class="modal-close" onclick="forceClose()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i><span>Grading: <strong>O</strong> Outstanding · <strong>S</strong> Satisfactory · <strong>P</strong> Progressing · <strong>N</strong> Needs Improvement · <strong>N/A</strong> Not Applicable</span></div>
+      <div class="alert alert-info" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info" style="flex-shrink:0"></i>
+        <span><strong>5</strong> Excellent · <strong>4</strong> Above Expectations · <strong>3</strong> Meets Expectations · <strong>2</strong> Needs Improvement · <strong>1</strong> Unsatisfactory</span>
+      </div>
       <div class="form-section">Competency Ratings</div>
-      ${gradeRow('Overall Performance','re-overall', ev.overallPerformance||'')}
-      ${gradeRow('Technical Competency','re-technical', ev.technicalCompetency||'')}
-      ${gradeRow('Professional Behavior','re-professional', ev.professionalBehavior||'')}
-      <div class="form-section">Recommendation & Sign-Off</div>
-      <div class="form-group"><label class="form-label">Recommendation to School</label>
-        <select class="form-control" id="re-recommendation">
+      ${RE_EVAL_ITEMS.map(item=>`
+        <div style="padding:.75rem 0;border-bottom:1px solid var(--border)">
+          <div style="font-size:.84rem;font-weight:700;margin-bottom:.1rem">${item.label}</div>
+          <div style="font-size:.76rem;color:var(--text-light);margin-bottom:.35rem">${item.desc}</div>
+          ${reRatingSelector(item.id, ev[item.id]||'')}
+        </div>`).join('')}
+      <div class="form-section">Strengths & Development</div>
+      <div class="form-group"><label class="form-label">Strengths</label>
+        <textarea class="form-control" id="re-strengths" style="min-height:80px" placeholder="Key strengths observed during the rotation...">${ev.strengths||''}</textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Areas for Continued Development</label>
+        <textarea class="form-control" id="re-development" style="min-height:80px" placeholder="Areas where the student should continue to grow...">${ev.development||''}</textarea>
+      </div>
+      <div class="form-section">Overall Evaluation & Sign-Off</div>
+      <div class="form-group"><label class="form-label">Overall Evaluation</label>
+        <select class="form-control" id="re-overall-eval">
           <option value="">Select...</option>
-          ${['Recommend','Recommend with Reservations','Not Recommended'].map(o=>`<option ${ev.recommendation===o?'selected':''}>${o}</option>`).join('')}
+          ${['Excellent','Above Expectations','Meets Expectations','Needs Improvement','Unsatisfactory'].map(o=>`<option ${ev.overallEval===o?'selected':''}>${o}</option>`).join('')}
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Summary for School</label>
-        <textarea class="form-control" id="re-summary" style="min-height:100px" placeholder="Overall summary of the student's rotation performance, strengths, and areas for growth...">${ev.summary||''}</textarea>
+      <div class="form-group"><label class="form-label">Final Comments</label>
+        <textarea class="form-control" id="re-comments" style="min-height:80px" placeholder="Any additional comments...">${ev.finalComments||''}</textarea>
       </div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Preceptor Name</label><input class="form-control" id="re-preceptor" value="${ev.preceptorName||''}" placeholder="Preceptor full name"></div>
@@ -1140,18 +1153,12 @@ async function openRotationEvalModal(traineeId) {
 }
 
 async function saveRotationEval(traineeId) {
-  const rec = v('re-recommendation');
-  if(!rec) return alert('Please select a recommendation.');
-  const rotationEval = {
-    overallPerformance:  v('re-overall'),
-    technicalCompetency: v('re-technical'),
-    professionalBehavior:v('re-professional'),
-    recommendation:      rec,
-    summary:             v('re-summary'),
-    preceptorName:       v('re-preceptor'),
-    signoffDate:         v('re-date')||todayStr(),
-    completedDate:       todayStr(),
-  };
+  const overallEval = v('re-overall-eval');
+  if(!overallEval) return alert('Please select an Overall Evaluation.');
+  const rotationEval = {overallEval, strengths:v('re-strengths'), development:v('re-development'), finalComments:v('re-comments'), preceptorName:v('re-preceptor'), signoffDate:v('re-date')||todayStr(), completedDate:todayStr()};
+  RE_EVAL_ITEMS.forEach(item=>{ rotationEval[item.id] = v(item.id)||''; });
+  const scores = RE_EVAL_ITEMS.map(item=>parseInt(rotationEval[item.id]||'0')).filter(s=>s>0);
+  rotationEval.overallScore = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : null;
   setBtn('re-save-btn', true, 'Saving...');
   try {
     await db.collection('trainees').doc(traineeId).update({rotationEval});
@@ -1628,6 +1635,27 @@ async function deleteAssessment(id, traineeId, day) {
 const CI_RATINGS = ['Needs Improvement','Developing','Competent','Proficient'];
 const CI_RATING_COLORS = {'Needs Improvement':'#dc2626','Developing':'#d97706','Competent':'#1d4ed8','Proficient':'#15803d'};
 
+// ── FINAL ROTATION EVALUATION SCALE (1–5) ──
+const RE_EVAL_SCALE = [
+  {val:'5',label:'Excellent'},
+  {val:'4',label:'Above Expectations'},
+  {val:'3',label:'Meets Expectations'},
+  {val:'2',label:'Needs Improvement'},
+  {val:'1',label:'Unsatisfactory'},
+];
+const RE_EVAL_COLORS = {'5':'#15803d','4':'#0369a1','3':'#d97706','2':'#dc2626','1':'#991b1b'};
+const RE_EVAL_ITEMS = [
+  {id:'re_prof',   label:'Professionalism & Patient Care',  desc:'Professional, punctual, respectful, and demonstrates appropriate patient communication and safety.'},
+  {id:'re_anatomy',label:'Venous Anatomy',                  desc:'Demonstrates knowledge of deep and superficial venous anatomy and can identify relevant vessels and junctions.'},
+  {id:'re_reflux', label:'Venous Reflux Studies',           desc:'Performs reflux examinations using appropriate positioning, technique, Doppler, augmentation, and measurements.'},
+  {id:'re_image',  label:'Image Quality',                   desc:'Obtains diagnostic-quality images, properly labels anatomy, and optimizes ultrasound settings.'},
+  {id:'re_path',   label:'Pathology & Clinical Correlation',desc:'Recognizes venous reflux and other abnormalities and understands how findings relate to treatment planning.'},
+  {id:'re_docs',   label:'Documentation',                   desc:'Completes required measurements, images, and documentation accurately and efficiently.'},
+  {id:'re_proc',   label:'Procedure Assistance',            desc:'Demonstrates understanding of vein procedures and appropriately assists with ultrasound-guided procedures and patient preparation.'},
+  {id:'re_infect', label:'Infection Control & Safety',      desc:'Follows appropriate infection-control, sterile/non-sterile, and patient-safety practices.'},
+  {id:'re_growth', label:'Professional Growth',             desc:'Accepts feedback, demonstrates initiative, and shows improvement throughout the rotation.'},
+];
+
 // ── SONOGRAPHY STUDENT RATING SCALE (3-tier) ──
 const ST_CI_RATINGS = ['Not Applicable','Progressing','Competent'];
 const ST_CI_RATING_COLORS = {'Not Applicable':'#64748b','Progressing':'#d97706','Competent':'#15803d'};
@@ -1684,6 +1712,15 @@ function setSTCIRating(el, fieldId, rating) {
     const r=b.dataset.rating; b.style.background='#fff'; b.style.color=ST_CI_RATING_COLORS[r]; b.style.borderColor='var(--border)';
   });
   el.style.background=ST_CI_RATING_COLORS[rating]; el.style.color='#fff'; el.style.borderColor=ST_CI_RATING_COLORS[rating];
+  document.getElementById(fieldId).value=rating;
+}
+
+function setRErating(el, fieldId, rating) {
+  el.parentElement.querySelectorAll('.re-rate-btn').forEach(b=>{
+    const r=b.dataset.rating;
+    b.style.background='#fff'; b.style.color=RE_EVAL_COLORS[r]; b.style.borderColor='var(--border)';
+  });
+  el.style.background=RE_EVAL_COLORS[rating]; el.style.color='#fff'; el.style.borderColor=RE_EVAL_COLORS[rating];
   document.getElementById(fieldId).value=rating;
 }
 
