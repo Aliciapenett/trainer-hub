@@ -1031,7 +1031,7 @@ async function renderTraineeDetail(tid, fromTid) {
             </div>
             <div class="a-card-body">
               ${dueDate?`<div style="font-size:.73rem;color:var(--text-light);margin-bottom:.4rem"><i class="fa-solid fa-calendar"></i> Due: ${fmtDate(dueDate.toISOString().split('T')[0])}</div>`:''}
-              ${done?`<div style="font-size:.77rem"><i class="fa-solid fa-check-circle" style="color:var(--success)"></i> Completed ${fmtDate(done.completedDate)}</div><div style="margin-top:.3rem;font-size:.73rem;color:var(--text-light)">${done.sonoSignoff?'Signed off: '+done.sonoSignoff:''}</div>${done.comments?`<div style="margin-top:.25rem;font-size:.71rem;color:var(--text-light)">${done.comments.substring(0,60)}${done.comments.length>60?'…':''}</div>`:''}<div style="margin-top:.6rem" onclick="event.stopPropagation()">${done.reviewedWithTrainee?`<span style="display:inline-flex;align-items:center;gap:.3rem;background:#dcfce7;color:#15803d;border-radius:100px;padding:.24rem .7rem;font-size:.72rem;font-weight:700"><i class="fa-solid fa-circle-check"></i> Reviewed with trainee · ${fmtDate(done.reviewedDate)}</span>`:currentUser&&currentUser.role==='admin'?`<button onclick="markAssessmentReviewed('${done.id}','${trainee.id}',${day},this)" style="background:#0ea5e9;color:#fff;border:none;border-radius:6px;padding:.3rem .75rem;font-size:.73rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem"><i class="fa-solid fa-clipboard-check"></i> Mark Reviewed with Trainee</button>`:''}</div>`
+              ${done?`<div style="font-size:.77rem"><i class="fa-solid fa-check-circle" style="color:var(--success)"></i> Completed ${fmtDate(done.completedDate)}</div><div style="margin-top:.3rem;font-size:.73rem;color:var(--text-light)">${done.sonoSignoff?'Signed off: '+done.sonoSignoff:''}</div>${done.comments?`<div style="margin-top:.25rem;font-size:.71rem;color:var(--text-light)">${done.comments.substring(0,60)}${done.comments.length>60?'…':''}</div>`:''}<div style="margin-top:.6rem" onclick="event.stopPropagation()" id="review-btn-${done.id}">${getReviewBtnHTML(done, trainee.id, day)}</div>`
               :`<div style="font-size:.77rem;color:var(--text-light)">Not yet completed. Click to begin.</div>`}
             </div>
           </div>`;
@@ -1660,6 +1660,17 @@ async function deleteAssessment(id, traineeId, day) {
   await db.collection('assessments').doc(id).delete();
   forceClose();
   openAssessmentModal(traineeId, day);
+}
+
+function getReviewBtnHTML(done, traineeId, day) {
+  if (!done) return '';
+  if (done.reviewedWithTrainee) {
+    return '<span style="display:inline-flex;align-items:center;gap:.3rem;background:#dcfce7;color:#15803d;border-radius:100px;padding:.24rem .7rem;font-size:.72rem;font-weight:700"><i class="fa-solid fa-circle-check"></i> Reviewed with trainee &middot; ' + fmtDate(done.reviewedDate) + '</span>';
+  }
+  if (currentUser && currentUser.role === 'admin') {
+    return '<button onclick="markAssessmentReviewed(\'' + done.id + '\',\'' + traineeId + '\',' + day + ',this)" style="background:#0ea5e9;color:#fff;border:none;border-radius:6px;padding:.3rem .75rem;font-size:.73rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem"><i class=\"fa-solid fa-clipboard-check\"></i> Mark Reviewed with Trainee</button>';
+  }
+  return '';
 }
 
 async function markAssessmentReviewed(assessmentId, traineeId, day, btn) {
