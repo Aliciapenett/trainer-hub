@@ -1616,7 +1616,25 @@ async function saveAssessment(traineeId, day, existingId, protocol='') {
     if(existingId) await db.collection('assessments').doc(existingId).delete();
     await db.collection('assessments').add({...obj, createdAt:ts()});
     const trDoc = await db.collection('trainees').doc(traineeId).get();
-    await logActivity(`${day}-day assessment completed for ${trDoc.data().name}`,'fa-clipboard-check');
+    const traineeData = trDoc.data();
+    await logActivity(`${day}-day assessment completed for ${traineeData.name}`,'fa-clipboard-check');
+    try {
+      const adminCfg = await db.collection('config').doc('setup').get();
+      const adminEmail = adminCfg.exists ? adminCfg.data().adminEmail : null;
+      if (adminEmail) {
+        const trainerSnap = traineeData.trainerId ? await db.collection('trainers').doc(traineeData.trainerId).get() : null;
+        const preceptorName = (trainerSnap && trainerSnap.exists) ? trainerSnap.data().name : (currentUser ? currentUser.name : 'Unknown');
+        await emailjs.send(EJ_SERVICE, EJ_ASMT_COMPLETE, {
+          to_name:        'Alicia',
+          to_email:       adminEmail,
+          trainee_name:   traineeData.name,
+          assessment_day: day + '-Day',
+          preceptor_name: preceptorName,
+          completed_date: fmtDate(todayStr()),
+          tracker_url:    window.location.href,
+        });
+      }
+    } catch(emailErr) { console.warn('Assessment notification failed:', emailErr); }
     forceClose();
     renderTraineeDetail(traineeId, traineeBackContext);
   } catch(e){ alert('Error: '+e.message); setBtn('asmt-save-btn',false,'Save'); }
@@ -2540,6 +2558,7 @@ emailjs.init('JeI4EaHZq9fT_iwQi');
 const EJ_SERVICE   = 'service_zbd6z5n';
 const EJ_REMINDER  = 'template_51iol4q';   // existing assessment/check-in reminder
 const EJ_ASSIGNED  = 'template_new_trainee';   // ← create this in EmailJS dashboard
+const EJ_ASMT_COMPLETE = 'template_asmt_complete'; // admin notification on assessment completion
 
 // Sends a welcome/assignment email to the trainer when a trainee is newly assigned or transferred
 async function sendNewTraineeEmail(traineeName, trainer, startDate, protocol) {
