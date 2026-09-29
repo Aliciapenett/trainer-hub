@@ -1085,6 +1085,22 @@ async function renderTraineeDetail(tid, fromTid) {
         </div>`
       :`<div class="empty"><i class="fa-solid fa-star-half-stroke"></i><p>No final evaluation yet — click "Start Evaluation" when the rotation is complete.</p></div>`}
     </div>`:''}
+    <div id="tab-history" style="display:none">
+      <div class="sec-hdr"><span class="sec-title">Preceptor History</span></div>
+      ${(!trainee.preceptorHistory || !trainee.preceptorHistory.length)
+        ? '<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>No transfers recorded — this trainee has always been with their current preceptor.</p></div>'
+        : '<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>From Preceptor</th><th>To Preceptor</th><th>Transferred By</th><th>Reason</th></tr></thead><tbody>'
+          + [...trainee.preceptorHistory].reverse().map(h =>
+              `<tr>
+                <td style="white-space:nowrap">${fmtDate(h.transferredAt)}</td>
+                <td><span class="badge badge-gray">${h.fromName||'Unassigned'}</span></td>
+                <td><span class="badge badge-info">${h.toName||'—'}</span></td>
+                <td style="font-size:.78rem;color:var(--text-light)">${h.transferredBy||'—'}</td>
+                <td style="font-size:.78rem;color:var(--text-light);font-style:${h.reason?'normal':'italic'}">${h.reason||'No reason given'}</td>
+              </tr>`
+            ).join('')
+          + '</tbody></table></div></div>'}
+    </div>
     `;
 }
 
@@ -1624,10 +1640,14 @@ async function saveAssessment(traineeId, day, existingId, protocol='') {
       if (adminEmail) {
         const trainerSnap = traineeData.trainerId ? await db.collection('trainers').doc(traineeData.trainerId).get() : null;
         const preceptorName = (trainerSnap && trainerSnap.exists) ? trainerSnap.data().name : (currentUser ? currentUser.name : 'Unknown');
-        await emailjs.send(EJ_SERVICE, EJ_REMINDER, {
-          to_name:      'Alicia',
-          to_email:     adminEmail,
-          trainee_list: `ASSESSMENT COMPLETED\n• ${traineeData.name} — ${day}-Day Milestone\nCompleted by: ${preceptorName}\nDate: ${fmtDate(todayStr())}\n\nView: ${window.location.href}`,
+        await emailjs.send(EJ_SERVICE, EJ_ASMT_COMPLETE, {
+          to_name:        'Alicia',
+          to_email:       adminEmail,
+          trainee_name:   traineeData.name,
+          assessment_day: day + '-Day',
+          preceptor_name: preceptorName,
+          completed_date: fmtDate(todayStr()),
+          tracker_url:    window.location.href,
         });
       }
     } catch(emailErr) { console.warn('Assessment notification failed:', emailErr); }
@@ -2554,6 +2574,7 @@ emailjs.init('JeI4EaHZq9fT_iwQi');
 const EJ_SERVICE   = 'service_zbd6z5n';
 const EJ_REMINDER  = 'template_51iol4q';   // existing assessment/check-in reminder
 const EJ_ASSIGNED  = 'template_new_trainee';   // ← create this in EmailJS dashboard
+const EJ_ASMT_COMPLETE = 'template_asmt_complete'; // admin notification on assessment completion
 
 // Sends a welcome/assignment email to the trainer when a trainee is newly assigned or transferred
 async function sendNewTraineeEmail(traineeName, trainer, startDate, protocol) {
