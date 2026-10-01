@@ -455,7 +455,7 @@ function initApp() {
   document.getElementById('hdr-user-name').textContent = currentUser.name;
   document.getElementById('hdr-user-role').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Preceptor';
   renderNav();
-  if (currentUser.role === 'admin') renderHub();
+  if (currentUser.role === 'admin') { renderHub(); initNotifBadge(); }
   else { viewTrainerId = currentUser.trainerId; renderTrainerDashboard(currentUser.trainerId); }
 }
 
@@ -467,6 +467,7 @@ function renderNav() {
       <button class="nav-btn" id="nav-trainers" onclick="renderTrainersPage()"><i class="fa-solid fa-user-nurse"></i> Preceptors</button>
       <button class="nav-btn" id="nav-trainees" onclick="renderTraineesPage()"><i class="fa-solid fa-user-graduate"></i> Trainees</button>
       <button class="nav-btn" id="nav-students" onclick="renderStudentsPage()"><i class="fa-solid fa-graduation-cap"></i> Students</button>
+      <button class="nav-btn" id="nav-notifications" onclick="renderNotificationsPage()"><i class="fa-solid fa-bell"></i> Notifications<span id="notif-badge" style="display:none;background:#dc2626;color:#fff;border-radius:100px;padding:0 .4rem;font-size:.67rem;font-weight:700;margin-left:.25rem;vertical-align:middle"></span></button>
       <button class="nav-btn" id="nav-settings" onclick="renderSettingsPage()"><i class="fa-solid fa-gear"></i> Settings</button>`;
   } else {
     nav.innerHTML = `<button class="nav-btn active" id="nav-dashboard"><i class="fa-solid fa-house"></i> My Dashboard</button>`;
@@ -1634,6 +1635,7 @@ async function saveAssessment(traineeId, day, existingId, protocol='') {
     const trDoc = await db.collection('trainees').doc(traineeId).get();
     const traineeData = trDoc.data();
     await logActivity(`${day}-day assessment completed for ${traineeData.name}`,'fa-clipboard-check');
+    await logNotification('assessment', traineeId, traineeData.name, `${day}-Day Assessment`, currentUser?.name||'Unknown');
     try {
       const adminCfg = await db.collection('config').doc('setup').get();
       const adminEmail = adminCfg.exists ? adminCfg.data().adminEmail : null;
@@ -1947,6 +1949,7 @@ async function saveCheckin(traineeId, week, formType) {
     await db.collection('checkins').add({...obj, createdAt:ts()});
     const trDoc = await db.collection('trainees').doc(traineeId).get();
     await logActivity(`Week ${week} check-in for ${trDoc.data().name}`,'fa-calendar-check');
+    await logNotification('checkin', traineeId, trDoc.data().name, `Week ${week} Check-in`, currentUser?.name||'Unknown');
     forceClose(); renderTraineeDetail(traineeId, traineeBackContext);
   } catch(e){ alert('Error: '+e.message); setBtn('ci-save-btn',false,'Save'); }
 }
@@ -2116,6 +2119,23 @@ function setBtn(id,disabled,html){ const el=document.getElementById(id); if(el){
 
 async function logActivity(text, icon) {
   try { await db.collection('activity').add({text, icon, user:currentUser?.name||'', ts:ts()}); } catch(e){}
+}
+
+async function logNotification(type, traineeId, traineeName, detail, submittedBy) {
+  try {
+    await db.collection('notifications').add({type, traineeId, traineeName, detail, submittedBy, read:false, createdAt:ts()});
+  } catch(e) { console.warn('Notification log failed:', e); }
+}
+
+function initNotifBadge() {
+  const unsub = db.collection('notifications').where('read','==',false).onSnapshot(snap => {
+    const badge = document.getElementById('notif-badge');
+    if(!badge) return;
+    const count = snap.size;
+    badge.textContent = count > 99 ? '99+' : count;
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  });
+  activeListeners.push(unsub);
 }
 
 function getAsmtStatus(trainee, assessments) {
@@ -2687,6 +2707,99 @@ async function sendAssessmentReminder(trainerId, btnEl) {
     btnEl.disabled = false; btnEl.innerHTML = origHTML;
     alert('Failed to send email: ' + (e.text || e.message || 'Unknown error'));
   }
+}
+
+// ═══════════════════════════════════════
+//  NOTIFICATIONS PAGE (ADMIN)
+// ═══════════════════════════════════════
+let notifFilter = 'all';
+
+async function renderNotificationsPage() {
+  setNavActive('nav-notifications');
+  window._currentPage = 'notifications';
+  clearListeners();
+  if(currentUser.role === 'admin') initNotifBadge();
+  const el = document.getElementById('main-content');
+  el.innerHTML = `
+    <div class="sec-hdr">
+      <div><h1 style="font-size:1.3rem;font-weight:800">Notifications</h1><p style="color:var(--text-light);font-size:.82rem;margin-top:.18rem">Real-time alerts when assessments or check-ins are submitted</p></div>
+      <button class="btn btn-outline btn-sm" onclick="markAllNotificationsRead()"><i class="fa-solid fa-check-double"></i> Mark All Read</button>
+    </div>
+    <div style="display:flex;gap:.45rem;margin-bottom:1.2rem;flex-wrap:wrap">
+      <button class="btn btn-sm ${notifFilter==='all'?'btn-primary':'btn-outline'}" onclick="setNotifFilter('all')">All</button>
+      <button class="btn btn-sm ${notifFilter==='unread'?'btn-primary':'btn-outline'}" onclick="setNotifFilter('unread')"><i class="fa-solid fa-circle" style="font-size:.5rem"></i> Unread</button>
+      <button class="btn btn-sm ${notifFilter==='assessment'?'btn-primary':'btn-outline'}" onclick="setNotifFilter('assessment')"><i class="fa-solid fa-clipboard-list"></i> Assessments</button>
+      <button class="btn btn-sm ${notifFilter==='checkin'?'btn-primary':'btn-outline'}" onclick="setNotifFilter('checkin')"><i class="fa-solid fa-calendar-check"></i> Check-ins</button>
+    </div>
+    <div class="card">
+      <div class="card-body" id="notif-list" style="padding:.5rem 1.4rem"><p style="color:var(--text-light);font-size:.83rem;padding:.6rem 0">Loading...</p></div>
+    </div>`;
+
+  const unsub = db.collection('notifications').orderBy('createdAt','desc').limit(100).onSnapshot(snap => {
+    window._notifDocs = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderNotifList();
+  }, e => console.error(e));
+  activeListeners.push(unsub);
+}
+
+function setNotifFilter(f) {
+  notifFilter = f;
+  renderNotificationsPage();
+}
+
+function renderNotifList() {
+  const all = window._notifDocs || [];
+  let filtered = all;
+  if(notifFilter==='unread') filtered = all.filter(n=>!n.read);
+  else if(notifFilter==='assessment') filtered = all.filter(n=>n.type==='assessment');
+  else if(notifFilter==='checkin') filtered = all.filter(n=>n.type==='checkin');
+  const el = document.getElementById('notif-list');
+  if(!el) return;
+  if(!filtered.length) {
+    el.innerHTML = `<div class="empty"><i class="fa-solid fa-bell-slash"></i><p>${notifFilter==='unread'?'No unread notifications — all caught up! ✓':notifFilter==='all'?'No notifications yet':'No '+notifFilter+' notifications'}</p></div>`;
+    return;
+  }
+  const unreadCount = all.filter(n=>!n.read).length;
+  el.innerHTML = (unreadCount > 0 ? `<div style="font-size:.74rem;color:var(--text-light);padding:.45rem 0 .65rem;border-bottom:1px solid var(--border);margin-bottom:.1rem">${unreadCount} unread · ${all.length} total</div>` : '') +
+  filtered.map(n => {
+    const isAsmt = n.type === 'assessment';
+    const icon = isAsmt ? 'fa-clipboard-list' : 'fa-calendar-check';
+    const iconBg = isAsmt ? '#dbeafe' : '#ede9fe';
+    const iconColor = isAsmt ? '#1d4ed8' : '#6d28d9';
+    const badge = isAsmt ? '<span class="badge badge-info">Assessment</span>' : '<span class="badge badge-purple">Check-in</span>';
+    const ts2 = n.createdAt ? fmtTime(n.createdAt.toDate ? n.createdAt.toDate() : new Date(n.createdAt)) : '';
+    return `<div style="display:flex;align-items:flex-start;gap:.85rem;padding:.9rem 0;border-bottom:1px solid var(--border);${!n.read?'background:linear-gradient(to right,#f0f9ff,transparent);border-left:3px solid var(--accent);padding-left:.7rem;margin-left:-.7rem':''}"
+        id="notif-${n.id}">
+      <div style="width:36px;height:36px;border-radius:50%;background:${iconBg};color:${iconColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem">
+        <i class="fa-solid ${icon}"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.18rem">
+          ${!n.read?'<span style="width:7px;height:7px;border-radius:50%;background:#dc2626;flex-shrink:0;display:inline-block"></span>':''}
+          ${badge}
+          <span style="font-size:.88rem;font-weight:${n.read?'500':'700'}">${n.traineeName||'Unknown'}</span>
+          <span style="color:var(--text-light);font-size:.8rem">·</span>
+          <span style="font-size:.82rem;color:var(--text-light)">${n.detail||''}</span>
+        </div>
+        <div style="font-size:.74rem;color:var(--text-light)">Submitted by <strong>${n.submittedBy||'Unknown'}</strong>${ts2?' · '+ts2:''}</div>
+      </div>
+      ${!n.read?`<button class="btn btn-ghost btn-sm" style="flex-shrink:0" title="Mark as read" onclick="markNotifRead('${n.id}')"><i class="fa-solid fa-check" style="color:var(--success)"></i></button>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function markNotifRead(id) {
+  try { await db.collection('notifications').doc(id).update({read:true}); } catch(e){ console.error(e); }
+}
+
+async function markAllNotificationsRead() {
+  try {
+    const snap = await db.collection('notifications').where('read','==',false).get();
+    if(!snap.size) return;
+    const batch = db.batch();
+    snap.docs.forEach(d => batch.update(d.ref, {read:true}));
+    await batch.commit();
+  } catch(e){ console.error(e); }
 }
 
 // Track current page for refreshes
